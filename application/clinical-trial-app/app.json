@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Clinical Trail Search",
+    "name": "Clinical Trial Search",
     "slug": "clinical-trial-app",
     "privacy": "public",
     "sdkVersion": "32.0.0",
