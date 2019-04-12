@@ -7,10 +7,14 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Button,
+  Alert
 } from 'react-native';
 import { WebBrowser } from 'expo';
 
 import { MonoText } from '../components/StyledText';
+
+import ClinicalTrialAPI  from '../components/ClinicalTrialAPI.js';
 
 export default class HomeScreen extends React.Component {
   static navigationOptions = {
@@ -44,6 +48,11 @@ export default class HomeScreen extends React.Component {
             <Text style={styles.getStartedText}>
               Change this text and your app will automatically reload.
             </Text>
+
+            <Button
+              onPress={this._testFunction}
+              title="Press Me"
+            />
           </View>
 
           <View style={styles.helpContainer}>
@@ -62,6 +71,11 @@ export default class HomeScreen extends React.Component {
         </View>
       </View>
     );
+  }
+
+  _testFunction() {
+    //Alert.alert('You tapped the button!');
+    ClinicalTrialAPI.testFunc();
   }
 
   _maybeRenderDevelopmentModeWarning() {
