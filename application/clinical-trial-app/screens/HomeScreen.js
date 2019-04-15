@@ -16,6 +16,8 @@ import { MonoText } from '../components/StyledText';
 
 import ClinicalTrialAPI  from '../components/ClinicalTrialAPI.js';
 
+import MapView from 'react-native-maps';
+
 export default class HomeScreen extends React.Component {
   static navigationOptions = {
     header: null,
@@ -60,7 +62,26 @@ export default class HomeScreen extends React.Component {
               <Text style={styles.helpLinkText}>Help, it didn’t automatically reload!</Text>
             </TouchableOpacity>
           </View>
+
         </ScrollView>
+
+        <MapView
+            style={{ flex: 1 }}
+            initialRegion={{
+              latitude: myLat,
+              longitude: myLong,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
+            }}
+          >
+          {markers.map(marker => (
+            <MapView.Marker
+              coordinate={marker.coordinates}
+              title = {marker.title}
+              key = {marker.key}
+            />
+          ))}
+          </MapView>
 
         <View style={styles.tabBarInfoContainer}>
           <Text style={styles.tabBarInfoText}>This is a tab bar. You can edit it in:</Text>
@@ -200,3 +221,39 @@ const styles = StyleSheet.create({
     color: '#2e78b7',
   },
 });
+
+/*var markers = [
+  {
+    latitude: 35.9995,
+    longitude: -78.94,
+    title: 'Foo Place',
+    subtitle: '1234 Foo Drive'
+  }
+];*/
+
+var myLat = 35.9995;
+var myLong = -78.94;
+
+var markers = [{
+  key: 1,
+  title: "hello1",
+  coordinates: {
+      latitude: myLat,
+      longitude: myLong
+    },
+  },{
+    key: 2,
+    title: "hello2",
+    coordinates: {
+      latitude: myLat + 3,
+      longitude: myLong + 3
+    }
+  },{
+    key: 3,
+    title: "hello3",
+    coordinates: {
+      latitude: myLat + 5,
+      longitude: myLong + 5
+    }
+}]
+
