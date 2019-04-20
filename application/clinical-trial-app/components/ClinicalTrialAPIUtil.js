@@ -86,6 +86,53 @@ import * as QueryConstants from '../constants/MainSearchQueryParams.js';
       }
   }
 
+  //Functions for processing certain parts of the response
+  //Takes the response JSON of a trial as an argument and returns a string for display
+
+
+  static getGenderRestrictions(trial){
+    var genderRes = trial[QueryConstants.ELIGIBILITY][QueryConstants.STRUCTURED][QueryConstants.GENDER];
+    if(genderRes === "BOTH"){
+      return "Male or Female";
+    }
+    else if(genderRes === "MALE"){
+      return "Male";
+    }
+    else if(genderRes === "FEMALE"){
+      return "Female";
+    }
+    else{
+      console.error("Gender returned was not an expected value");
+      return genderRes;
+    }
+  }
+
+  static getAgeRestrictions(trial){
+    var returnStr = "";
+
+    var minAgeNum = trial[QueryConstants.ELIGIBILITY][QueryConstants.STRUCTURED][QueryConstants.MIN_AGE_NUMBER];
+    var maxAgeNum = trial[QueryConstants.ELIGIBILITY][QueryConstants.STRUCTURED][QueryConstants.MAX_AGE_NUMBER];
+
+    var minAgeUnit = trial[QueryConstants.ELIGIBILITY][QueryConstants.STRUCTURED][QueryConstants.MIN_AGE_UNIT].toString();
+    var maxAgeUnit = trial[QueryConstants.ELIGIBILITY][QueryConstants.STRUCTURED][QueryConstants.MAX_AGE_UNIT].toString();
+
+    returnStr += minAgeNum.toString();
+    if(maxAgeNum >= 999){
+      returnStr += " " + maxAgeUnit + " and older";
+      return returnStr;
+    }
+    else if(minAgeUnit === maxAgeUnit){
+      returnStr += " to " + maxAgeNum.toString() + " " + maxAgeUnit;
+      return returnStr;
+    }
+    else{
+      returnStr += " " + minAgeUnit + " to " + maxAgeNum.toString() + " " + maxAgeUnit;
+      return returnStr; 
+    }
+  }
+
+
+
   static testPostReq = () => {
     var params = {};
     var sizeStr = "size";
