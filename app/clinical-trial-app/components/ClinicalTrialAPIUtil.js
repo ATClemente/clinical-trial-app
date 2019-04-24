@@ -16,62 +16,7 @@ import * as QueryConstants from '../constants/MainSearchQueryParams.js';
     Alert.alert("Called code from the other file");
   }
 
-  static async sendPostRequest
-  (size = 10, from = 0, useInclude = true, current_trial_status = "active",
-    primary_purpose_code = "treatment", keywords = "", postal_code = null,
-    distance = "10", distanceType = "mi"){
-
-      /*var params = {};
-      params[QueryConstants.SIZE_STR] = size;
-      params[QueryConstants.CURRENT_TRIAL_STATUS_STR] = current_trial_status;
-      params[QueryConstants.PURPOSE_CODE_STR] = primary_purpose_code;
-      if(postal_code !== null){
-        params[QueryConstants.POSTAL_CODE_STR] = postal_code;
-        params[QueryConstants.DISTANCE_STR] = (distance + distanceType);
-      }
-      if(keywords !== "" && keywords !== null ){
-        params[QueryConstants.KEYWORD_STR] = keywords.toLowerCase();
-      }
-      if(useInclude){
-        params[QueryConstants.INCLUDE_STR] = QueryConstants.INCLUDE_ARR;
-      }
-
-      fetch('https://clinicaltrialsapi.cancer.gov/v1/clinical-trials', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(
-          //{size: '5'}
-          params
-        ),
-      }).then((response) => response.json())
-        .then((responseJson) => {
-          //console.log(responseJson.total);
-          return responseJson;
-          //return responseJson.movies;
-        })
-      .catch((error) => {
-        console.error(error);
-      });*/
-
-      var params = {};
-      params[QueryConstants.SIZE_STR] = size;
-      params[QueryConstants.FROM_STR] = from;
-      params[QueryConstants.CURRENT_TRIAL_STATUS_STR] = current_trial_status;
-      params[QueryConstants.PURPOSE_CODE_STR] = primary_purpose_code;
-      if(postal_code !== null){
-        params[QueryConstants.POSTAL_CODE_STR] = postal_code;
-        params[QueryConstants.DISTANCE_STR] = (distance + distanceType);
-      }
-      if(keywords !== "" && keywords !== null ){
-        params[QueryConstants.KEYWORD_STR] = keywords.toLowerCase();
-      }
-      if(useInclude){
-        params[QueryConstants.INCLUDE_STR] = QueryConstants.INCLUDE_ARR;
-      }
-
+  static async sendPostRequest(params){
       try {
         const response = await fetch('https://clinicaltrialsapi.cancer.gov/v1/clinical-trials', {
           method: 'POST',
@@ -118,7 +63,10 @@ import * as QueryConstants from '../constants/MainSearchQueryParams.js';
     var maxAgeUnit = trial[QueryConstants.ELIGIBILITY][QueryConstants.STRUCTURED][QueryConstants.MAX_AGE_UNIT].toString();
 
     returnStr += minAgeNum.toString();
-    if(maxAgeNum >= 999){
+    if(minAgeNum === 0){
+      return "Not specified";
+    }
+    else if(maxAgeNum >= 999){
       returnStr += " " + maxAgeUnit + " and older";
       return returnStr;
     }
@@ -130,6 +78,10 @@ import * as QueryConstants from '../constants/MainSearchQueryParams.js';
       returnStr += " " + minAgeUnit + " to " + maxAgeNum.toString() + " " + maxAgeUnit;
       return returnStr; 
     }
+  }
+
+  static getPhase(trial){
+    return trial[QueryConstants.PHASE][QueryConstants.PHASE].replace("_", "\/");
   }
 
 

@@ -31,10 +31,16 @@ export default class ClinicalTrialSearchScreen extends React.Component {
         hasNewSearchData: false,
         keyWordText: "",
         zipCodeText: "",
-        distanceSelect: "10",
+        //distanceSelect: "10",
         searchSize: 5,
         resultsFromIndex: 0, //Just add searchSize for next batch when needed.
-        searchData: {} 
+        searchData: {},
+        prevParams: {},
+        desiredStatus: "active",
+        desiredPurpose: "treatment",
+        desiredDistance: "10",
+        desiredDistanceType: "mi",
+        currentPage: 1
     };
 
   }
@@ -59,10 +65,10 @@ export default class ClinicalTrialSearchScreen extends React.Component {
           />
 
           <Picker
-              selectedValue={this.state.distanceSelect}
+              selectedValue={this.state.desiredDistance}
               style={styles.distanceSelectPicker}
               onValueChange={(itemValue, itemIndex) =>
-                  this.setState({distanceSelect: itemValue})
+                  this.setState({desiredDistance: itemValue})
               }>
               <Picker.Item label="10mi" value="10" />
               <Picker.Item label="20mi" value="20" />
@@ -81,8 +87,13 @@ export default class ClinicalTrialSearchScreen extends React.Component {
         <View style={styles.getStartedContainer}>
 
           <Button
-            onPress={() => this._sendPostAPIRequest()}
+            onPress={() => this._doAPISearch()}
             title="Search!"
+          />
+
+          <Button
+            onPress={() => this._doAPISearch(true)}
+            title="Next page!"
           />
 
         </View>
@@ -95,61 +106,77 @@ export default class ClinicalTrialSearchScreen extends React.Component {
 
 
         {!this.state.searchLoading &&
-          <ClinicalTrialSearchResults searchData = {this.state.searchData} />
+          <ClinicalTrialSearchResults searchData = {this.state.searchData} currentPage = {this.state.currentPage}/>
         }
 
       </View>
     );
   }
 
-  _sendPostAPIRequest(){
+  _doAPISearch(pageSearch = false, useInclude = true){
+//ClinicalTrialAPIUtil.sendPostRequest(this.state.searchSize, 0, true, "active", "treatment", keyWordArg, zipCodeArg, this.state.distanceSelect)
     this.setState({searchLoading: true});
-    let keyWordArg = this.state.keyWordText.trim();
+    var params = {};
+    if(!pageSearch){
+
+      this.state.resultsFromIndex = 0;
+      this.state.currentPage = 1;
+
+      params[QueryConstants.SIZE_STR] = this.state.searchSize;
+      params[QueryConstants.FROM_STR] = this.state.resultsFromIndex;
+      params[QueryConstants.CURRENT_TRIAL_STATUS_STR] = this.state.desiredStatus;
+      params[QueryConstants.PURPOSE_CODE_STR] = this.state.desiredPurpose;
+
+      let keyWordArg = this.state.keyWordText.trim();
+      let zipCodeArg = this.state.zipCodeText.trim();
+
+      if(zipCodeArg.length == 5){
+        params[QueryConstants.POSTAL_CODE_STR] = zipCodeArg;
+        params[QueryConstants.DISTANCE_STR] = (this.state.desiredDistance + this.state.desiredDistanceType);
+      }
+      else if(zipCodeArg != ""){
+        this.zipCodeInvalidAlert();
+        this.setState({searchLoading: false});
+        return;
+      }
+      if(keyWordArg !== "" && keyWordArg !== null ){
+        params[QueryConstants.KEYWORD_STR] = keyWordArg.toLowerCase();
+      }
+      if(useInclude){
+        params[QueryConstants.INCLUDE_STR] = QueryConstants.INCLUDE_ARR;
+      }
+    }
+    else{
+      this.state.prevParams[QueryConstants.FROM_STR] += this.state.searchSize;
+      this.state.currentPage++;
+      params = this.state.prevParams;
+    }
+
+    /*let keyWordArg = this.state.keyWordText.trim();
     let zipCodeArg = this.state.zipCodeText.trim();
     if(zipCodeArg == ""){
       zipCodeArg = null
     }
     else if (zipCodeArg.length != 5){
-      Alert.alert(
-        'Invalid Zip Code',
-        'Zip code format is invalid. Please enter your 5 digit zipcode if you would like to search by location',
-        [
-          {text: 'OK', onPress: () => {}},
-        ],
-        { cancelable: false }
-      );
+      this.zipCodeInvalidAlert();
       this.setState({searchLoading: false});
       return;
-    } 
-    //this.setState({hasNewSearchData: false});   
-    ClinicalTrialAPIUtil.sendPostRequest(this.state.searchSize, this.state.resultsFromIndex, true, "active", "treatment", keyWordArg, zipCodeArg, this.state.distanceSelect)
+    }*/  
+    ClinicalTrialAPIUtil.sendPostRequest(params)
     .then((response) => {
         if(response.total === undefined){
             console.log(response);
-            Alert.alert(
-                'Search Error',
-                'Search resulted in error. Please refine and try again',
-                [
-                  {text: 'OK', onPress: () => {}},
-                ],
-                { cancelable: false }
-            );
+            this.searchErrorAlert();
             this.setState({searchLoading: false});
         }
         else if(response.total == 0){
-            Alert.alert(
-                'No results',
-                'No results found! Change search terms and try again.',
-                [
-                  {text: 'OK', onPress: () => {}},
-                ],
-                { cancelable: false }
-            );
+          this.noResultsAlert();
             this.setState({searchLoading: false});
         }
         else{
             this.setState({searchLoading: false});
             this.setState({searchData: response});
+            this.setState({prevParams: params});
             console.log(response.total);
             //console.log(ClinicalTrialAPIUtil.getAgeRestrictions(this.state.searchData.trials[0]));
             //console.log(ClinicalTrialAPIUtil.getGenderRestrictions(this.state.searchData.trials[0]));
@@ -158,6 +185,40 @@ export default class ClinicalTrialSearchScreen extends React.Component {
             //this.setState({hasNewSearchData: true}); 
         }
     });                                                     
+  }
+
+
+  zipCodeInvalidAlert(){
+    Alert.alert(
+      'Invalid Zip Code',
+      'Zip code format is invalid. Please enter your 5 digit zipcode if you would like to search by location',
+      [
+        {text: 'OK', onPress: () => {}},
+      ],
+      { cancelable: false }
+    );
+  }
+
+  searchErrorAlert(){
+    Alert.alert(
+      'Search Error',
+      'Search resulted in error. Please refine and try again',
+      [
+        {text: 'OK', onPress: () => {}},
+      ],
+      { cancelable: false }
+    );
+  }
+
+  noResultsAlert(){
+    Alert.alert(
+      'No results',
+      'No results found! Change search terms and try again.',
+      [
+        {text: 'OK', onPress: () => {}},
+      ],
+      { cancelable: false }
+    );
   }
 
   onZipCodeChanged(text){

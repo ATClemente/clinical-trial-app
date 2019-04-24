@@ -50,9 +50,9 @@ export default class ClinicalTrialSearchResults extends React.Component {
 
     <View style = {styles.itemView}>
         <TouchableOpacity onPress={() => Alert.alert("Summary:", item[QueryConstants.BRIEF_SUMMARY])}>
-            <Text>{(index+1).toString()}. {item[QueryConstants.BRIEF_TITLE]}</Text>
+            <Text>{(index+(1 + this.props.searchData.trials.length * ( this.props.currentPage - 1 ))).toString()}. {item[QueryConstants.BRIEF_TITLE]}</Text>
         </TouchableOpacity>
-        <Text>Phase: {item[QueryConstants.PHASE][QueryConstants.PHASE]}</Text>
+        <Text>Phase: {ClinicalTrialAPIUtil.getPhase(item)}</Text>
         <Text>Age: {ClinicalTrialAPIUtil.getAgeRestrictions(item)}</Text>
         <Text>Gender: {ClinicalTrialAPIUtil.getGenderRestrictions(item)}</Text>
     </View>
