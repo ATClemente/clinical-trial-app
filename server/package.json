@@ -4,8 +4,10 @@
   "description": "app server",
   "main": "index.js",
   "dependencies": {
+    "bcrypt": "^3.0.6",
     "body-parser": "^1.18.3",
     "express": "^4.16.3",
+    "jsonwebtoken": "^8.5.1",
     "pg": "^7.10.0"
   },
   "devDependencies": {
