@@ -17,6 +17,7 @@ import { WebBrowser } from 'expo';
 import { MonoText } from '../components/StyledText';
 import ClinicalTrialAPIUtil from '../components/ClinicalTrialAPIUtil.js';
 import * as QueryConstants from '../constants/MainSearchQueryParams.js';
+import ClinicalTrialSearchResults from '../components/ClinicalTrialSearchResults';
 
 export default class ClinicalTrialSearchScreen extends React.Component {
   static navigationOptions = {
@@ -31,6 +32,8 @@ export default class ClinicalTrialSearchScreen extends React.Component {
         keyWordText: "",
         zipCodeText: "",
         distanceSelect: "10",
+        searchSize: 5,
+        resultsFromIndex: 0, //Just add searchSize for next batch when needed.
         searchData: {} 
     };
 
@@ -39,72 +42,49 @@ export default class ClinicalTrialSearchScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+        <View style={styles.inputView}>
+          <Text>Search by keywords:</Text>
+          <TextInput style = {styles.keyWordSearchBox}
+              placeholder = "Enter search terms"
+              onChangeText={(text) => this.setState({keyWordText: text})}
+              value={this.state.keyWordText}
+          />
 
-          <View style={{
-              paddingTop: 30,
-              paddingLeft: 30,
-              paddingRight: 30,
-              paddingBottom: 15
-            }}
-            >
-            <Text>Search by keywords:</Text>
-            <TextInput style = {styles.keyWordSearchBox}
-                placeholder = "Enter search terms"
-                onChangeText={(text) => this.setState({keyWordText: text})}
-                value={this.state.keyWordText}
-            />
+          <Text>Search by Zip code:</Text>
+          <TextInput style = {styles.zipCodeSearchBox}
+              keyboardType = "numeric"
+              placeholder = "#####"
+              onChangeText={(text) => this.onZipCodeChanged(text)}
+              value={this.state.zipCodeText}
+          />
 
-            <Text>Search by Zip code:</Text>
-            <TextInput style = {styles.zipCodeSearchBox}
-                keyboardType = "numeric"
-                placeholder = "#####"
-                onChangeText={(text) => this.onZipCodeChanged(text)}
-                value={this.state.zipCodeText}
-            />
+          <Picker
+              selectedValue={this.state.distanceSelect}
+              style={styles.distanceSelectPicker}
+              onValueChange={(itemValue, itemIndex) =>
+                  this.setState({distanceSelect: itemValue})
+              }>
+              <Picker.Item label="10mi" value="10" />
+              <Picker.Item label="20mi" value="20" />
+              <Picker.Item label="30mi" value="30" />
+              <Picker.Item label="40mi" value="40" />
+              <Picker.Item label="50mi" value="50" />
+              <Picker.Item label="60mi" value="60" />
+              <Picker.Item label="70mi" value="70" />
+              <Picker.Item label="80mi" value="80" />
+              <Picker.Item label="90mi" value="90" />
+              <Picker.Item label="100mi" value="100" />
+          </Picker>
 
-            <Picker
-                selectedValue={this.state.distanceSelect}
-                style={styles.distanceSelectPicker}
-                onValueChange={(itemValue, itemIndex) =>
-                    this.setState({distanceSelect: itemValue})
-                }>
-                <Picker.Item label="10mi" value="10" />
-                <Picker.Item label="20mi" value="20" />
-                <Picker.Item label="30mi" value="30" />
-                <Picker.Item label="40mi" value="40" />
-                <Picker.Item label="50mi" value="50" />
-                <Picker.Item label="60mi" value="60" />
-                <Picker.Item label="70mi" value="70" />
-                <Picker.Item label="80mi" value="80" />
-                <Picker.Item label="90mi" value="90" />
-                <Picker.Item label="100mi" value="100" />
-            </Picker>
+        </View>
 
-          </View>
+        <View style={styles.getStartedContainer}>
 
-          <View style={styles.getStartedContainer}>
+          <Button
+            onPress={() => this._sendPostAPIRequest()}
+            title="Search!"
+          />
 
-            <Button
-              onPress={() => this._testPostAPIRequest()}
-              title="Search!"
-            />
-
-          </View>
-
-          <View style={styles.helpContainer}>
-            <TouchableOpacity onPress={this._handleHelpPress} style={styles.helpLink}>
-              <Text style={styles.helpLinkText}>Help, it didn’t automatically reload!</Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
-
-        <View style={styles.tabBarInfoContainer}>
-          <Text style={styles.tabBarInfoText}>This is a tab bar. You can edit it in:</Text>
-
-          <View style={[styles.codeHighlightContainer, styles.navigationFilename]}>
-            <MonoText style={styles.codeHighlightText}>navigation/MainTabNavigator.js</MonoText>
-          </View>
         </View>
 
         {this.state.searchLoading &&
@@ -113,26 +93,58 @@ export default class ClinicalTrialSearchScreen extends React.Component {
             </View>
         }
 
-        {this.state.hasNewSearchData && 
-            this._respondToRequest()
+
+        {!this.state.searchLoading &&
+          <ClinicalTrialSearchResults searchData = {this.state.searchData} />
         }
 
       </View>
     );
   }
 
-  _testPostAPIRequest(){
+  _sendPostAPIRequest(){
     this.setState({searchLoading: true});
+    let keyWordArg = this.state.keyWordText.trim();
+    let zipCodeArg = this.state.zipCodeText.trim();
+    if(zipCodeArg == ""){
+      zipCodeArg = null
+    }
+    else if (zipCodeArg.length != 5){
+      Alert.alert(
+        'Invalid Zip Code',
+        'Zip code format is invalid. Please enter your 5 digit zipcode if you would like to search by location',
+        [
+          {text: 'OK', onPress: () => {}},
+        ],
+        { cancelable: false }
+      );
+      this.setState({searchLoading: false});
+      return;
+    } 
     //this.setState({hasNewSearchData: false});   
-    ClinicalTrialAPIUtil.sendPostRequest(5, true, "active", "treatment", this.state.keyWordText, this.state.zipCodeText, this.state.distanceSelect)
+    ClinicalTrialAPIUtil.sendPostRequest(this.state.searchSize, this.state.resultsFromIndex, true, "active", "treatment", keyWordArg, zipCodeArg, this.state.distanceSelect)
     .then((response) => {
         if(response.total === undefined){
             console.log(response);
-            Alert.alert("Search resulted in error. Please refine and try again");
+            Alert.alert(
+                'Search Error',
+                'Search resulted in error. Please refine and try again',
+                [
+                  {text: 'OK', onPress: () => {}},
+                ],
+                { cancelable: false }
+            );
             this.setState({searchLoading: false});
         }
         else if(response.total == 0){
-            Alert.alert("No results! Change search terms and try again.");
+            Alert.alert(
+                'No results',
+                'No results found! Change search terms and try again.',
+                [
+                  {text: 'OK', onPress: () => {}},
+                ],
+                { cancelable: false }
+            );
             this.setState({searchLoading: false});
         }
         else{
@@ -274,6 +286,7 @@ const styles = StyleSheet.create({
   getStartedContainer: {
     alignItems: 'center',
     marginHorizontal: 50,
+    zIndex: 1 //Hacky for now. Gets ActivityIndicator to appear above button.
   },
   homeScreenFilename: {
     marginVertical: 7,
@@ -340,7 +353,8 @@ const styles = StyleSheet.create({
     opacity: 0.80,
     backgroundColor: 'white',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    zIndex: 10 //Part of said hack
   },
   keyWordSearchBox:{
     marginTop: 10,
@@ -370,5 +384,11 @@ const styles = StyleSheet.create({
     marginLeft: 60,
     borderWidth: 2,
     borderColor: '#7a42f4'
+  },
+  inputView:{
+    paddingTop: 50,
+    paddingLeft: 30,
+    paddingRight: 30,
+    paddingBottom: 15
   }
 });

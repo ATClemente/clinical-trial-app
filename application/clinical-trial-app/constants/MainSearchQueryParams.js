@@ -2,6 +2,7 @@
 
 //Query Parameters
 export const SIZE_STR = "size";
+export const FROM_STR = "from";
 export const CURRENT_TRIAL_STATUS_STR = "current_trial_status";
 export const PURPOSE_CODE_STR = "primary_purpose.primary_purpose_code";
 export const POSTAL_CODE_STR = "sites.org_postal_code";

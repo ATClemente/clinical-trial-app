@@ -17,7 +17,7 @@ import * as QueryConstants from '../constants/MainSearchQueryParams.js';
   }
 
   static async sendPostRequest
-  (size = 10, useInclude = true, current_trial_status = "active",
+  (size = 10, from = 0, useInclude = true, current_trial_status = "active",
     primary_purpose_code = "treatment", keywords = "", postal_code = null,
     distance = "10", distanceType = "mi"){
 
@@ -58,6 +58,7 @@ import * as QueryConstants from '../constants/MainSearchQueryParams.js';
 
       var params = {};
       params[QueryConstants.SIZE_STR] = size;
+      params[QueryConstants.FROM_STR] = from;
       params[QueryConstants.CURRENT_TRIAL_STATUS_STR] = current_trial_status;
       params[QueryConstants.PURPOSE_CODE_STR] = primary_purpose_code;
       if(postal_code !== null){

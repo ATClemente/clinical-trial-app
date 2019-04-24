@@ -8,6 +8,8 @@ import HomeScreen from '../screens/HomeScreen';
 import LinksScreen from '../screens/LinksScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 
+import TestingScreen from '../screens/TestingScreen'
+
 
 const TrialSearchStack = createStackNavigator({
   TrialSearch: ClinicalTrialSearchScreen,
@@ -15,6 +17,24 @@ const TrialSearchStack = createStackNavigator({
 
 TrialSearchStack.navigationOptions = {
   tabBarLabel: 'Trial Search',
+  tabBarIcon: ({ focused }) => (
+    <TabBarIcon
+      focused={focused}
+      name={
+        Platform.OS === 'ios'
+          ? `ios-information-circle${focused ? '' : '-outline'}`
+          : 'md-information-circle'
+      }
+    />
+  ),
+};
+
+const TestingScreenStack = createStackNavigator({
+  TestScreen: TestingScreen,
+});
+
+TestingScreenStack.navigationOptions = {
+  tabBarLabel: 'Test Screen',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
@@ -75,6 +95,7 @@ SettingsStack.navigationOptions = {
 
 export default createBottomTabNavigator({
   TrialSearchStack,
+  TestingScreenStack,
   HomeStack,
   LinksStack,
   SettingsStack,
