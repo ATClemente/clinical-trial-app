@@ -6,6 +6,7 @@ import TabBarIcon from '../components/TabBarIcon';
 import HomeScreen from '../screens/HomeScreen';
 import LinksScreen from '../screens/LinksScreen';
 import SettingsScreen from '../screens/SettingsScreen';
+import CancerNews from '../screens/CancerNews';
 
 const HomeStack = createStackNavigator({
   Home: HomeScreen,
@@ -43,6 +44,8 @@ const SettingsStack = createStackNavigator({
   Settings: SettingsScreen,
 });
 
+
+
 SettingsStack.navigationOptions = {
   tabBarLabel: 'Settings',
   tabBarIcon: ({ focused }) => (
@@ -53,8 +56,27 @@ SettingsStack.navigationOptions = {
   ),
 };
 
+
+const CancerNewsStack = createStackNavigator({
+    News: CancerNews,
+});
+
+
+CancerNewsStack.navigationOptions = {
+    tabBarLabel: 'Cancer News',
+    tabBarIcon: ({ focused }) => (
+        <TabBarIcon
+            focused={focused}
+            name={Platform.OS === 'ios' ? 'ios-options' : 'md-options'}
+        />
+    ),
+};
+
+// Do this last to add a button 
 export default createBottomTabNavigator({
   HomeStack,
   LinksStack,
+  CancerNewsStack,
   SettingsStack,
+
 });

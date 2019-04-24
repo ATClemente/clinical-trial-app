@@ -18,7 +18,7 @@ const AuthStack = createStackNavigator(
     SignUp: {
       screen: SignUpScreen,
       navigationOptions: {
-        title: 'Sign up for an account'
+        title: 'Sign '
       }
     },
     ForgotPassword: {
