@@ -75,7 +75,7 @@ app.get('/auth/login', async (req, res) => {
       'SELECT * FROM users WHERE username = $1',
       [req.body.username]
     );
-    if (!user) {
+    if (!user.rowCount) {
       res.status(401).json(msg(false, 'Error: Invalid credentials'));
     } else {
       const passwordHash = user.rows[0].password;
