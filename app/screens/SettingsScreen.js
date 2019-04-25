@@ -16,6 +16,7 @@ export default class SettingsScreen extends React.Component {
 
     
     //https://medium.com/@snehabagri.90/reactnative-webview-with-local-content-c98a09340801
+    //https://stackoverflow.com/questions/42851296/react-native-load-local-html-file-into-webview
   //render() {
     /* Go ahead and delete ExpoConfigView and replace it with your
      * content, we just wanted to give you a quick view of your config */
@@ -31,10 +32,15 @@ export default class SettingsScreen extends React.Component {
   */
 
     render() {
+
+        const feed = require('./index.html');
         return (
             <WebView
+                source={{ feed }}
+                style={{ flex: 1 }}
+                /*
                 source={{ uri: 'http://feeds.feedburner.com/cancer-currents' }}
-                style={{ marginTop: 20 }}
+                style={{ marginTop: 20 }}*/
             />
         );
     }
