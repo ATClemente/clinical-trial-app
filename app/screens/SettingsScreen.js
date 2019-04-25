@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, Button, AsyncStorage } from 'react-native';
 import { ExpoConfigView } from '@expo/samples';
+import { WebView } from 'react-native';
+
 
 export default class SettingsScreen extends React.Component {
   static navigationOptions = {
@@ -12,9 +14,13 @@ export default class SettingsScreen extends React.Component {
     this.props.navigation.navigate('Auth');
   };
 
-  render() {
+    
+    //https://medium.com/@snehabagri.90/reactnative-webview-with-local-content-c98a09340801
+  //render() {
     /* Go ahead and delete ExpoConfigView and replace it with your
      * content, we just wanted to give you a quick view of your config */
+
+    /*
     return (
       <View>
         <ExpoConfigView />
@@ -22,4 +28,16 @@ export default class SettingsScreen extends React.Component {
       </View>
     );
   }
+  */
+
+    render() {
+        return (
+            <WebView
+                source={{ uri: 'http://feeds.feedburner.com/cancer-currents' }}
+                style={{ marginTop: 20 }}
+            />
+        );
+    }
+
+
 }
