@@ -78,7 +78,7 @@ app.post('/auth/register', async (req, res) => {
   }
 });
 
-app.get('/auth/login', async (req, res) => {
+app.post('/auth/login', async (req, res) => {
   if (!req.body || !req.body.username || !req.body.password) {
     res
       .status(400)

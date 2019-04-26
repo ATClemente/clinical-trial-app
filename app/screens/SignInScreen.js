@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  Alert,
   AsyncStorage,
   StyleSheet,
   Text,
@@ -8,6 +9,8 @@ import {
   View
 } from 'react-native';
 import Colors from '../constants/Colors';
+import Urls from '../constants/Urls';
+import axios from 'axios';
 
 export default class SignInScreen extends React.Component {
   constructor(props) {
@@ -60,7 +63,30 @@ export default class SignInScreen extends React.Component {
 
   _signInAsync = async () => {
     await AsyncStorage.setItem('userToken', 'abc');
-    this.props.navigation.navigate('Main');
+
+    const response = axios.post(
+      Urls.server + '/auth/login',
+      {
+        username: this.state.username,
+        password: this.state.password
+      }
+    ).then(response => {
+      console.log('response');
+      console.log(response);
+    }).catch(error => {
+      if(error.response) {
+        console.log(JSON.stringify(error.response));
+        Alert.alert(error.response.data.status);
+      }
+      else if (error.request) {
+        Alert.alert(JSON.stringify(error.request));
+      }
+      else {
+        Alert.alert(JSON.stringify(error));
+      }
+    });
+
+    //this.props.navigation.navigate('Main');
   };
 }
 

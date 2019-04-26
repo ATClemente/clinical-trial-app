@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import {
+  Alert,
   AsyncStorage,
   StyleSheet,
   Text,
@@ -9,6 +10,7 @@ import {
   View
 } from 'react-native';
 import Colors from '../constants/Colors';
+import Urls from '../constants/Urls';
 
 export default class SignUpScreen extends React.Component {
   constructor(props) {
@@ -50,8 +52,30 @@ export default class SignUpScreen extends React.Component {
   }
 
   _signUpAsync = async () => {
-    await AsyncStorage.setItem('userToken', 'abc');
-    this.props.navigation.navigate('Main');
+    const response = axios.post(
+      Urls.server + '/auth/register',
+      {
+        username: this.state.username,
+        password: this.state.password
+      }
+    ).then(response => {
+      console.log('response');
+      console.log(response);
+    }).catch(error => {
+      if(error.response) {
+        console.log(JSON.stringify(error.response));
+        Alert.alert(error.response.data.status);
+      }
+      else if (error.request) {
+        Alert.alert(JSON.stringify(error.request));
+      }
+      else {
+        Alert.alert(JSON.stringify(error));
+      }
+    });
+
+    //await AsyncStorage.setItem('userToken', 'abc');
+    //this.props.navigation.navigate('Main');
   };
 }
 
