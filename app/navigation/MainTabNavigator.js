@@ -8,7 +8,6 @@ import HomeScreen from '../screens/HomeScreen';
 import LinksScreen from '../screens/LinksScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 
-
 const TrialSearchStack = createStackNavigator({
   TrialSearch: ClinicalTrialSearchScreen,
 });
