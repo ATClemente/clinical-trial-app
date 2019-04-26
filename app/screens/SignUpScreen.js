@@ -59,8 +59,10 @@ export default class SignUpScreen extends React.Component {
         password: this.state.password
       }
     ).then(response => {
-      AsyncStorage.setItem('jwt', response.data.jwt);
-      AsyncStorage.setItem('profile', response.data.profile);
+      return AsyncStorage.setItem('jwt', response.data.jwt)
+      .then( () => {
+        AsyncStorage.setItem('profile', JSON.stringify(response.data.profile));
+      })
     }).then( () => {
       this.props.navigation.navigate('Main');
     }).catch(error => {
