@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import {
+  Alert,
   AsyncStorage,
   StyleSheet,
   Text,
@@ -8,7 +9,8 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
-import Colors from '../constants/Colors';
+import Styles from '../constants/Styles';
+import Urls from '../constants/Urls';
 
 export default class SignUpScreen extends React.Component {
   constructor(props) {
@@ -21,20 +23,20 @@ export default class SignUpScreen extends React.Component {
 
   render() {
     const btnDisabled = !this.state.username || !this.state.password;
-    const btnStyle = [styles.button, 
+    const btnStyle = [Styles.buttonGreen, 
       btnDisabled 
-      ? styles.disabled 
-      : styles.enabled ];
+      ? Styles.disabled 
+      : Styles.enabled ];
     return (      
-      <View style={styles.container}>
-        <View style={styles.form}>
+      <View style={Styles.container}>
+        <View style={Styles.form}>
           <TextInput
-            style={styles.textInput}
+            style={Styles.textInput}
             placeholder="Username"
             onChangeText={username => this.setState({username})}
           />
           <TextInput
-            style={styles.textInput}
+            style={Styles.textInput}
             placeholder="Password"
             onChangeText={password => this.setState({password})}
           />
@@ -42,7 +44,7 @@ export default class SignUpScreen extends React.Component {
             style={btnStyle} 
             onPress={this._signUpAsync}
             disabled={btnDisabled}>
-            <Text style={styles.buttonText}>Sign Up</Text>
+            <Text style={Styles.buttonText}>Sign Up</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -50,47 +52,28 @@ export default class SignUpScreen extends React.Component {
   }
 
   _signUpAsync = async () => {
-    await AsyncStorage.setItem('userToken', 'abc');
-    this.props.navigation.navigate('Main');
+    axios.post(
+      Urls.server + '/auth/register',
+      {
+        username: this.state.username,
+        password: this.state.password
+      }
+    ).then(response => {
+      AsyncStorage.setItem('jwt', response.data.jwt);
+      AsyncStorage.setItem('profile', response.data.profile);
+    }).then( () => {
+      this.props.navigation.navigate('Main');
+    }).catch(error => {
+      if(error.response) {
+        console.log(JSON.stringify(error.response));
+        Alert.alert(error.response.data.status);
+      }
+      else {
+        Alert.alert(JSON.stringify(error));
+      }
+    });
+
+    //await AsyncStorage.setItem('userToken', 'abc');
+    //this.props.navigation.navigate('Main');
   };
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: 'column',
-    backgroundColor: Colors.WHITE,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  form: {
-    justifyContent: 'center',
-    width: '80%'
-  },
-  textInput: {
-    height: 40,
-    borderColor: Colors.SILVER,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    marginBottom: 20
-  },
-  button: {
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: Colors.GREEN,
-    marginBottom: 12,
-    paddingVertical: 12,
-    borderRadius: 5
-  },
-  enabled: {
-    opacity: 1
-  },
-  disabled: {
-    opacity: 0.5
-  },
-  buttonText: {
-    color: Colors.WHITE,
-    textAlign: 'center',
-    height: 20
-  }
-});
