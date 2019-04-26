@@ -17,5 +17,10 @@ export default {
   SILVER: '#BEBEBE',
   TORCH_RED: '#F8262F',
   MISCHKA: '#E5E4E6',
-  GREEN: '#27b21a'
+  GREEN: '#27b21a',
+  blueOne: '#00bfff',
+  blueTwo: '#92fecf',
+  radar1: '#A770EF',
+  radar2: '#CF8BF3',
+  radar3: '#FDB99B'
 };

@@ -1,5 +1,6 @@
 import React from 'react';
 import { 
+  ActivityIndicator,
   View, 
   Button, 
   AsyncStorage, 
@@ -7,6 +8,8 @@ import {
   TouchableOpacity,
   TextInput
  } from 'react-native';
+import { LinearGradient } from 'expo';
+import Colors from '../constants/Colors';
 import Styles from '../constants/Styles';
 
 export default class SettingsScreen extends React.Component {
@@ -17,7 +20,8 @@ export default class SettingsScreen extends React.Component {
       email: '',
       age: '',
       gender: '',
-      cancerType: ''
+      cancerType: '',
+      loading: false
     };
     this._getProfileAsync();
   }
@@ -37,6 +41,7 @@ export default class SettingsScreen extends React.Component {
   };
 
   _updateProfileAsync = async () => {
+    await this.setState({ loading: true });
     console.log(JSON.stringify({
       username: this.state.username,
       email: this.state.email,
@@ -77,10 +82,18 @@ export default class SettingsScreen extends React.Component {
             onChangeText={(cancerType) => this.setState({ cancerType })}
           />
           <TouchableOpacity 
-            style={Styles.buttonBlue} 
+            style={Styles.button} 
             onPress={this._updateProfileAsync}
           >
-            <Text style={Styles.buttonText}>Update Profile</Text>
+            <LinearGradient 
+              style={Styles.button}
+              colors={[Colors.radar2, Colors.radar3]}
+              start={[0, 0.5]}
+              end={[1, 0.5]}
+            >
+              { this.state.loading && <ActivityIndicator animating={true} color='#ffffff' /> }
+              { !this.state.loading && <Text style={Styles.buttonText}>Update Profile</Text> }
+            </LinearGradient>          
           </TouchableOpacity>
         </View>
         <Button title='Sign Out' onPress={this._signOutAsync} />

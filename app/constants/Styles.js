@@ -24,11 +24,10 @@ export default StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     marginBottom: 20
   },
-  buttonBlue: {
+  button: {
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: Colors.DODGER_BLUE,
     marginBottom: 12,
     paddingVertical: 12,
     borderRadius: 5

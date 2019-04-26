@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import {
+  ActivityIndicator,
   Alert,
   AsyncStorage,
   StyleSheet,
@@ -9,6 +10,8 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import { LinearGradient } from 'expo';
+import Colors from '../constants/Colors';
 import Styles from '../constants/Styles';
 import Urls from '../constants/Urls';
 
@@ -17,13 +20,14 @@ export default class SignUpScreen extends React.Component {
     super(props);
     this.state = {
       username: '',
-      password: ''
+      password: '',
+      loading: false
     }
   }
 
   render() {
     const btnDisabled = !this.state.username || !this.state.password;
-    const btnStyle = [Styles.buttonGreen, 
+    const btnStyle = [Styles.button, 
       btnDisabled 
       ? Styles.disabled 
       : Styles.enabled ];
@@ -33,7 +37,7 @@ export default class SignUpScreen extends React.Component {
           <TextInput
             style={Styles.textInput}
             placeholder="Username"
-            onChangeText={username => this.setState({username})}
+            onChangeText={username => this.setState({username: username.trim()})}
           />
           <TextInput
             style={Styles.textInput}
@@ -44,7 +48,15 @@ export default class SignUpScreen extends React.Component {
             style={btnStyle} 
             onPress={this._signUpAsync}
             disabled={btnDisabled}>
-            <Text style={Styles.buttonText}>Sign Up</Text>
+            <LinearGradient 
+              style={Styles.button}
+              colors={[Colors.radar2, Colors.radar3]}
+              start={[0, 0.5]}
+              end={[1, 0.5]}
+            >
+              { this.state.loading && <ActivityIndicator animating={true} color='#ffffff' /> }
+              { !this.state.loading && <Text style={Styles.buttonText}>Sign Up</Text> }
+            </LinearGradient>
           </TouchableOpacity>
         </View>
       </View>
@@ -52,30 +64,25 @@ export default class SignUpScreen extends React.Component {
   }
 
   _signUpAsync = async () => {
-    axios.post(
-      Urls.server + '/auth/register',
-      {
-        username: this.state.username,
-        password: this.state.password
-      }
-    ).then(response => {
-      return AsyncStorage.setItem('jwt', response.data.jwt)
-      .then( () => {
-        AsyncStorage.setItem('profile', JSON.stringify(response.data.profile));
-      })
-    }).then( () => {
+    await this.setState({ loading: true });
+    try {
+      const { data } = await axios.post(
+        Urls.server + '/auth/register',
+        {
+          username: this.state.username,
+          password: this.state.password
+        }
+      );
+      await AsyncStorage.setItem('jwt', data.jwt);
+      await AsyncStorage.setItem('profile', JSON.stringify(data.profile));
       this.props.navigation.navigate('Main');
-    }).catch(error => {
-      if(error.response) {
-        console.log(JSON.stringify(error.response));
-        Alert.alert(error.response.data.status);
-      }
-      else {
+    } catch (e) {
+      if (e.response) {
+        Alert.alert(JSON.stringify(e.response.data.status));
+      } else {
         Alert.alert(JSON.stringify(error));
       }
-    });
-
-    //await AsyncStorage.setItem('userToken', 'abc');
-    //this.props.navigation.navigate('Main');
+      this.setState({ loading: false });
+    }
   };
 }
