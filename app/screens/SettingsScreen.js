@@ -4,7 +4,7 @@ import { ExpoConfigView } from '@expo/samples';
 
 export default class SettingsScreen extends React.Component {
   static navigationOptions = {
-    title: 'app.json',
+    title: 'Settings',
   };
 
   _signOutAsync = async () => {
@@ -12,14 +12,17 @@ export default class SettingsScreen extends React.Component {
     this.props.navigation.navigate('Auth');
   };
 
-  render() {
-    /* Go ahead and delete ExpoConfigView and replace it with your
-     * content, we just wanted to give you a quick view of your config */
-    return (
-      <View>
-        <ExpoConfigView />
-        <Button title="Sign Out" onPress={this._signOutAsync} />
-      </View>
-    );
-  }
+
+    render() {
+        /* Go ahead and delete ExpoConfigView and replace it with your
+         * content, we just wanted to give you a quick view of your config */
+        return (
+            <View>
+                <ExpoConfigView />
+                <Button title="Sign Out" onPress={this._signOutAsync} />
+            </View>
+        );
+    }
+    
+  
 }
