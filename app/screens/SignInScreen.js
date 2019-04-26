@@ -62,31 +62,24 @@ export default class SignInScreen extends React.Component {
   }
 
   _signInAsync = async () => {
-    await AsyncStorage.setItem('userToken', 'abc');
-
-    const response = axios.post(
+    axios.post(
       Urls.server + '/auth/login',
       {
         username: this.state.username,
         password: this.state.password
       }
     ).then(response => {
-      console.log('response');
-      console.log(response);
+      AsyncStorage.setItem('jwt', response.data.jwt)
+    }).then( () => {
+      this.props.navigation.navigate('Main');
     }).catch(error => {
       if(error.response) {
-        console.log(JSON.stringify(error.response));
         Alert.alert(error.response.data.status);
-      }
-      else if (error.request) {
-        Alert.alert(JSON.stringify(error.request));
       }
       else {
         Alert.alert(JSON.stringify(error));
       }
     });
-
-    //this.props.navigation.navigate('Main');
   };
 }
 

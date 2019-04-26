@@ -20,10 +20,11 @@ const msg = (success, status) => ({
   status
 });
 
-const auth = (success, status, token) => ({
+const auth = (success, status, token, profile) => ({
   success,
   status,
-  jwt: token
+  jwt: token,
+  profile
 });
 
 const jwtSign = username => {
@@ -70,7 +71,10 @@ app.post('/auth/register', async (req, res) => {
         hash
       ]);
       const token = jwtSign(req.body.username);
-      res.status(201).json(auth(true, 'Account created', token));
+      const profile = {
+        username: req.body.username
+      };
+      res.status(201).json(auth(true, 'Account created', token, profile));
     }
   } catch (err) {
     console.log(err);
@@ -98,7 +102,10 @@ app.post('/auth/login', async (req, res) => {
         res.status(401).json(msg(false, 'Error: Invalid credentials'));
       } else {
         const token = jwtSign(req.body.username);
-        res.status(200).json(auth(true, 'Valid', token));
+        const profile = {
+          username: user.username
+        };
+        res.status(200).json(auth(true, 'Valid', token, profile));
       }
     }
   } catch (err) {
