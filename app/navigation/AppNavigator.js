@@ -11,11 +11,13 @@ import SignInScreen from '../screens/SignInScreen';
 import SignUpScreen from '../screens/SignUpScreen';
 import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
 
+
 const AuthStack = createStackNavigator({
   SignIn: {
     screen: SignInScreen,
     navigationOptions: {
       header: null
+
     }
   },
   SignUp: {
