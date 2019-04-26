@@ -16,7 +16,8 @@ import {
 } from 'react-native';
 import { WebBrowser } from 'expo';
 import { MonoText } from '../components/StyledText';
-import ClinicalTrialSearchResults from '../components/ClinicalTrialSearchResults'
+import Colors from '../constants/Colors';
+import ClinicalTrialSearchResults from '../components/ClinicalTrialSearchResults';
 
 export default class TestingScreen extends React.Component {
   constructor(props) {
@@ -32,8 +33,13 @@ export default class TestingScreen extends React.Component {
 
 
   render() {
+    const btnDisabled = !this.state.username || !this.state.password;
+    const btnStyle = [styles.button, 
+      btnDisabled 
+      ? styles.disabled 
+      : styles.enabled ];
     return (
-      <View style={{ padding: 10 }}>
+      <View style={styles.container}>
         <TextInput
           placeholder="A single line text input"
           onChangeText={this.updateSingleLineValue}
@@ -49,6 +55,28 @@ export default class TestingScreen extends React.Component {
           secureTextEntry
           style={styles.textInputStyle}
         />
+
+        <View style={styles.form}>
+          <TextInput
+            style={styles.textInput}
+            placeholder="Username"
+            onChangeText={(username) => this.setState({username})}
+          />
+          <TextInput
+            style={styles.textInput}
+            placeholder="Password"
+            onChangeText={(password) => this.setState({password})}
+          />
+          <TouchableOpacity 
+            style={btnStyle} 
+            onPress={this._signInAsync}
+            disabled={btnDisabled}>
+            <Text style={styles.buttonText}>Login</Text>
+          </TouchableOpacity>
+        </View>
+
+
+
       </View>
     );
   }
@@ -63,5 +91,28 @@ const styles = StyleSheet.create({
     fontSize: 15,
     padding: 5,
     height: 40,
+  },
+  form: {
+    justifyContent: 'center',
+    width: '80%'
+  },
+  textInput: {
+    height: 40,
+    borderColor: Colors.SILVER,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    marginBottom: 20
+  },
+  container: {
+    flex: 1,
+    flexDirection: 'column',
+    backgroundColor: Colors.WHITE,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  enabled: {
+    opacity: 1
+  },
+  disabled: {
+    opacity: 0.5
   }
 });
