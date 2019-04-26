@@ -41,3 +41,4 @@ export default createAppContainer(createSwitchNavigator({
     initialRouteName: 'AuthLoading',
   }
 ));
+
