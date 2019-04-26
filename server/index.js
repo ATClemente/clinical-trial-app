@@ -60,7 +60,7 @@ app.post('/auth/register', async (req, res) => {
     return;
   }
   try {
-    const user = findOne(req.query.username);
+    const user = await findOne(req.body.username);
     if (user) {
       res.status(403).json(msg(false, 'Error: Username already exists'));
     } else {
@@ -88,7 +88,7 @@ app.post('/auth/login', async (req, res) => {
     return;
   }
   try {
-    const user = findOne(req.query.username);
+    const user = await findOne(req.body.username);
     if (!user) {
       res.status(401).json(msg(false, 'Error: Invalid credentials'));
     } else {
