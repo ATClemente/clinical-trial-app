@@ -33,10 +33,12 @@ export default class SettingsScreen extends React.Component {
 
     render() {
 
-        const feed = require('./index.html');
+       // const feed = require('./index.html');
         return (
             <WebView
-                source={{ feed }}
+              //  source={{ feed }}
+                source={ require('./index.html')}
+                originWhitelist={['*']}
                 style={{ flex: 1 }}
                 /*
                 source={{ uri: 'http://feeds.feedburner.com/cancer-currents' }}
