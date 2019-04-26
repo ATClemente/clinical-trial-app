@@ -40,11 +40,14 @@ export default class CancerNews extends React.Component {
         }
 
         return (
-            <View style={{ flex: 1, paddingTop: 20 }}>
+            <View style={{ flex: 1, paddingTop: 1, justifyContent: 'space-between'}}>
+                <Text> Latest Cancer Research </Text>
+
                 <FlatList
                     data={this.state.dataSource}
-                    renderItem={({ item }) => <Text>{item.title}, {item.abstract}</Text>}
-                    keyExtractor={({ id }, index) => id}
+
+                    renderItem={({ item }) => <Text>{item.title}, {item.publicationDate}</Text>}
+                    keyExtractor={({ id }, index) => id}    
                 />
             </View>
         );
