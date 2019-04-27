@@ -39,7 +39,8 @@ export default class ClinicalTrialSearchResults extends React.Component {
                 <FlatList 
                     data={this.props.searchData.trials}
                     renderItem={this._renderItem}
-                    keyExtractor={(item) => item[QueryConstants.NCT_ID]} 
+                    keyExtractor={(item) => item[QueryConstants.NCT_ID]}
+                    ItemSeparatorComponent={this._renderSeparator} 
                 />
             </View>
         );
@@ -58,6 +59,20 @@ export default class ClinicalTrialSearchResults extends React.Component {
     </View>
 
   );
+
+
+  _renderSeparator = () => {
+    return (
+      <View
+        style={{
+          height: 1,
+          width: "100%",
+          backgroundColor: "#CED0CE",
+          //marginLeft: "14%"
+        }}
+      />
+    );
+  };
 
 
 }
