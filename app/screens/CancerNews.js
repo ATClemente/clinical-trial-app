@@ -53,10 +53,8 @@ export default class CancerNews extends React.Component {
 
                         <View style={{ padding: 1 }}>
 
-                            <Text style={{ fontWeight: 'bold', fontSize:17, padding: 5}} >Publication Date:{item.publicationDate} </Text>
+                            <Text style={styles.pubDate} >Publication Date:{item.publicationDate} </Text>
 
-         
-     
                             <Text style={styles.articleTitle}
                                 onPress={() => Linking.openURL(item.url[0].value)}>
                                 {item.title}
@@ -66,7 +64,7 @@ export default class CancerNews extends React.Component {
                             <Text style={styles.abstract}> {item.abstract} </Text>
 
                             
-                            <Text style={{ color: 'blue' }}
+                            <Text style={styles.doi}
                                 onPress={() => Linking.openURL(item.url[0].value)}>
                                 {item.doi}
                             </Text>
@@ -107,17 +105,41 @@ const styles = StyleSheet.create({
         padding:5,
        // alignItems: 'center',
        // textAlign: 'center',
+        marginLeft: 15,
+        marginRight: 15
+
 
     },
 
+    doi: {
+
+        color: 'blue',
+        marginLeft: 15,
+        marginRight: 15
+    },
+
+    pubDate: {
+        fontWeight: 'bold',
+        fontSize: 17,
+        padding: 5,
+                // alignItems: 'center',
+                // textAlign: 'center',
+        marginLeft: 15,
+        marginRight: 15
+
+
+},
+
     abstract: {
 
-        fontSize: 14,
+        fontSize: 15,
         color: '#4d4d4d',
         // padding:10,
         // alignItems: 'center',
         // textAlign: 'center',
-
+        marginLeft: 15, 
+        marginRight: 15
+        
     },
 
     bigBlue: {
