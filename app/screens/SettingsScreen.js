@@ -7,6 +7,8 @@ import {
   Text,
   View,
  } from 'react-native';
+import axios from 'axios';
+import Urls from '../constants/Urls';
 import GradientButton from '../components/GradientButton';
 import FormInput from '../components/FormInput';
 import FormDatePicker from '../components/FormDatePicker';
@@ -34,14 +36,26 @@ export default class SettingsScreen extends React.Component {
   };
 
   _getProfileAsync = async () => {
-    const profile = await AsyncStorage.getItem('profile');
-    await this.setState({ username: JSON.parse(profile).username });
+    const result = await AsyncStorage.getItem('profile');
+    const profile = JSON.parse(result);
+    await this.setState({
+      username: profile.username,
+      email: profile.email || '',
+      dob: profile.dob || '',
+      gender: profile.gender || true,
+      location: profile.location || '',
+      cancerType: profile.cancerType || ''
+    });
+    console.log('load settings');
+    console.log(this.state);
   };
 
   _updateProfileAsync = async () => {
     await this.setState({ isLoading: true });
+    const token = await AsyncStorage.getItem('jwt');
+    console.log(token);
     try {
-      const { data } = await axios.post(
+      const { data } = await axios.put(
         Urls.server + '/user/profile',
         {
           email: this.state.email,
@@ -49,6 +63,12 @@ export default class SettingsScreen extends React.Component {
           gender: this.state.gender,
           location: this.state.location,
           cancerType: this.state.cancerType
+        },
+        {
+          headers: {
+            Authorization: token,
+            'Content-Type': 'application/json'
+          }
         }
       );
       await AsyncStorage.setItem('jwt', data.jwt);
@@ -56,14 +76,17 @@ export default class SettingsScreen extends React.Component {
       console.log(data.profile);
       Object.keys(data.profile).forEach(item => {
         this.setState({ item });
-      })
+      });
+      Alert.alert('Profile updated');
     } catch (e) {
+      console.log(e);
       if (e.response) {
-        Alert.alert(JSON.stringify(e.response.data.status));
+        Alert.alert(JSON.stringify(e.response.data));
       } else {
-        Alert.alert(JSON.stringify(error));
+        Alert.alert(JSON.stringify(e));
       }
-      this.setState({ loading: false });
+    } finally {
+      this.setState({ isLoading: false });
     }
   };
 
@@ -91,7 +114,7 @@ export default class SettingsScreen extends React.Component {
             placeholder='johndoe@example.com'
             keyboardType='email-address'
             autoCapitalize='none'
-            value={ this.state.email }
+            value={this.state.email}
             onChange={email => this.setState({ email })}
           />
           <FormDatePicker
@@ -103,20 +126,20 @@ export default class SettingsScreen extends React.Component {
           <FormSwitch
             label='Gender'
             onValueChange={gender => this.setState({ gender })}
-            value={ this.state.gender }
+            value={this.state.gender}
           />
           <FormInput
             label='Location (Zip Code)'
             placeholder='90210'
             keyboardType='number-pad'
             maxLength={5}
-            value={ this.state.location }
+            value={this.state.location}
             onChange={location => this.setState({ location })}
           />
           <FormInput
             label='Cancer Type'
-            placeholder="Lung cancer"
-            value = { this.state.cancerType }
+            placeholder='Lung cancer'
+            value={this.state.cancerType}
             onChange={cancerType => this.setState({ cancerType })}
           />
           <View style={{ marginTop: 20, marginBottom: 12 }}>

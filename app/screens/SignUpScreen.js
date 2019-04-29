@@ -75,7 +75,7 @@ export default class SignUpScreen extends React.Component {
       if (e.response) {
         Alert.alert(JSON.stringify(e.response.data.status));
       } else {
-        Alert.alert(JSON.stringify(error));
+        Alert.alert(JSON.stringify(e));
       }
       this.setState({ loading: false });
     }

@@ -159,7 +159,7 @@ app.put('/user/profile', async (req, res) => {
         user.username
       ]
     );
-    const token = jwtSign(req.body.username);
+    const token = jwtSign(req.profile.username);
     user = await findOne(req.profile.username);
     const profile = {
       username: user.username,
