@@ -22,7 +22,7 @@ export default StyleSheet.create({
     height: 40,
     borderColor: Colors.SILVER,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    marginBottom: 5
+    marginBottom: 10
   },
   button: {
     width: '100%',

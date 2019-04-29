@@ -142,7 +142,7 @@ export default class SettingsScreen extends React.Component {
             value={this.state.cancerType}
             onChangeText={cancerType => this.setState({ cancerType })}
           />
-          <View style={{ marginTop: 20, marginBottom: 12 }}>
+          <View style={{ marginTop: 15, marginBottom: 12 }}>
             <GradientButton
               colors={[Colors.radar2, Colors.radar3]}
               handleClick={ this._updateProfileAsync }
