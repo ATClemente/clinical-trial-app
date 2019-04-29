@@ -15,6 +15,7 @@ import {
 } from 'react-native';
 import { WebBrowser } from 'expo';
 import { MonoText } from '../components/StyledText';
+import Colors from '../constants/Colors';
 import ClinicalTrialAPIUtil from '../components/ClinicalTrialAPIUtil.js';
 import * as QueryConstants from '../constants/MainSearchQueryParams.js';
 import ClinicalTrialSearchResults from '../components/ClinicalTrialSearchResults';
@@ -57,45 +58,56 @@ export default class ClinicalTrialSearchScreen extends React.Component {
           />
 
           <Text>Search by Zip code:</Text>
-          <TextInput style = {styles.zipCodeSearchBox}
-              keyboardType = "numeric"
-              placeholder = "#####"
-              onChangeText={(text) => this.onZipCodeChanged(text)}
-              value={this.state.zipCodeText}
-          />
+          <View style={styles.distanceInputs}>
+            <TextInput style = {styles.zipCodeSearchBox}
+                keyboardType = "numeric"
+                placeholder = "#####"
+                onChangeText={(text) => this.onZipCodeChanged(text)}
+                value={this.state.zipCodeText}
+            />
 
-          <Picker
-              selectedValue={this.state.desiredDistance}
-              style={styles.distanceSelectPicker}
-              onValueChange={(itemValue, itemIndex) =>
-                  this.setState({desiredDistance: itemValue})
-              }>
-              <Picker.Item label="10mi" value="10" />
-              <Picker.Item label="20mi" value="20" />
-              <Picker.Item label="30mi" value="30" />
-              <Picker.Item label="40mi" value="40" />
-              <Picker.Item label="50mi" value="50" />
-              <Picker.Item label="60mi" value="60" />
-              <Picker.Item label="70mi" value="70" />
-              <Picker.Item label="80mi" value="80" />
-              <Picker.Item label="90mi" value="90" />
-              <Picker.Item label="100mi" value="100" />
-          </Picker>
+            <Picker
+                selectedValue={this.state.desiredDistance}
+                style={styles.distanceSelectPicker}
+                onValueChange={(itemValue, itemIndex) =>
+                    this.setState({desiredDistance: itemValue})
+                }>
+                <Picker.Item label="10mi" value="10" />
+                <Picker.Item label="20mi" value="20" />
+                <Picker.Item label="30mi" value="30" />
+                <Picker.Item label="40mi" value="40" />
+                <Picker.Item label="50mi" value="50" />
+                <Picker.Item label="60mi" value="60" />
+                <Picker.Item label="70mi" value="70" />
+                <Picker.Item label="80mi" value="80" />
+                <Picker.Item label="90mi" value="90" />
+                <Picker.Item label="100mi" value="100" />
+            </Picker>
+
+            <View style={styles.searchButtonHolder}>
+              <Button
+              onPress={() => this._doAPISearch()}
+              title="Search!"
+              />
+            </View>
+          </View>
+
+        
 
         </View>
 
-        <View style={styles.getStartedContainer}>
+        <View style={styles.pagingButtons}>
 
           <Button
-            onPress={() => this._doAPISearch()}
-            title="Search!"
+              disabled={this.state.prevParams == {} || this.state.currentPage == 1}
+              onPress={() => this._doAPISearch(true, -1)}
+              title="Prev"
           />
-
           <Button
+            disabled={this.state.prevParams == {} || this.state.currentPage == Math.ceil(this.state.searchData.total / this.state.searchSize)}
             onPress={() => this._doAPISearch(true)}
-            title="Next page!"
+            title="Next"
           />
-
         </View>
 
         {this.state.searchLoading &&
@@ -106,14 +118,14 @@ export default class ClinicalTrialSearchScreen extends React.Component {
 
 
         {!this.state.searchLoading &&
-          <ClinicalTrialSearchResults searchData = {this.state.searchData} currentPage = {this.state.currentPage}/>
+          <ClinicalTrialSearchResults searchData = {this.state.searchData} currentPage = {this.state.currentPage} searchSize = {this.state.searchSize}/>
         }
 
       </View>
     );
   }
 
-  _doAPISearch(pageSearch = false, useInclude = true){
+  _doAPISearch(pageSearch = false, pageDirection = 1, useInclude = true){
 //ClinicalTrialAPIUtil.sendPostRequest(this.state.searchSize, 0, true, "active", "treatment", keyWordArg, zipCodeArg, this.state.distanceSelect)
     this.setState({searchLoading: true});
     var params = {};
@@ -147,8 +159,19 @@ export default class ClinicalTrialSearchScreen extends React.Component {
       }
     }
     else{
-      this.state.prevParams[QueryConstants.FROM_STR] += this.state.searchSize;
-      this.state.currentPage++;
+      //this.state.prevParams[QueryConstants.FROM_STR] += this.state.searchSize;
+      //this.state.currentPage++;
+      let localParams = this.state.prevParams;
+      localParams[QueryConstants.FROM_STR] += (this.state.searchSize * pageDirection);
+      if(localParams[QueryConstants.FROM_STR] < 0){
+        localParams[QueryConstants.FROM_STR] = 0;
+      }
+      this.setState({prevParams: localParams});
+      let newPage = this.state.currentPage + pageDirection;
+      if(newPage <= 0){
+        newPage = 1;
+      }
+      this.setState({currentPage: newPage});
       params = this.state.prevParams;
     }
 
@@ -185,7 +208,12 @@ export default class ClinicalTrialSearchScreen extends React.Component {
               //console.log(response.trials[0].brief_title);  
               //this.setState({hasNewSearchData: true}); 
             }
-            //Add no more pages alert and make sure to set state stuff
+            else{
+              //Likely a "from" index was sent higher than was valid 
+              this.setState({currentPage: this.state.currentPage - 1});
+              this.setState({searchLoading: false});
+              this.noMorePages();
+            }
         }
     });                                                     
   }
@@ -224,8 +252,19 @@ export default class ClinicalTrialSearchScreen extends React.Component {
     );
   }
 
+  noMorePages(){
+    Alert.alert(
+      'No more pages',
+      'There are no more pages in the results.',
+      [
+        {text: 'OK', onPress: () => {}},
+      ],
+      { cancelable: false }
+    );
+  }
+
   onZipCodeChanged(text){
-    this.setState({zipCodeText: text.replace(/[^0-9]/g, '')});
+    this.setState({zipCodeText: text.replace(/[^0-9]/g, '').substring(0,5)});
   }
 
   _testFunc(){
@@ -280,44 +319,6 @@ export default class ClinicalTrialSearchScreen extends React.Component {
         console.log("LATITUDE: " + currTrial[QueryConstants.SITES][0][QueryConstants.ORG_CORRDINATES][QueryConstants.LON]);
     }
   }
-
-  _respondToRequest(){
-    //this.setState({hasNewSearchData: false});
-    Alert.alert(this.state.searchData.total.toString());
-  }
-
-  _maybeRenderDevelopmentModeWarning() {
-    if (__DEV__) {
-      const learnMoreButton = (
-        <Text onPress={this._handleLearnMorePress} style={styles.helpLinkText}>
-          Learn more
-        </Text>
-      );
-
-      return (
-        <Text style={styles.developmentModeText}>
-          Development mode is enabled, your app will be slower but you can use useful development
-          tools. {learnMoreButton}
-        </Text>
-      );
-    } else {
-      return (
-        <Text style={styles.developmentModeText}>
-          You are not in development mode, your app will run at full speed.
-        </Text>
-      );
-    }
-  }
-
-  _handleLearnMorePress = () => {
-    WebBrowser.openBrowserAsync('https://docs.expo.io/versions/latest/guides/development-mode');
-  };
-
-  _handleHelpPress = () => {
-    WebBrowser.openBrowserAsync(
-      'https://docs.expo.io/versions/latest/guides/up-and-running.html#can-t-see-your-changes'
-    );
-  };
 }
 
 const styles = StyleSheet.create({
@@ -432,10 +433,10 @@ const styles = StyleSheet.create({
     paddingRight: 6
   },
   zipCodeSearchBox:{
-    marginTop: 10,
-    marginLeft: 45,
-    marginRight: 45,
-    marginBottom: 15,
+    marginTop: 5,
+    //marginLeft: 45,
+    marginRight: 20,
+    marginBottom: 10,
     height: 40,
     borderColor: '#7a42f4',
     borderWidth: 2,
@@ -444,8 +445,8 @@ const styles = StyleSheet.create({
   },
   distanceSelectPicker:{
     height: 50, 
-    width: 100,
-    marginLeft: 60,
+    width: 110,
+    //marginLeft: 60,
     borderWidth: 2,
     borderColor: '#7a42f4'
   },
@@ -454,5 +455,22 @@ const styles = StyleSheet.create({
     paddingLeft: 30,
     paddingRight: 30,
     paddingBottom: 15
+  },
+  distanceInputs:{
+    flexDirection: "row"
+  },
+  searchButtonHolder:{
+    marginLeft: 10,
+    //alignItems: "center",
+    marginTop: 7.5,
+    width: "40%",
+    zIndex: 1 //Hacky for now. Gets ActivityIndicator to appear above button.
+  },
+  pagingButtons: {
+    zIndex: 1,
+    flexDirection: "row",
+    marginLeft: 15,
+    marginRight: 15,
+    justifyContent: "space-between"
   }
 });
