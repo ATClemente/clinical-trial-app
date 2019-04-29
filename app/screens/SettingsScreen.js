@@ -1,16 +1,17 @@
 import React from 'react';
 import { 
-  ActivityIndicator,
-  View, 
+  Alert,
+  AsyncStorage,
   Button, 
-  AsyncStorage, 
+  ScrollView,
   Text,
-  TouchableOpacity,
-  TextInput
+  View,
  } from 'react-native';
-import { LinearGradient } from 'expo';
+import GradientButton from '../components/GradientButton';
+import FormInput from '../components/FormInput';
+import FormDatePicker from '../components/FormDatePicker';
+import FormSwitch from '../components/FormSwitch';
 import Colors from '../constants/Colors';
-import Styles from '../constants/Styles';
 
 export default class SettingsScreen extends React.Component {
   constructor(props) {
@@ -18,17 +19,14 @@ export default class SettingsScreen extends React.Component {
     this.state = {
       username: '',
       email: '',
-      age: '',
-      gender: '',
+      dob: '',
+      gender: true,
+      location: '',
       cancerType: '',
-      loading: false
-    };
+      isLoading: false,
+    }
     this._getProfileAsync();
   }
-
-  static navigationOptions = {
-    title: 'Settings',
-  };
 
   _signOutAsync = async () => {
     await AsyncStorage.clear();
@@ -41,64 +39,98 @@ export default class SettingsScreen extends React.Component {
   };
 
   _updateProfileAsync = async () => {
-    await this.setState({ loading: true });
-    console.log(JSON.stringify({
-      username: this.state.username,
-      email: this.state.email,
-      age: this.state.age,
-      gender: this.state.gender,
-      cancerType: this.state.cancerType
-    }));
+    await this.setState({ isLoading: true });
+    try {
+      const { data } = await axios.post(
+        Urls.server + '/user/profile',
+        {
+          email: this.state.email,
+          dob: this.state.dob,
+          gender: this.state.gender,
+          location: this.state.location,
+          cancerType: this.state.cancerType
+        }
+      );
+      await AsyncStorage.setItem('jwt', data.jwt);
+      await AsyncStorage.setItem('profile', JSON.stringify(data.profile));
+      console.log(data.profile);
+      Object.keys(data.profile).forEach(item => {
+        this.setState({ item });
+      })
+    } catch (e) {
+      if (e.response) {
+        Alert.alert(JSON.stringify(e.response.data.status));
+      } else {
+        Alert.alert(JSON.stringify(error));
+      }
+      this.setState({ loading: false });
+    }
   };
 
   render() {
     return (
-      <View style={Styles.container}>
-        <View style={Styles.form}>
+      <View style={{ 
+        flex: 1,
+        flexDirection: 'column',
+        alignItems: 'center',
+      }}>
+        <View style={{
+          width: '100%',
+          justifyContent: 'center',
+          paddingHorizontal: 20,
+          marginTop: 20
+        }}>
+        <ScrollView>
           <Text
-            style={{ alignSelf: 'center', fontSize: 20, marginBottom: 10 }}
+            style={{ alignSelf: 'center', fontSize: 20, marginBottom: 15, fontWeight: 'bold' }}
           >
             {this.state.username}
           </Text>
-          <TextInput
-            style={Styles.textInput}
-            placeholder='Email'
-            onChangeText={(email) => this.setState({ email })}
+          <FormInput
+            label='Email'
+            placeholder='johndoe@example.com'
+            keyboardType='email-address'
+            autoCapitalize='none'
+            value={ this.state.email }
+            onChange={email => this.setState({ email })}
           />
-          <TextInput
-            style={Styles.textInput}
-            placeholder='Gender'
-            onChangeText={(gender) => this.setState({ gender })}
+          <FormDatePicker
+            label='Date of Birth'
+            placeholder='04/01/2019'
+            onDateChange={dob => this.setState({ dob })}
+            date={this.state.dob}
           />
-          <TextInput
-            style={Styles.textInput}
-            placeholder='Age'
-            keyboardType='numeric'
-            onChangeText={(age) => this.setState({ age })}
+          <FormSwitch
+            label='Gender'
+            onValueChange={gender => this.setState({ gender })}
+            value={ this.state.gender }
           />
-          <TextInput
-            style={Styles.textInput}
-            placeholder='Cancer Type'
-            onChangeText={(cancerType) => this.setState({ cancerType })}
+          <FormInput
+            label='Location (Zip Code)'
+            placeholder='90210'
+            keyboardType='number-pad'
+            maxLength={5}
+            value={ this.state.location }
+            onChange={location => this.setState({ location })}
           />
-          <TouchableOpacity 
-            style={Styles.button} 
-            onPress={this._updateProfileAsync}
-          >
-            <LinearGradient 
-              style={Styles.button}
+          <FormInput
+            label='Cancer Type'
+            placeholder="Lung cancer"
+            value = { this.state.cancerType }
+            onChange={cancerType => this.setState({ cancerType })}
+          />
+          <View style={{ marginTop: 20, marginBottom: 12 }}>
+            <GradientButton
               colors={[Colors.radar2, Colors.radar3]}
-              start={[0, 0.5]}
-              end={[1, 0.5]}
-            >
-              { this.state.loading && <ActivityIndicator animating={true} color='#ffffff' /> }
-              { !this.state.loading && <Text style={Styles.buttonText}>Update Profile</Text> }
-            </LinearGradient>          
-          </TouchableOpacity>
+              handleClick={ this._updateProfileAsync }
+              loading={ this.state.isLoading }
+              text='Update Profile'
+            />
+          </View>
+          <Button title='Sign Out' onPress={this._signOutAsync} />
+          </ScrollView>
         </View>
-        <Button title='Sign Out' onPress={this._signOutAsync} />
       </View>
-    );
+    )
   }
-
-}
+};

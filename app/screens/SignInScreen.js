@@ -1,18 +1,15 @@
 import React from 'react';
 import {
-  ActivityIndicator,
   Alert,
   AsyncStorage,
-  StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   View
 } from 'react-native';
-import { LinearGradient } from 'expo';
 import Styles from '../constants/Styles';
 import Colors from '../constants/Colors';
 import Urls from '../constants/Urls';
+import GradientButton from '../components/GradientButton';
 import axios from 'axios';
 
 export default class SignInScreen extends React.Component {
@@ -27,37 +24,28 @@ export default class SignInScreen extends React.Component {
 
   render() {
     const btnDisabled = !this.state.username || !this.state.password;
-    const btnStyle = [Styles.button,
-      btnDisabled 
-      ? Styles.disabled 
-      : Styles.enabled ];
     return (      
       <View style={Styles.container}>
         <View style={Styles.form}>
           <TextInput
-            style={Styles.textInput}
+            style={Styles.formInput}
             placeholder="Username"
             onChangeText={(username) => this.setState({username})}
           />
           <TextInput
-            style={Styles.textInput}
+            style={Styles.formInput}
             placeholder="Password"
             onChangeText={(password) => this.setState({password})}
           />
-          <TouchableOpacity 
-            style={btnStyle} 
-            onPress={this._signInAsync}
-            disabled={btnDisabled}>
-            <LinearGradient 
-              style={Styles.button}
+          <View style={{ marginVertical: 15 }}>
+            <GradientButton
               colors={[Colors.blueOne, Colors.blueTwo]}
-              start={[0, 0.5]}
-              end={[1, 0.5]}
-            >
-              { this.state.loading && <ActivityIndicator animating={true} color='#ffffff' /> }
-              { !this.state.loading && <Text style={Styles.buttonText}>Login</Text> }
-            </LinearGradient>
-          </TouchableOpacity>
+              handleClick={this._signInAsync}
+              disabled={btnDisabled}
+              loading={this.state.loading}
+              text='Login'
+            />
+          </View>
         </View>
         <View style={Styles.signupRow}>
           <Text

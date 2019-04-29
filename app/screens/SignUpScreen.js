@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
-import { LinearGradient } from 'expo';
+import GradientButton from '../components/GradientButton';
 import Colors from '../constants/Colors';
 import Styles from '../constants/Styles';
 import Urls from '../constants/Urls';
@@ -35,29 +35,24 @@ export default class SignUpScreen extends React.Component {
       <View style={Styles.container}>
         <View style={Styles.form}>
           <TextInput
-            style={Styles.textInput}
+            style={Styles.formInput}
             placeholder="Username"
             onChangeText={username => this.setState({username: username.trim()})}
           />
           <TextInput
-            style={Styles.textInput}
+            style={Styles.formInput}
             placeholder="Password"
             onChangeText={password => this.setState({password})}
           />
-          <TouchableOpacity 
-            style={btnStyle} 
-            onPress={this._signUpAsync}
-            disabled={btnDisabled}>
-            <LinearGradient 
-              style={Styles.button}
+          <View style={{ marginVertical: 15 }}>
+            <GradientButton
               colors={[Colors.radar2, Colors.radar3]}
-              start={[0, 0.5]}
-              end={[1, 0.5]}
-            >
-              { this.state.loading && <ActivityIndicator animating={true} color='#ffffff' /> }
-              { !this.state.loading && <Text style={Styles.buttonText}>Sign Up</Text> }
-            </LinearGradient>
-          </TouchableOpacity>
+              handleClick={this._signUpAsync}
+              disabled={btnDisabled}
+              loading={this.state.loading}
+              text='Sign Up'
+            />
+          </View>
         </View>
       </View>
     );

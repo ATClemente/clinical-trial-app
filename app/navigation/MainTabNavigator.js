@@ -28,7 +28,12 @@ TrialSearchStack.navigationOptions = {
 };
 
 const SettingsStack = createStackNavigator({
-  Settings: SettingsScreen,
+  Settings: {
+    screen: SettingsScreen,
+    navigationOptions: {
+      title: 'Settings'
+    }
+  },
 });
 
 SettingsStack.navigationOptions = {

@@ -11,18 +11,18 @@ export default StyleSheet.create({
   },
   form: {
     justifyContent: 'center',
-    width: '80%'
+    width: '85%'
   },
   signupRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '80%'
+    width: '85%'
   },
-  textInput: {
+  formInput: {
     height: 40,
     borderColor: Colors.SILVER,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    marginBottom: 20
+    marginBottom: 5
   },
   button: {
     width: '100%',

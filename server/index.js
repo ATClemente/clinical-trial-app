@@ -37,6 +37,12 @@ const jwtSign = username => {
   );
 };
 
+const jwtVerify = token => {
+  jwt.verify(token, SECRET, (err, decoded) => {
+    return decoded;
+  });
+};
+
 const findOne = async username => {
   const user = await db.query('SELECT * FROM users WHERE username = $1', [
     username
@@ -103,7 +109,12 @@ app.post('/auth/login', async (req, res) => {
       } else {
         const token = jwtSign(req.body.username);
         const profile = {
-          username: user.username
+          username: user.username,
+          email: user.email,
+          dob: user.dob,
+          gender: user.gender,
+          location: user.zip,
+          cancerType: user.cancertype
         };
         res.status(200).json(auth(true, 'Valid', token, profile));
       }
@@ -111,6 +122,57 @@ app.post('/auth/login', async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(500).json(msg(false, 'Error: Server error'));
+  }
+});
+
+app.use('/user', async (req, res, next) => {
+  const token = req.header('Authorization');
+  if (!token) {
+    res.status(401).json('Error: Authorization required');
+    return;
+  }
+  jwt.verify(token, SECRET, (err, decoded) => {
+    if (err) {
+      res.status(401).json('Error: Authorization required');
+      return;
+    }
+    req.profile = decoded;
+    next();
+  });
+});
+
+app.put('/user/profile', async (req, res) => {
+  try {
+    let user = await findOne(req.profile.username);
+    if (!user) {
+      res.status(404).json(msg(false, 'Error: Could not find profile'));
+      return;
+    }
+    await db.query(
+      'UPDATE users SET email=$1, dob=$2, gender=$3, zip=$4, cancertype=$5 WHERE username=$6',
+      [
+        req.body.email,
+        req.body.dob,
+        req.body.gender,
+        req.body.location,
+        req.body.cancerType,
+        user.username
+      ]
+    );
+    const token = jwtSign(req.body.username);
+    user = await findOne(req.profile.username);
+    const profile = {
+      username: user.username,
+      email: user.email,
+      dob: user.dob,
+      gender: user.gender,
+      location: user.zip,
+      cancerType: user.cancertype
+    };
+    res.status(200).json(auth(true, 'Updated', token, profile));
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(msg(false, 'Server error'));
   }
 });
 

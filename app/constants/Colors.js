@@ -22,5 +22,6 @@ export default {
   blueTwo: '#92fecf',
   radar1: '#A770EF',
   radar2: '#CF8BF3',
-  radar3: '#FDB99B'
+  radar3: '#FDB99B',
+  radar4: '#fda69b'
 };
