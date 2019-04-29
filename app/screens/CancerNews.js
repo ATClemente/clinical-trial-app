@@ -1,6 +1,8 @@
 import React from 'react';
-import { FlatList, ActivityIndicator, Text, WebView, View, Button, AsyncStorage} from 'react-native';
+import { FlatList, Linking,AppRegistry, StyleSheet,ActivityIndicator, Text, WebView, View, Button, AsyncStorage} from 'react-native';
 import { ExpoConfigView } from '@expo/samples';
+
+
 
 export default class CancerNews extends React.Component {
    //Cite: https://facebook.github.io/react-native/docs/network
@@ -41,12 +43,45 @@ export default class CancerNews extends React.Component {
 
         return (
             <View style={{ flex: 1, paddingTop: 1, justifyContent: 'space-between'}}>
-                <Text> Latest Cancer Research </Text>
+                <Text style={styles.title}> Latest Cancer Research </Text>
 
                 <FlatList
                     data={this.state.dataSource}
 
-                    renderItem={({ item }) => <Text>{item.title}, {item.publicationDate}</Text>}
+                    renderItem={({ item }) =>
+                        //<Text style={styles.body}>{item.title}, {item.publicationDate}, {item.abstract}</Text>}
+
+                        <View style={{ padding: 1 }}>
+
+                            <Text style={styles.pubDate} >Publication Date:{item.publicationDate} </Text>
+
+                            <Text style={styles.articleTitle}
+                                onPress={() => Linking.openURL(item.url[0].value)}>
+                                {item.title}
+                            </Text>
+
+
+                            <Text style={styles.abstract}> {item.abstract} </Text>
+
+                            
+                            <Text style={styles.doi}
+                                onPress={() => Linking.openURL(item.url[0].value)}>
+                                {item.doi}
+                            </Text>
+                  
+
+                            <View
+                                style={{
+                                    borderBottomColor: 'grey',
+                                    borderBottomWidth: 1,
+         
+                                    borderRadius: 5,
+                                    padding: 5
+                                }}
+                            />
+                            
+                            </View>
+                   }
                     keyExtractor={({ id }, index) => id}    
                 />
             </View>
@@ -54,7 +89,69 @@ export default class CancerNews extends React.Component {
     }
 }
 
+const styles = StyleSheet.create({
+    title: {
+        fontWeight: 'bold',
+        fontSize: 22,
+        alignItems: 'center',
+        textAlign: 'center',
+        fontFamily: 'Georgia'
 
+    },
+
+    articleTitle: {
+        fontWeight: 'bold',
+        fontSize: 17,
+        padding:5,
+       // alignItems: 'center',
+       // textAlign: 'center',
+        marginLeft: 15,
+        marginRight: 15
+
+
+    },
+
+    doi: {
+
+        color: 'blue',
+        marginLeft: 15,
+        marginRight: 15
+    },
+
+    pubDate: {
+        fontWeight: 'bold',
+        fontSize: 17,
+        padding: 5,
+                // alignItems: 'center',
+                // textAlign: 'center',
+        marginLeft: 15,
+        marginRight: 15
+
+
+},
+
+    abstract: {
+
+        fontSize: 15,
+        color: '#4d4d4d',
+        // padding:10,
+        // alignItems: 'center',
+        // textAlign: 'center',
+        marginLeft: 15, 
+        marginRight: 15
+        
+    },
+
+    bigBlue: {
+        color: 'blue',
+        fontWeight: 'bold',
+        fontSize: 30,
+    },
+    body: {
+        color: 'black',
+        padding: 10,
+    },
+});
     /*
     //Cite: https://www.tutorialspoint.com/react_native/react_native_http.htm
 
@@ -115,6 +212,14 @@ export default class CancerNews extends React.Component {
             />
         );
     }
+
+
+
+                            <Text style={{ color: 'blue' }}
+                                onPress={() => Linking.openURL('http://google.com')}>
+                                Google
+                            </Text>
+                             <Text style={styles.articleTitle}>{item.title}</Text>
 
 */
 
