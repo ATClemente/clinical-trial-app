@@ -47,7 +47,12 @@ SettingsStack.navigationOptions = {
 };
 
 const CancerNewsStack = createStackNavigator({
-    News: CancerNews,
+    News: {
+      screen: CancerNews,
+      navigationOptions: {
+        title: 'Latest Cancer Research'
+      }
+    },
 });
 
 CancerNewsStack.navigationOptions = {

@@ -46,14 +46,14 @@ export default class SettingsScreen extends React.Component {
       location: profile.location || '',
       cancerType: profile.cancerType || ''
     });
-    console.log('load settings');
-    console.log(this.state);
+    // console.log('load settings');
+    // console.log(this.state);
   };
 
   _updateProfileAsync = async () => {
     await this.setState({ isLoading: true });
     const token = await AsyncStorage.getItem('jwt');
-    console.log(token);
+    // console.log(token);
     try {
       const { data } = await axios.put(
         Urls.server + '/user/profile',
@@ -73,7 +73,7 @@ export default class SettingsScreen extends React.Component {
       );
       await AsyncStorage.setItem('jwt', data.jwt);
       await AsyncStorage.setItem('profile', JSON.stringify(data.profile));
-      console.log(data.profile);
+      // console.log(data.profile);
       Object.keys(data.profile).forEach(item => {
         this.setState({ item });
       });
@@ -115,7 +115,7 @@ export default class SettingsScreen extends React.Component {
             keyboardType='email-address'
             autoCapitalize='none'
             value={this.state.email}
-            onChange={email => this.setState({ email })}
+            onChangeText={email => this.setState({ email })}
           />
           <FormDatePicker
             label='Date of Birth'
@@ -134,13 +134,13 @@ export default class SettingsScreen extends React.Component {
             keyboardType='number-pad'
             maxLength={5}
             value={this.state.location}
-            onChange={location => this.setState({ location })}
+            onChangeText={location => this.setState({ location })}
           />
           <FormInput
             label='Cancer Type'
             placeholder='Lung cancer'
             value={this.state.cancerType}
-            onChange={cancerType => this.setState({ cancerType })}
+            onChangeText={cancerType => this.setState({ cancerType })}
           />
           <View style={{ marginTop: 20, marginBottom: 12 }}>
             <GradientButton

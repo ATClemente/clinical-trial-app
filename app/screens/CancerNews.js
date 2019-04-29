@@ -43,7 +43,7 @@ export default class CancerNews extends React.Component {
 
         return (
             <View style={{ flex: 1, paddingTop: 1, justifyContent: 'space-between'}}>
-                <Text style={styles.title}> Latest Cancer Research </Text>
+                {/* <Text style={styles.title}> Latest Cancer Research </Text> */}
 
                 <FlatList
                     data={this.state.dataSource}
