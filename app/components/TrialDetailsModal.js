@@ -34,7 +34,7 @@ export default class TrialDetailsModal extends React.Component {
     componentWillReceiveProps(nextProps) {
         this.setState({
             modalVisible: nextProps.modalVisible,
-            trial: nextProps.trial,
+            trial: nextProps.trial
         })
     }
 
@@ -45,24 +45,47 @@ export default class TrialDetailsModal extends React.Component {
                 transparent={ false }
                 visible={ this.state.modalVisible }
                 onRequestClose={() => { this.props.setModalVisible(false) }}>
-                    <View>
-                        <View>
-                            <Text>{this.state.trial[QueryConstants.BRIEF_TITLE]}</Text>
-                            <TouchableHighlight
-                                onPress = {() => { this.props.setModalVisible(false) }}
-                            >
-                                <Text>Hide Modal</Text>
-                            </TouchableHighlight>
-                        </View>
-                    </View>
+                <View style={styles.mainView}>
+                    <TouchableHighlight onPress = {() => { this.props.setModalVisible(false) }}>
+                        <Text>Return to results</Text>
+                    </TouchableHighlight>
+                    <ScrollView>
+                        <Text>{this.state.trial[QueryConstants.BRIEF_TITLE]}</Text>
+                        <ScrollView>
+                            <Text>{this.state.trial[QueryConstants.BRIEF_SUMMARY]}</Text>
+                        </ScrollView>
+                        <Text>Contact:</Text>
+                        <Text>{this.state.trial[QueryConstants.LEAD_ORG]}</Text>
+                        <Text>{this.state.trial[QueryConstants.PRINCIPAL_INVESTIGATOR]}</Text>
+                        {this.testSeparateRender(true)}
+                    </ScrollView>
+                </View>
             </Modal>
         )
+    }
+
+    testSeparateRender(test){
+
+        if(test){
+            return(
+                <Text>tHIS IS COMING FROM THE OTHER METHOD when truuuuuue</Text>
+            );
+        }
+        else{
+            return(
+                <Text>tHIS IS COMING FROM THE OTHER METHOD</Text>
+            );
+        }
     }
 
 
 }
 
-const styles = StyleSheet.create({ 
+const styles = StyleSheet.create({
+  mainView:{
+      padding: 20,
+      flex: 1
+  },
   allResultsView:{
     //padding: 20,
     paddingLeft: 20,

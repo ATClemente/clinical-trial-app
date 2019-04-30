@@ -66,7 +66,7 @@ export default class ClinicalTrialSearchResults extends React.Component {
     if(index % 2 == 0){
       return(
         <View style = {styles.itemView1}>
-          <TouchableOpacity onPress={(item) => this.setUpModal(item)}>
+          <TouchableOpacity onPress={() => {this.setUpModal(item)}}>
               <Text style={styles.titleText}>{(index+(1 + this.props.searchData.trials.length * ( this.props.currentPage - 1 ))).toString()}. {item[QueryConstants.BRIEF_TITLE]}</Text>
           </TouchableOpacity>
           <Text>Phase: {ClinicalTrialAPIUtil.getPhase(item)}</Text>
@@ -78,7 +78,7 @@ export default class ClinicalTrialSearchResults extends React.Component {
     else{
       return(
         <View style = {styles.itemView2}>
-          <TouchableOpacity onPress={(item) => this.setUpModal(item)}>
+          <TouchableOpacity onPress={() => {this.setUpModal(item)}}>
               <Text style={styles.titleText}>{(index+(1 + this.props.searchData.trials.length * ( this.props.currentPage - 1 ))).toString()}. {item[QueryConstants.BRIEF_TITLE]}</Text>
           </TouchableOpacity>
           <Text>Phase: {ClinicalTrialAPIUtil.getPhase(item)}</Text>
@@ -99,7 +99,7 @@ export default class ClinicalTrialSearchResults extends React.Component {
   }
 
   setModalVisible(visible) {
-    this.setState({modalVisible: visible});
+    this.setState({displayTrialDetails: visible});
   }
 
 
