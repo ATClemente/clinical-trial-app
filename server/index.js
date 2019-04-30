@@ -136,18 +136,23 @@ app.use('/user', async (req, res, next) => {
       res.status(401).json('Error: Authorization required');
       return;
     }
-    req.profile = decoded;
-    next();
+    findOne(decoded.username)
+      .then(user => {
+        if (user) {
+          req.profile = user;
+          next();
+        } else {
+          throw Error('Username not found');
+        }
+      })
+      .catch(e => {
+        res.status(404).json(msg(false, e.toString()));
+      });
   });
 });
 
 app.put('/user/profile', async (req, res) => {
   try {
-    let user = await findOne(req.profile.username);
-    if (!user) {
-      res.status(404).json(msg(false, 'Error: Could not find profile'));
-      return;
-    }
     await db.query(
       'UPDATE users SET email=$1, dob=$2, gender=$3, zip=$4, cancertype=$5 WHERE username=$6',
       [
@@ -156,11 +161,11 @@ app.put('/user/profile', async (req, res) => {
         req.body.gender,
         req.body.location,
         req.body.cancerType,
-        user.username
+        req.profile.username
       ]
     );
     const token = jwtSign(req.profile.username);
-    user = await findOne(req.profile.username);
+    const user = await findOne(req.profile.username);
     const profile = {
       username: user.username,
       email: user.email,
@@ -172,6 +177,76 @@ app.put('/user/profile', async (req, res) => {
     res.status(200).json(auth(true, 'Updated', token, profile));
   } catch (err) {
     console.log(err);
+    res.status(500).json(msg(false, 'Server error'));
+  }
+});
+
+app.get('/user/trials', async (req, res) => {
+  try {
+    const result = await db.query(
+      'SELECT * FROM user_trials ut ' +
+        'INNER JOIN users u on ut.user_id = u.id ' +
+        'WHERE u.username = $1',
+      [req.profile.username]
+    );
+    const trialIds = result.rowCount
+      ? result.rows.map(item => {
+          return { trialId: item.trial_id, createdDate: item.created_date };
+        })
+      : [];
+    res.status(200).json({
+      username: req.profile.username,
+      success: true,
+      savedTrials: trialIds
+    });
+  } catch (e) {
+    console.log(e);
+    res.status(500).json(msg(false, 'Server error'));
+  }
+});
+
+app.post('/user/trials', async (req, res) => {
+  try {
+    await db.query(
+      'INSERT INTO user_trials(user_id, trial_id) VALUES($1, $2)',
+      [req.profile.id, req.body.trialId]
+    );
+    const result = await db.query(
+      'SELECT * FROM user_trials ut ' +
+        'INNER JOIN users u on ut.user_id = u.id ' +
+        'WHERE u.username = $1',
+      [req.profile.username]
+    );
+    const trialIds = result.rowCount
+      ? result.rows.map(item => {
+          return { trialId: item.trial_id, createdDate: item.created_date };
+        })
+      : [];
+    res.status(200).json({
+      username: req.profile.username,
+      success: true,
+      status: 'Trial saved',
+      savedTrials: trialIds
+    });
+  } catch (e) {
+    console.log(e);
+    res.status(500).json(msg(false, 'Server error'));
+  }
+});
+
+app.delete('/user/trials/:tid', async (req, res) => {
+  try {
+    const result = await db.query(
+      'DELETE FROM user_trials WHERE user_id=$1 AND trial_id=$2',
+      [req.profile.id, req.params.tid]
+    );
+    if (result.rowCount) {
+      res.status(200).json(msg(true, 'Trial deleted'));
+      return;
+    }
+    res.status(404).json(msg(false, 'Trial not found'));
+  } catch (e) {
+    console.log(e);
     res.status(500).json(msg(false, 'Server error'));
   }
 });
