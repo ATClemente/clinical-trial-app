@@ -20,6 +20,31 @@ const { data } = await axios.get(
   }
 );
 ```
+* Example Response:
+```
+{
+    "username": "James",
+    "success": true,
+    "savedTrials": [
+        {
+            "trialId": "NCT-1223",
+            "createdDate": "2019-05-01T03:53:06.547Z"
+        },
+        {
+            "trialId": "NCT-1002",
+            "createdDate": "2019-05-01T03:58:29.869Z"
+        },
+        {
+            "trialId": "NCT-1001",
+            "createdDate": "2019-05-01T03:58:34.569Z"
+        },
+        {
+            "trialId": "NCT-1010",
+            "createdDate": "2019-05-01T04:18:48.672Z"
+        }
+    ]
+}
+```
 
 ### Save trial
 * Route: /users/trials
@@ -44,6 +69,7 @@ const { data } = await axios.post(
   }
 );
 ```
+* Example Response: Same as GET trials
 
 ### Delete trial
 * Route: /users/trials/{trial_id}
@@ -67,4 +93,10 @@ const { data } = await axios.delete(
   }
 );
 ```
-
+* Example Response:
+```
+{
+    "success": true,
+    "status": "Trial deleted"
+}
+```
