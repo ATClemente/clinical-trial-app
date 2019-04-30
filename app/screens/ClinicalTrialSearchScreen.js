@@ -18,6 +18,7 @@ import {
 } from 'react-native';
 import GradientButton from '../components/GradientButton';
 import { SearchBar } from 'react-native-elements';
+import IOSPicker from 'react-native-ios-picker';
 import { WebBrowser } from 'expo';
 import { MonoText } from '../components/StyledText';
 import Colors from '../constants/Colors';
@@ -52,9 +53,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
 
   }
 
-    render() {
-
-        var data = [["10","20","30","40","50"]];
+  render() {
 
     return (
       <SafeAreaView style={styles.container}>
@@ -65,7 +64,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
             onChangeText={text => this.setState({ keyWordText: text})}
             value={this.state.keyWordText}
             platform='ios'
-            containerStyle={{ backgroundColor: '#fff', marginTop: 20, height: 35 }}
+            containerStyle={{ backgroundColor: '#fff', marginTop: Platform.OS === 'ios' ? 0 : 20, height: 35 }}
             inputContainerStyle={{ backgroundColor: '#eee' }}
             searchIcon={{ name: 'md-key', type: 'ionicon' }}
             returnKeyType='search'
@@ -91,8 +90,8 @@ export default class ClinicalTrialSearchScreen extends React.Component {
 
             <Picker
                 selectedValue={this.state.desiredDistance}
-                style={{ height: 50, width: '40%' }}
-                itemStyle={{ height: 50 }}
+                style={Platform.OS === 'ios' ? { height: 45, width: '35%', marginTop: 7 } : { height: 50, width: '40%' }}
+                itemStyle={Platform.OS === 'ios' ? { height: 38, borderWidth: 0, fontSize: 18 } : { height: 50 }}
                 mode='dropdown'
                 onValueChange={(itemValue, itemIndex) =>
                     this.setState({desiredDistance: itemValue})
@@ -149,7 +148,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
 
         {this.state.searchLoading &&
             <View style={styles.searchLoading}>
-                <ActivityIndicator size={128} color="#0000ff" />
+                <ActivityIndicator size='large' color="#0000ff" />
             </View>
         }
 

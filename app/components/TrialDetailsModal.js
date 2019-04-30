@@ -13,6 +13,7 @@ import {
   TextInput,
   Picker,
   FlatList,
+  SafeAreaView,
   Modal,
   TouchableHighlight
 } from 'react-native';
@@ -45,7 +46,7 @@ export default class TrialDetailsModal extends React.Component {
                 transparent={ false }
                 visible={ this.state.modalVisible }
                 onRequestClose={() => { this.props.setModalVisible(false) }}>
-                <View style={styles.mainView}>
+                <SafeAreaView style={styles.mainView}>
                     <TouchableHighlight onPress = {() => { this.props.setModalVisible(false) }}>
                         <Text>Return to results</Text>
                     </TouchableHighlight>
@@ -59,7 +60,7 @@ export default class TrialDetailsModal extends React.Component {
                         <Text>{this.state.trial[QueryConstants.PRINCIPAL_INVESTIGATOR]}</Text>
                         {this.testSeparateRender(true)}
                     </ScrollView>
-                </View>
+                </SafeAreaView>
             </Modal>
         )
     }
