@@ -67,6 +67,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
             platform='ios'
             containerStyle={{ backgroundColor: '#fff', marginTop: 20, height: 35 }}
             inputContainerStyle={{ backgroundColor: '#eee' }}
+            searchIcon={{ name: 'md-key', type: 'ionicon' }}
             returnKeyType='search'
             onSubmitEditing={()=> this._doAPISearch()}
           />
@@ -80,6 +81,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
               platform='ios'
               containerStyle={{ backgroundColor: '#fff', marginTop: 10, height: 35, width: '60%' }}
               inputContainerStyle={{ backgroundColor: '#eee' }}
+              searchIcon={{ name: 'md-pin', type: 'ionicon' }}
               returnKeyType='search'
               keyboardType='numeric'
               maxLength={5}
