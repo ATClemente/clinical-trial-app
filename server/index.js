@@ -235,6 +235,7 @@ app.post('/user/trials', async (req, res) => {
     console.log(e);
     if (e.code === '23505') {
       res.status(403).json(msg(false, 'Trial already saved for user'));
+      return;
     }
     res.status(500).json(msg(false, 'Server error'));
   }
