@@ -1,4 +1,5 @@
 import React from 'react';
+import DropdownMenu from 'react-native-dropdown-menu';
 import {
   Image,
   Platform,
@@ -10,7 +11,8 @@ import {
   Button,
   ActivityIndicator,
   Alert,
-  TextInput,
+    TextInput,
+  ReturnKeyType,
   Picker
 } from 'react-native';
 import { WebBrowser } from 'expo';
@@ -41,30 +43,47 @@ export default class ClinicalTrialSearchScreen extends React.Component {
         desiredPurpose: "treatment",
         desiredDistance: "10",
         desiredDistanceType: "mi",
-        currentPage: 1
+        currentPage: 1,
+        text:' '
     };
 
   }
 
-  render() {
+    render() {
+
+        var data = [["10","20","30","40","50"]];
+
     return (
       <View style={styles.container}>
-        <View style={styles.inputView}>
-          <Text>Search by keywords:</Text>
+            <View style={styles.inputView}>
+
+
+                {/*<Text> Search by keywords:</Text>*/}
           <TextInput style = {styles.keyWordSearchBox}
-              placeholder = "Enter search terms"
+                    placeholder="Search clinical trials by keywords"
+                    placeholderTextColor='rgb(80,80,80)'
+                    returnKeyType="search"
+                    onSubmitEditing={() => this._doAPISearch()
+                    }
               onChangeText={(text) => this.setState({keyWordText: text})}
               value={this.state.keyWordText}
           />
 
-          <Text>Search by Zip code:</Text>
+                {/* <Text>Search by Zip code:</Text> */}
           <View style={styles.distanceInputs}>
             <TextInput style = {styles.zipCodeSearchBox}
                 keyboardType = "numeric"
-                placeholder = "#####"
+                        placeholder="Search by zipcode"
+                        placeholderTextColor='rgb(80,80,80)'
+                        returnKeyType="search"
+                        onSubmitEditing={() => this._doAPISearch()}
+
                 onChangeText={(text) => this.onZipCodeChanged(text)}
                 value={this.state.zipCodeText}
             />
+
+
+                    {/*}
 
             <Picker
                 selectedValue={this.state.desiredDistance}
@@ -84,16 +103,61 @@ export default class ClinicalTrialSearchScreen extends React.Component {
                 <Picker.Item label="100mi" value="100" />
             </Picker>
 
+*/}
+                    <View>
+                    <DropdownMenu
+                        style={{ flex: 1 }}
+                        bgColor={'white'}
+                        tintColor={'#666666'}
+                        activityTintColor={'green'}
+                        // arrowImg={}      
+                        // checkImage={}   
+                        // optionTextStyle={{color: '#333333'}}
+                        // titleStyle={{color: '#333333'}} 
+                        // maxHeight={300} 
+                        handler={(selection, row) => this.setState({ text: data[selection][row] })}
+                        data={data}
+                    >
+
+                        <View style={{ flex: 1 }}>
+                            <Text>
+                                {this.state.text} miles away
+            </Text>
+                        </View>
+
+                    </DropdownMenu>
+                        </View> 
+
+
+
+
+
             <View style={styles.searchButtonHolder}>
               <Button
               onPress={() => this._doAPISearch()}
-              title="Search!"
+              title="Search"
               />
             </View>
+                
+
+                    {/*
+                    <TextInput
+                        placeholder = "het"
+                        returnKeyType= "search"
+                        onSubmitEditing={() => this._doAPISearch()
+                        } />
+                        */}
+
+
           </View>
 
-        
+   
 
+
+
+
+        
+        
         </View>
 
         <View style={styles.pagingButtons}>
@@ -422,36 +486,47 @@ const styles = StyleSheet.create({
     zIndex: 10 //Part of said hack
   },
   keyWordSearchBox:{
-    marginTop: 10,
+    marginTop: 2,
     marginLeft: 15,
     marginRight: 15,
     marginBottom: 15,
     height: 40,
-    borderColor: '#7a42f4',
+    borderColor: 'grey',
     borderWidth: 2,
-    paddingLeft: 6,
-    paddingRight: 6
-  },
+      paddingLeft: 6,
+      borderRadius: 3,
+      paddingRight: 6,
+    shadowColor:'grey',
+      color: 'rgb(80,80,80)',
+      fontWeight: 'bold', 
+
+    },
+
   zipCodeSearchBox:{
-    marginTop: 5,
+    marginTop: 2,
     //marginLeft: 45,
     marginRight: 20,
     marginBottom: 10,
-    height: 40,
-    borderColor: '#7a42f4',
+      height: 40,
+    borderRadius:3,
+    borderColor: 'grey',
     borderWidth: 2,
     paddingLeft: 6,
-    paddingRight: 6
+      paddingRight: 6,
+      color: 'rgb(80,80,80)',
+      fontWeight: 'bold',
+      shadowColor: 'grey', 
+      shadowRadius: 2
   },
   distanceSelectPicker:{
     height: 50, 
-    width: 110,
+    width: 50,
     //marginLeft: 60,
     borderWidth: 2,
     borderColor: '#7a42f4'
   },
   inputView:{
-    paddingTop: 50,
+    paddingTop: 30,
     paddingLeft: 30,
     paddingRight: 30,
     paddingBottom: 15
