@@ -15,6 +15,7 @@ import {
   FlatList,
   Modal
 } from 'react-native';
+import { Card } from 'react-native-elements';
 import { WebBrowser } from 'expo';
 import { MonoText } from '../components/StyledText';
 import Colors from '../constants/Colors';
@@ -55,7 +56,7 @@ export default class ClinicalTrialSearchResults extends React.Component {
                   data={this.props.searchData.trials}
                   renderItem={this._renderItem}
                   keyExtractor={(item) => item[QueryConstants.NCT_ID]}
-                  ItemSeparatorComponent={this._renderSeparator} 
+                  //ItemSeparatorComponent={this._renderSeparator} 
               />
             </View>
         );
@@ -63,30 +64,26 @@ export default class ClinicalTrialSearchResults extends React.Component {
   }
 
   _renderItem = ({item, index}) => {
-    if(index % 2 == 0){
-      return(
-        <View style = {styles.itemView1}>
-          <TouchableOpacity onPress={() => {this.setUpModal(item)}}>
-              <Text style={styles.titleText}>{(index+(1 + this.props.searchData.trials.length * ( this.props.currentPage - 1 ))).toString()}. {item[QueryConstants.BRIEF_TITLE]}</Text>
-          </TouchableOpacity>
+    const number = (index+(1 + this.props.searchData.trials.length * ( this.props.currentPage - 1 ))).toString();
+    const trialText = item[QueryConstants.BRIEF_TITLE];
+    return(
+      <Card
+        containerStyle={{ padding: 0, borderRadius: 5 }}
+        wrapperStyle={{ padding: 10 }}
+      >
+        <View>
+          <Text style={{ color: '#333' }}>{`${number}. ${trialText}`}</Text>
           <Text>Phase: {ClinicalTrialAPIUtil.getPhase(item)}</Text>
           <Text>Age: {ClinicalTrialAPIUtil.getAgeRestrictions(item)}</Text>
           <Text>Gender: {ClinicalTrialAPIUtil.getGenderRestrictions(item)}</Text>
-        </View>
-      );
-    }
-    else{
-      return(
-        <View style = {styles.itemView2}>
-          <TouchableOpacity onPress={() => {this.setUpModal(item)}}>
-              <Text style={styles.titleText}>{(index+(1 + this.props.searchData.trials.length * ( this.props.currentPage - 1 ))).toString()}. {item[QueryConstants.BRIEF_TITLE]}</Text>
+          <TouchableOpacity 
+            style={{ backgroundColor: '#eee', marginTop: 8 }}
+            onPress={() => {this.setUpModal(item)}}>
+            <Text style={{ alignSelf: 'center', paddingVertical: 6 }}>View Trial</Text>
           </TouchableOpacity>
-          <Text>Phase: {ClinicalTrialAPIUtil.getPhase(item)}</Text>
-          <Text>Age: {ClinicalTrialAPIUtil.getAgeRestrictions(item)}</Text>
-          <Text>Gender: {ClinicalTrialAPIUtil.getGenderRestrictions(item)}</Text>
         </View>
-      );
-    }
+      </Card>
+    );
 
   };
 
@@ -128,8 +125,8 @@ export default class ClinicalTrialSearchResults extends React.Component {
 const styles = StyleSheet.create({ 
   allResultsView:{
     //padding: 20,
-    paddingLeft: 20,
-    paddingRight: 20,
+    paddingLeft: 10,
+    paddingRight: 10,
     paddingBottom:20,
     flex: 1
   },
@@ -161,7 +158,7 @@ const styles = StyleSheet.create({
     marginBottom: 10
   },
   titleText:{
-    color: "#409ae0",
-    textDecorationLine: 'underline'
+    // color: "#409ae0",
+    // textDecorationLine: 'underline'
   }
 });
