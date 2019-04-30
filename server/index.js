@@ -207,6 +207,9 @@ app.get('/user/trials', async (req, res) => {
 
 app.post('/user/trials', async (req, res) => {
   try {
+    if (!req.body.trialId) {
+      res.status(400).json(msg(false, 'Body required: { trialId: STRING }'));
+    }
     await db.query(
       'INSERT INTO user_trials(user_id, trial_id) VALUES($1, $2)',
       [req.profile.id, req.body.trialId]
@@ -230,6 +233,9 @@ app.post('/user/trials', async (req, res) => {
     });
   } catch (e) {
     console.log(e);
+    if (e.code === '23505') {
+      res.status(403).json(msg(false, 'Trial already saved for user'));
+    }
     res.status(500).json(msg(false, 'Server error'));
   }
 });
