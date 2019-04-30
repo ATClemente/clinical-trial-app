@@ -22,12 +22,11 @@ export default class SettingsScreen extends React.Component {
       username: '',
       email: '',
       dob: '',
-      gender: true,
+      gender: false,
       location: '',
       cancerType: '',
       isLoading: false,
     }
-    this._getProfileAsync();
   }
 
   _signOutAsync = async () => {
@@ -35,20 +34,23 @@ export default class SettingsScreen extends React.Component {
     this.props.navigation.navigate('Auth');
   };
 
-  _getProfileAsync = async () => {
-    const result = await AsyncStorage.getItem('profile');
-    const profile = JSON.parse(result);
-    await this.setState({
-      username: profile.username,
-      email: profile.email || '',
-      dob: profile.dob || '',
-      gender: profile.gender || true,
-      location: profile.location || '',
-      cancerType: profile.cancerType || ''
-    });
-    // console.log('load settings');
-    // console.log(this.state);
-  };
+  componentDidMount() {
+    AsyncStorage.getItem('profile')
+    .then(res => JSON.parse(res))
+    .then(profile => {
+      this.setState({
+        username: profile.username,
+        email: profile.email || '',
+        dob: profile.dob || '',
+        gender: profile.gender,
+        location: profile.location || '',
+        cancerType: profile.cancerType || ''
+      });
+    })
+    .catch(e => {
+      console.log(e);
+    })
+  }
 
   _updateProfileAsync = async () => {
     await this.setState({ isLoading: true });
@@ -101,57 +103,57 @@ export default class SettingsScreen extends React.Component {
           width: '100%',
           justifyContent: 'center',
           paddingHorizontal: 20,
-          marginTop: 20
+          marginTop: 10
         }}>
-        <ScrollView>
-          <Text
-            style={{ alignSelf: 'center', fontSize: 20, marginBottom: 15, fontWeight: 'bold' }}
-          >
-            {this.state.username}
-          </Text>
-          <FormInput
-            label='Email'
-            placeholder='johndoe@example.com'
-            keyboardType='email-address'
-            autoCapitalize='none'
-            value={this.state.email}
-            onChangeText={email => this.setState({ email })}
-          />
-          <FormDatePicker
-            label='Date of Birth'
-            placeholder='04/01/2019'
-            onDateChange={dob => this.setState({ dob })}
-            date={this.state.dob}
-          />
-          <FormSwitch
-            label='Gender'
-            onValueChange={gender => this.setState({ gender })}
-            value={this.state.gender}
-          />
-          <FormInput
-            label='Location (Zip Code)'
-            placeholder='90210'
-            keyboardType='number-pad'
-            maxLength={5}
-            value={this.state.location}
-            onChangeText={location => this.setState({ location })}
-          />
-          <FormInput
-            label='Cancer Type'
-            placeholder='Lung cancer'
-            value={this.state.cancerType}
-            onChangeText={cancerType => this.setState({ cancerType })}
-          />
-          <View style={{ marginTop: 15, marginBottom: 12 }}>
-            <GradientButton
-              colors={[Colors.radar2, Colors.radar3]}
-              handleClick={ this._updateProfileAsync }
-              loading={ this.state.isLoading }
-              text='Update Profile'
+          <View>
+            <Text
+              style={{ alignSelf: 'center', fontSize: 20, marginBottom: 10, fontWeight: 'bold' }}
+            >
+              {this.state.username}
+            </Text>
+            <FormInput
+              label='Email'
+              placeholder='johndoe@example.com'
+              keyboardType='email-address'
+              autoCapitalize='none'
+              value={this.state.email}
+              onChangeText={email => this.setState({ email })}
             />
+            <FormDatePicker
+              label='Date of Birth'
+              placeholder='04/01/2019'
+              onDateChange={dob => this.setState({ dob })}
+              date={this.state.dob}
+            />
+            <FormSwitch
+              label='Gender'
+              onValueChange={gender => this.setState({ gender })}
+              value={this.state.gender}
+            />
+            <FormInput
+              label='Location (Zip Code)'
+              placeholder='90210'
+              keyboardType='number-pad'
+              maxLength={5}
+              value={this.state.location}
+              onChangeText={location => this.setState({ location })}
+            />
+            <FormInput
+              label='Cancer Type'
+              placeholder='Lung cancer'
+              value={this.state.cancerType}
+              onChangeText={cancerType => this.setState({ cancerType })}
+            />
+            <View style={{ marginTop: 15, marginBottom: 12 }}>
+              <GradientButton
+                colors={[Colors.radar2, Colors.radar3]}
+                handleClick={ this._updateProfileAsync }
+                loading={ this.state.isLoading }
+                text='Update Profile'
+              />
+            </View>
+            <Button title='Sign Out' onPress={this._signOutAsync} />
           </View>
-          <Button title='Sign Out' onPress={this._signOutAsync} />
-          </ScrollView>
         </View>
       </View>
     )

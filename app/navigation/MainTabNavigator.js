@@ -4,8 +4,7 @@ import { createStackNavigator, createBottomTabNavigator } from 'react-navigation
 
 import TabBarIcon from '../components/TabBarIcon';
 import ClinicalTrialSearchScreen from '../screens/ClinicalTrialSearchScreen'
-// import HomeScreen from '../screens/HomeScreen';
-// import LinksScreen from '../screens/LinksScreen';
+import AppointmentsScreen from '../screens/AppointmentsScreen'
 import SettingsScreen from '../screens/SettingsScreen';
 import CancerNews from '../screens/CancerNews';
 
@@ -18,11 +17,26 @@ TrialSearchStack.navigationOptions = {
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
-      name={
-        Platform.OS === 'ios'
-          ? `ios-information-circle${focused ? '' : '-outline'}`
-          : 'md-information-circle'
-      }
+      name={Platform.OS === 'ios' ? 'ios-search' : 'md-search'}
+    />
+  ),
+};
+
+const AppointmentsStack = createStackNavigator({
+  Appointments: {
+    screen: AppointmentsScreen,
+    navigationOptions: {
+      title: 'Appointments'
+    }
+  }
+});
+
+AppointmentsStack.navigationOptions = {
+  tabBarLabel: 'Appointments',
+  tabBarIcon: ({ focused }) => (
+    <TabBarIcon
+      focused={focused}
+      name={Platform.OS === 'ios' ? 'ios-calendar' : 'md-calendar'}
     />
   ),
 };
@@ -33,7 +47,7 @@ const SettingsStack = createStackNavigator({
     navigationOptions: {
       title: 'Settings'
     }
-  },
+  }
 });
 
 SettingsStack.navigationOptions = {
@@ -41,7 +55,7 @@ SettingsStack.navigationOptions = {
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
-      name={Platform.OS === 'ios' ? 'ios-options' : 'md-options'}
+      name={Platform.OS === 'ios' ? 'ios-settings' : 'md-settings'}
     />
   ),
 };
@@ -60,7 +74,7 @@ CancerNewsStack.navigationOptions = {
     tabBarIcon: ({ focused }) => (
         <TabBarIcon
             focused={focused}
-            name={Platform.OS === 'ios' ? 'ios-link' : 'md-link'}
+            name={Platform.OS === 'ios' ? 'ios-paper' : 'md-paper'}
             />
     ),
 };
@@ -69,5 +83,6 @@ CancerNewsStack.navigationOptions = {
 export default createBottomTabNavigator({
   TrialSearchStack,
   CancerNewsStack,
+  AppointmentsStack,
   SettingsStack
 });
