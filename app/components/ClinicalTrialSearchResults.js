@@ -12,19 +12,22 @@ import {
   Alert,
   TextInput,
   Picker,
-  FlatList
+  FlatList,
+  Modal
 } from 'react-native';
 import { WebBrowser } from 'expo';
 import { MonoText } from '../components/StyledText';
 import Colors from '../constants/Colors';
 import * as QueryConstants from '../constants/MainSearchQueryParams.js';
 import ClinicalTrialAPIUtil from '../components/ClinicalTrialAPIUtil.js';
+import TrialDetailsModal from '../components/TrialDetailsModal';
 
 export default class ClinicalTrialSearchResults extends React.Component {
   constructor(props) {
     super(props);
     this.state = { 
-        text: 'Useless Placeholder',
+        displayTrialDetails: false,
+        currentTrial: {}
     };
   }
 
@@ -43,6 +46,11 @@ export default class ClinicalTrialSearchResults extends React.Component {
               <View style={styles.pageIndicator}>
                 <Text>Page {this.props.currentPage.toString()} of {this._getTotalPageCount()}</Text>
               </View>
+              <TrialDetailsModal
+                modalVisible = { this.state.displayTrialDetails }
+                setModalVisible = { (vis) => { this.setModalVisible(vis) }}
+                trial = { this.state.currentTrial }
+            />
               <FlatList
                   data={this.props.searchData.trials}
                   renderItem={this._renderItem}
@@ -58,7 +66,7 @@ export default class ClinicalTrialSearchResults extends React.Component {
     if(index % 2 == 0){
       return(
         <View style = {styles.itemView1}>
-          <TouchableOpacity onPress={() => Alert.alert("Summary:", item[QueryConstants.BRIEF_SUMMARY])}>
+          <TouchableOpacity onPress={(item) => this.setUpModal(item)}>
               <Text style={styles.titleText}>{(index+(1 + this.props.searchData.trials.length * ( this.props.currentPage - 1 ))).toString()}. {item[QueryConstants.BRIEF_TITLE]}</Text>
           </TouchableOpacity>
           <Text>Phase: {ClinicalTrialAPIUtil.getPhase(item)}</Text>
@@ -70,7 +78,7 @@ export default class ClinicalTrialSearchResults extends React.Component {
     else{
       return(
         <View style = {styles.itemView2}>
-          <TouchableOpacity onPress={() => Alert.alert("Summary:", item[QueryConstants.BRIEF_SUMMARY])}>
+          <TouchableOpacity onPress={(item) => this.setUpModal(item)}>
               <Text style={styles.titleText}>{(index+(1 + this.props.searchData.trials.length * ( this.props.currentPage - 1 ))).toString()}. {item[QueryConstants.BRIEF_TITLE]}</Text>
           </TouchableOpacity>
           <Text>Phase: {ClinicalTrialAPIUtil.getPhase(item)}</Text>
@@ -81,6 +89,18 @@ export default class ClinicalTrialSearchResults extends React.Component {
     }
 
   };
+
+  setUpModal = (item) => {
+      this.setState({
+        displayTrialDetails: true,
+        currentTrial: item
+    });
+
+  }
+
+  setModalVisible(visible) {
+    this.setState({modalVisible: visible});
+  }
 
 
   _renderSeparator = () => {
