@@ -11,10 +11,13 @@ import {
   Button,
   ActivityIndicator,
   Alert,
-    TextInput,
+  TextInput,
+  SafeAreaView,
   ReturnKeyType,
   Picker
 } from 'react-native';
+import GradientButton from '../components/GradientButton';
+import { SearchBar } from 'react-native-elements';
 import { WebBrowser } from 'expo';
 import { MonoText } from '../components/StyledText';
 import Colors from '../constants/Colors';
@@ -32,8 +35,8 @@ export default class ClinicalTrialSearchScreen extends React.Component {
     this.state = { 
         searchLoading: false,
         hasNewSearchData: false,
-        keyWordText: "",
-        zipCodeText: "",
+        keyWordText: '',
+        zipCodeText: '',
         //distanceSelect: "10",
         searchSize: 5,
         resultsFromIndex: 0, //Just add searchSize for next batch when needed.
@@ -54,40 +57,41 @@ export default class ClinicalTrialSearchScreen extends React.Component {
         var data = [["10","20","30","40","50"]];
 
     return (
-      <View style={styles.container}>
-            <View style={styles.inputView}>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.inputView}>
 
-
-                {/*<Text> Search by keywords:</Text>*/}
-          <TextInput style = {styles.keyWordSearchBox}
-                    placeholder="Search clinical trials by keywords"
-                    placeholderTextColor='rgb(80,80,80)'
-                    returnKeyType="search"
-                    onSubmitEditing={() => this._doAPISearch()
-                    }
-              onChangeText={(text) => this.setState({keyWordText: text})}
-              value={this.state.keyWordText}
+          <SearchBar
+            placeholder="Keywords"
+            onChangeText={text => this.setState({ keyWordText: text})}
+            value={this.state.keyWordText}
+            platform='ios'
+            containerStyle={{ backgroundColor: '#fff', marginTop: 20, height: 35 }}
+            inputContainerStyle={{ backgroundColor: '#eee' }}
+            returnKeyType='search'
+            onSubmitEditing={()=> this._doAPISearch()}
           />
 
-                {/* <Text>Search by Zip code:</Text> */}
-          <View style={styles.distanceInputs}>
-            <TextInput style = {styles.zipCodeSearchBox}
-                keyboardType = "numeric"
-                        placeholder="Search by zipcode"
-                        placeholderTextColor='rgb(80,80,80)'
-                        returnKeyType="search"
-                        onSubmitEditing={() => this._doAPISearch()}
+          <View style={{ flexDirection: 'row' }}>
 
-                onChangeText={(text) => this.onZipCodeChanged(text)}
-                value={this.state.zipCodeText}
+            <SearchBar
+              placeholder="ZIP code"
+              onChangeText={(text) => this.onZipCodeChanged(text)}
+              value={this.state.zipCodeText}
+              platform='ios'
+              containerStyle={{ backgroundColor: '#fff', marginTop: 10, height: 35, width: '60%' }}
+              inputContainerStyle={{ backgroundColor: '#eee' }}
+              returnKeyType='search'
+              keyboardType='numeric'
+              maxLength={5}
+              onSubmitEditing={() => this._doAPISearch()}
             />
 
 
-                    {/*}
-
             <Picker
                 selectedValue={this.state.desiredDistance}
-                style={styles.distanceSelectPicker}
+                style={{ height: 50, width: '40%' }}
+                itemStyle={{ height: 50 }}
+                mode='dropdown'
                 onValueChange={(itemValue, itemIndex) =>
                     this.setState({desiredDistance: itemValue})
                 }>
@@ -103,41 +107,19 @@ export default class ClinicalTrialSearchScreen extends React.Component {
                 <Picker.Item label="100mi" value="100" />
             </Picker>
 
-*/}
-                    <View>
-                    <DropdownMenu
-                        style={{ flex: 1 }}
-                        bgColor={'white'}
-                        tintColor={'#666666'}
-                        activityTintColor={'green'}
-                        // arrowImg={}      
-                        // checkImage={}   
-                        // optionTextStyle={{color: '#333333'}}
-                        // titleStyle={{color: '#333333'}} 
-                        // maxHeight={300} 
-                        handler={(selection, row) => this.setState({ text: data[selection][row] })}
-                        data={data}
-                    >
+          </View>
 
-                        <View style={{ flex: 1 }}>
-                            <Text>
-                                {this.state.text} miles away
-            </Text>
-                        </View>
+            <View style={{ alignSelf: 'center', width: '95%', marginTop: 10, zIndex: 1 }}>
 
-                    </DropdownMenu>
-                        </View> 
-
-
-
-
-
-            <View style={styles.searchButtonHolder}>
-              <Button
-              onPress={() => this._doAPISearch()}
-              title="Search"
+              <GradientButton
+                colors={[Colors.blueOne, Colors.blueTwo]}
+                handleClick={ () => this._doAPISearch() }
+                loading={false}
+                text='Search'
               />
             </View>
+
+
                 
 
                     {/*
@@ -147,18 +129,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
                         onSubmitEditing={() => this._doAPISearch()
                         } />
                         */}
-
-
           </View>
-
-   
-
-
-
-
-        
-        
-        </View>
 
         <View style={styles.pagingButtons}>
 
@@ -185,7 +156,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
           <ClinicalTrialSearchResults searchData = {this.state.searchData} currentPage = {this.state.currentPage} searchSize = {this.state.searchSize}/>
         }
 
-      </View>
+      </SafeAreaView>
     );
   }
 
@@ -389,6 +360,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+    width: '100%'
   },
   developmentModeText: {
     marginBottom: 20,
@@ -526,10 +498,7 @@ const styles = StyleSheet.create({
     borderColor: '#7a42f4'
   },
   inputView:{
-    paddingTop: 30,
-    paddingLeft: 30,
-    paddingRight: 30,
-    paddingBottom: 15
+    padding: 20
   },
   distanceInputs:{
     flexDirection: "row"

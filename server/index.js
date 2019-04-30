@@ -54,7 +54,7 @@ const findOne = async username => {
 };
 
 app.get('/', (req, res) => {
-  res.send(JSON.stringify(process.env));
+  res.send('Welcome');
 });
 
 app.post('/auth/register', async (req, res) => {
@@ -101,23 +101,23 @@ app.post('/auth/login', async (req, res) => {
     const user = await findOne(req.body.username);
     if (!user) {
       res.status(401).json(msg(false, 'Error: Invalid credentials'));
+      return;
+    }
+    const passwordHash = user.password;
+    const match = await bcrypt.compare(req.body.password, passwordHash);
+    if (!match) {
+      res.status(401).json(msg(false, 'Error: Invalid credentials'));
     } else {
-      const passwordHash = user.password;
-      const match = await bcrypt.compare(req.body.password, passwordHash);
-      if (!match) {
-        res.status(401).json(msg(false, 'Error: Invalid credentials'));
-      } else {
-        const token = jwtSign(req.body.username);
-        const profile = {
-          username: user.username,
-          email: user.email,
-          dob: user.dob,
-          gender: user.gender,
-          location: user.zip,
-          cancerType: user.cancertype
-        };
-        res.status(200).json(auth(true, 'Valid', token, profile));
-      }
+      const token = jwtSign(req.body.username);
+      const profile = {
+        username: user.username,
+        email: user.email,
+        dob: user.dob,
+        gender: user.gender,
+        location: user.zip,
+        cancerType: user.cancertype
+      };
+      res.status(200).json(auth(true, 'Valid', token, profile));
     }
   } catch (err) {
     console.log(err);
