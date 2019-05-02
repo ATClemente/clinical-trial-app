@@ -240,7 +240,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
               console.log(response.total);
               //console.log(ClinicalTrialAPIUtil.getAgeRestrictions(this.state.searchData.trials[0]));
               //console.log(ClinicalTrialAPIUtil.getGenderRestrictions(this.state.searchData.trials[0]));
-              this.logTrialByIndex(0);
+              //this.logTrialByIndex(0);
               //console.log(response.trials[0].brief_title);  
               //this.setState({hasNewSearchData: true}); 
             }
