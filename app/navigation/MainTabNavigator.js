@@ -7,6 +7,7 @@ import ClinicalTrialSearchScreen from '../screens/ClinicalTrialSearchScreen'
 import AppointmentsScreen from '../screens/AppointmentsScreen'
 import SettingsScreen from '../screens/SettingsScreen';
 import CancerNews from '../screens/CancerNews';
+import CancerRSS from '../screens/CancerRSS';
 
 const TrialSearchStack = createStackNavigator({
   TrialSearch: ClinicalTrialSearchScreen,
@@ -64,13 +65,13 @@ const CancerNewsStack = createStackNavigator({
     News: {
       screen: CancerNews,
       navigationOptions: {
-        title: 'Latest Cancer Research'
+        title: 'Cancer Research'
       }
     },
 });
 
 CancerNewsStack.navigationOptions = {
-    tabBarLabel: 'Cancer News',
+    tabBarLabel: ' Research',
     tabBarIcon: ({ focused }) => (
         <TabBarIcon
             focused={focused}
@@ -79,10 +80,32 @@ CancerNewsStack.navigationOptions = {
     ),
 };
 
+
+
+const CancerRSSStack = createStackNavigator({
+    RSS: {
+        screen: CancerRSS,
+        navigationOptions: {
+            title: 'Cancer News'
+        }
+    },
+});
+
+CancerRSSStack.navigationOptions = {
+    tabBarLabel: ' News',
+    tabBarIcon: ({ focused }) => (
+        <TabBarIcon
+            focused={focused}
+            name={Platform.OS === 'ios' ? 'ios-paper' : 'md-paper'}
+        />
+    ),
+};
 // Do this last to add a button 
 export default createBottomTabNavigator({
   TrialSearchStack,
-  CancerNewsStack,
+    CancerNewsStack,
+    CancerRSSStack,
   AppointmentsStack,
-  SettingsStack
+    SettingsStack, 
+  
 });
