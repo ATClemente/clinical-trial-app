@@ -1,6 +1,7 @@
 import React from 'react';
 import { 
   Modal,
+  Keyboard,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -104,16 +105,30 @@ export default class SearchLocationModal extends React.PureComponent{
                 keyboardType='number-pad'
                 maxLength={5}
                 value={this.state.location}
-                onChangeText={location => this.setState({ location })}
+                onChangeText={location => {
+                  this.setState({ location });
+                  if(location.length == 5) {
+                    Keyboard.dismiss();
+                  }
+                }}
               />
-            <View style={{ marginTop: 15, marginBottom: 12 }}>
+            <View style={{ marginTop: 15, marginBottom: 20 }}>
               <GradientButton
                 colors={[Colors.radar2, Colors.radar3]}
                 loading={ this.state.isLoading }
                 handleClick={ this._updateProfileAsync }
+                disabled={ !this.state.location }
                 text='Update Profile'
               />
             </View>
+          </View>
+          <View style={{ alignSelf: 'center' }}>
+            <Text 
+              style={{ fontSize: 18, color: '#1b6ae8' }}
+              onPress={() => this.props.setLocationModal(false)}
+            >
+              Close
+            </Text>
           </View>
         </SafeAreaView>
       </Modal>
