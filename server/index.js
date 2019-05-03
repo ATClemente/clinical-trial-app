@@ -20,6 +20,10 @@ const msg = (success, status) => ({
   status
 });
 
+const serverError = () => {
+  msg(false, 'Server error');
+};
+
 const auth = (success, status, token, profile) => ({
   success,
   status,
@@ -84,7 +88,7 @@ app.post('/auth/register', async (req, res) => {
     }
   } catch (err) {
     console.log(err);
-    res.status(500).json(msg(false, 'Error: Server error'));
+    res.status(500).json(serverError);
   }
 });
 
@@ -121,7 +125,7 @@ app.post('/auth/login', async (req, res) => {
     }
   } catch (err) {
     console.log(err);
-    res.status(500).json(msg(false, 'Error: Server error'));
+    res.status(500).json(serverError);
   }
 });
 
@@ -177,7 +181,7 @@ app.put('/user/profile', async (req, res) => {
     res.status(200).json(auth(true, 'Updated', token, profile));
   } catch (err) {
     console.log(err);
-    res.status(500).json(msg(false, 'Server error'));
+    res.status(500).json(serverError);
   }
 });
 
@@ -201,7 +205,7 @@ app.get('/user/trials', async (req, res) => {
     });
   } catch (e) {
     console.log(e);
-    res.status(500).json(msg(false, 'Server error'));
+    res.status(500).json(serverError);
   }
 });
 
@@ -237,7 +241,7 @@ app.post('/user/trials', async (req, res) => {
       res.status(403).json(msg(false, 'Trial already exists for user'));
       return;
     }
-    res.status(500).json(msg(false, 'Server error'));
+    res.status(500).json(serverError);
   }
 });
 
@@ -254,7 +258,7 @@ app.delete('/user/trials/:tid', async (req, res) => {
     res.status(404).json(msg(false, 'Trial not found'));
   } catch (e) {
     console.log(e);
-    res.status(500).json(msg(false, 'Server error'));
+    res.status(500).json(serverError);
   }
 });
 
