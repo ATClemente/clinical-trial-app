@@ -25,6 +25,7 @@
     "react-native-ios-picker": "^1.0.0",
     "react-native-view-more-text": "^2.1.0",
     "react-navigation": "^3.0.9",
+    "react-xml-parser": "^1.1.2",
     "yup": "^0.27.0"
   },
   "devDependencies": {

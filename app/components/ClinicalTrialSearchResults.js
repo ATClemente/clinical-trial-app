@@ -37,7 +37,7 @@ export default class ClinicalTrialSearchResults extends React.Component {
         return (
           <View style={styles.noResultsView}>
             <Text>No results yet.</Text>
-            <Text>Run a search and see what's out there :)</Text> 
+            <Text>Run a search for clinical trials and see what's out there :)</Text> 
           </View>
         );
     }
