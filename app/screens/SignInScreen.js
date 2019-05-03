@@ -2,6 +2,7 @@ import React from 'react';
 import {
   Alert,
   AsyncStorage,
+  Keyboard,
   Text,
   TextInput,
   View
@@ -11,6 +12,7 @@ import Colors from '../constants/Colors';
 import Urls from '../constants/Urls';
 import GradientButton from '../components/GradientButton';
 import axios from 'axios';
+import { Toast, Container } from 'native-base';
 
 export default class SignInScreen extends React.Component {
   constructor(props) {
@@ -25,19 +27,28 @@ export default class SignInScreen extends React.Component {
   render() {
     const btnDisabled = !this.state.username || !this.state.password;
     return (      
-      <View style={Styles.container}>
-        <View style={Styles.form}>
+      <Container style={{
+        flex: 1,
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
+        <View style={{
+          width: '85%'
+        }}>
           <TextInput
             style={Styles.formInput}
-            placeholder="Username"
+            placeholder='Username'
+            autoCapitalize='none'
             onChangeText={(username) => this.setState({username})}
           />
           <TextInput
             style={Styles.formInput}
-            placeholder="Password"
+            placeholder='Password'
+            secureTextEntry
             onChangeText={(password) => this.setState({password})}
           />
-          <View style={{ marginVertical: 15 }}>
+          <View style={{ marginTop: 15, marginBottom: 20 }}>
             <GradientButton
               colors={[Colors.blueOne, Colors.blueTwo]}
               handleClick={this._signInAsync}
@@ -57,12 +68,14 @@ export default class SignInScreen extends React.Component {
             Forgot Password
           </Text>
         </View>
-      </View>
+        <View style={{height: '10%'}}></View>
+      </Container>
     );
   }
 
   _signInAsync = async () => {
     await this.setState({ loading: true });
+    Keyboard.dismiss();
     try {
       const { data } = await axios.post(
         Urls.server + '/auth/login',
@@ -76,10 +89,19 @@ export default class SignInScreen extends React.Component {
       this.props.navigation.navigate('Main');
     } catch (e) {
       if (e.response) {
-        Alert.alert(JSON.stringify(e.response.data.status));
+        Toast.show({
+          text: e.response.data.status,
+          buttonText: 'Okay',
+          type: 'warning',
+          duration: 3000
+        });
       } else {
-        Alert.alert(JSON.stringify(e));
-      }
+        Toast.show({
+          text: e,
+          buttonText: 'Okay',
+          type: 'danger',
+          duration: 3000
+        });      }
       this.setState({ loading: false });
     }
   };

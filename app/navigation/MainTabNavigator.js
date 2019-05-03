@@ -33,7 +33,7 @@ const AppointmentsStack = createStackNavigator({
 });
 
 AppointmentsStack.navigationOptions = {
-  tabBarLabel: 'Appointments',
+  tabBarLabel: 'Appts',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
@@ -75,7 +75,7 @@ CancerNewsStack.navigationOptions = {
     tabBarIcon: ({ focused }) => (
         <TabBarIcon
             focused={focused}
-            name={Platform.OS === 'ios' ? 'ios-paper' : 'md-paper'}
+            name={Platform.OS === 'ios' ? 'ios-book' : 'md-book'}
             />
     ),
 };

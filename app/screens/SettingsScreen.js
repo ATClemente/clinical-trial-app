@@ -7,6 +7,7 @@ import {
   Text,
   View,
  } from 'react-native';
+import { Toast } from 'native-base';
 import axios from 'axios';
 import Urls from '../constants/Urls';
 import GradientButton from '../components/GradientButton';
@@ -75,15 +76,24 @@ export default class SettingsScreen extends React.Component {
       );
       await AsyncStorage.setItem('jwt', data.jwt);
       await AsyncStorage.setItem('profile', JSON.stringify(data.profile));
-      // console.log(data.profile);
       Object.keys(data.profile).forEach(item => {
         this.setState({ item });
       });
-      Alert.alert('Profile updated');
+      Toast.show({
+        text: data.status,
+        buttonText: 'Okay',
+        type: 'success',
+        duration: 3000
+      });
     } catch (e) {
       console.log(e);
       if (e.response) {
-        Alert.alert(JSON.stringify(e.response.data));
+        Toast.show({
+          text: 'Profile updated',
+          buttonText: 'Okay',
+          type: 'warning',
+          duration: 3000
+        });      
       } else {
         Alert.alert(JSON.stringify(e));
       }
