@@ -15,11 +15,13 @@ import {
   FlatList,
   SafeAreaView,
   Modal,
-  TouchableHighlight
+  TouchableHighlight,
+  AsyncStorage
 } from 'react-native';
 import { WebBrowser } from 'expo';
 import { MonoText } from '../components/StyledText';
 import Colors from '../constants/Colors';
+import GradientButton from '../components/GradientButton';
 import * as QueryConstants from '../constants/MainSearchQueryParams.js';
 import ClinicalTrialAPIUtil from '../components/ClinicalTrialAPIUtil.js';
 import ViewMoreText from 'react-native-view-more-text';
@@ -27,6 +29,8 @@ import Collapsible from 'react-native-collapsible';
 import Accordion from 'react-native-collapsible/Accordion';
 import MapView from 'react-native-maps';
 import { Card } from 'react-native-elements';
+import axios from 'axios';
+import Urls from '../constants/Urls';
 
 export default class TrialDetailsModal extends React.Component {
     constructor(props) {
@@ -107,11 +111,48 @@ export default class TrialDetailsModal extends React.Component {
                             </View>
                         </Collapsible>
 
+                        <View style={{ alignSelf: 'center', width: '95%', marginTop: 10, zIndex: 1 }}>
+
+                            <GradientButton
+                            colors={[Colors.blueOne, Colors.blueTwo]}
+                            handleClick={ () => this.saveTrial() }
+                            loading={false}
+                            text='Save Trial'
+                            />
+                        </View>
 
                     </ScrollView>
                 </SafeAreaView>
             </Modal>
         )
+    }
+
+    async saveTrial(){
+        const token = await AsyncStorage.getItem('jwt');
+        const response = await axios.post(
+          Urls.server + '/user/trials',
+          {
+              "trialId": this.state.trial[QueryConstants.NCT_ID]
+          },
+          {
+            headers: {
+              Authorization: token,
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+        
+        if(response.data.success == true){
+            Alert.alert("Trial Saved!");
+        }
+        else{
+            Alert.alert("There was a problem saving your trial");
+        }
+
+    }
+
+    applyToTrial(){
+
     }
 
     renderViewMore(onPress){
@@ -186,6 +227,10 @@ export default class TrialDetailsModal extends React.Component {
                 data={trial[QueryConstants.ELIGIBILITY][QueryConstants.UNSTRUCTURED]}
                 renderItem={this._renderEligibilityItem}
                 keyExtractor={(item) => item[QueryConstants.DISPLAY_ORDER].toString()}
+                initialNumToRender={10}
+                maxToRenderPerBatch={5}
+                windowSize={5}
+                onEndReachedThreshold={0.5}
                 //ItemSeparatorComponent={this._renderSeparator} 
             />
         );
@@ -217,12 +262,31 @@ export default class TrialDetailsModal extends React.Component {
     }
 
     renderLocations(trial){
+        /*console.log(trial[QueryConstants.SITES].length)
+        var count = 0;
+        var sites = trial[QueryConstants.SITES];
+        var types = [];
+        for (var site in sites){
+            //console.log(site);
+            if(sites[site][QueryConstants.ORG_STATUS].toLowerCase() == "nullified" || sites[site][QueryConstants.ORG_STATUS].toLowerCase() == "inactive"){
+                count++;
+            }
+            if(types.indexOf(sites[site][QueryConstants.ORG_STATUS].toLowerCase()) === -1){
+                types.push(sites[site][QueryConstants.ORG_STATUS].toLowerCase());
+            }
+        }
+        console.log(types);
+        console.log("Bad trial sites: " + count.toString());*/
         return(
             <FlatList
                 data={trial[QueryConstants.SITES]}
                 renderItem={this._renderLocationItem}
                 keyExtractor={(item, index) => index.toString()}
                 removeClippedSubviews={true}
+                initialNumToRender={10}
+                maxToRenderPerBatch={5}
+                windowSize={5}
+                onEndReachedThreshold={0.5}
                 //ItemSeparatorComponent={this._renderSeparator} 
             />
         );
@@ -235,7 +299,8 @@ export default class TrialDetailsModal extends React.Component {
         const contact_name = item[QueryConstants.CONTACT_NAME];
         const contact_phone = item[QueryConstants.CONTACT_PHONE];
         const contact_email = item[QueryConstants.CONTACT_EMAIL];
-        const site_status = item[QueryConstants.ORG_STATUS];
+        var site_status = item[QueryConstants.ORG_STATUS].toLowerCase();
+        site_status = site_status.charAt(0).toUpperCase() + site_status.slice(1);
         var site_lat;
         var site_lon;
         if(item[QueryConstants.ORG_CORRDINATES] == undefined){
