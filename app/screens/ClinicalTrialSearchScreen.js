@@ -74,7 +74,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
           <View style={{ flexDirection: 'row' }}>
 
             <SearchBar
-              placeholder="ZIP code"
+              placeholder="Zip Code"
               onChangeText={(text) => this.onZipCodeChanged(text)}
               value={this.state.zipCodeText}
               platform='ios'
@@ -90,7 +90,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
 
             <Picker
                 selectedValue={this.state.desiredDistance}
-                style={Platform.OS === 'ios' ? { height: 45, width: '35%', marginTop: 7 } : { height: 50, width: '40%' }}
+                style={Platform.OS === 'ios' ? { height: 45, width: '20%', marginTop: 7 } : { height: 50, width: '40%' }}
                 itemStyle={Platform.OS === 'ios' ? { height: 38, borderWidth: 0, fontSize: 18 } : { height: 50 }}
                 mode='dropdown'
                 onValueChange={(itemValue, itemIndex) =>
@@ -108,18 +108,24 @@ export default class ClinicalTrialSearchScreen extends React.Component {
                 <Picker.Item label="100mi" value="100" />
             </Picker>
 
+
+                    <View style={{ alignSelf: 'center', width: '20%', marginTop: 5, zIndex: 1, fontWeight: 'bold' }}>
+
+                        <GradientButton
+                            colors={[Colors.blueOne, Colors.blueTwo]}
+                            handleClick={() => this._doAPISearch()}
+                            loading={false}
+                            text='Search'
+                            textStyle={{ fontWeight: 'bold' }}
+                            impact
+                            impactStyle='Light'
+                            
+                        />
+                    </View>
+
           </View>
 
-            <View style={{ alignSelf: 'center', width: '95%', marginTop: 10, zIndex: 1 }}>
-
-              <GradientButton
-                colors={[Colors.blueOne, Colors.blueTwo]}
-                handleClick={ () => this._doAPISearch() }
-                loading={false}
-                text='Search'
-              />
-            </View>
-
+            
 
                 
 
@@ -479,7 +485,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
     //marginLeft: 45,
     marginRight: 20,
-    marginBottom: 10,
+    marginBottom: 5,
       height: 40,
     borderRadius:3,
     borderColor: 'grey',
@@ -516,6 +522,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginLeft: 15,
     marginRight: 15,
+    marginTop: 1,
     justifyContent: "space-between"
   }
 });
