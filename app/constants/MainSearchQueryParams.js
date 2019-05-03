@@ -24,6 +24,7 @@ export const LEAD_ORG = 'lead_org';
 export const SITES_ORG_NAME = 'sites.org_name';
 export const SITES_CONTACT_NAME = 'sites.contact_name';
 export const SITES_CONTACT_PHONE = 'sites.contact_phone';
+export const SITES_CONTACT_EMAIL = 'sites.contact_email';
 export const SITES_ORG_EMAIL = 'sites.org_email';
 export const SITES_ORG_ADDRESS_LINE_1 = 'sites.org_address_line_1';
 export const SITES_ORG_ADDRESS_LINE_2 = 'sites.org_address_line_2';
@@ -73,6 +74,7 @@ export const SITES = 'sites';
 export const ORG_NAME = 'org_name';
 export const CONTACT_NAME = 'contact_name';
 export const CONTACT_PHONE = 'contact_phone';
+export const CONTACT_EMAIL = "contact_email";
 export const ORG_EMAIL = 'org_email';
 export const ORG_ADDRESS_LINE_1 = 'org_address_line_1';
 export const ORG_ADDRESS_LINE_2 = 'org_address_line_2';
@@ -99,6 +101,7 @@ export const INCLUDE_ARR = [
   SITES_ORG_NAME,
   SITES_CONTACT_NAME,
   SITES_CONTACT_PHONE,
+  SITES_CONTACT_EMAIL,
   SITES_ORG_EMAIL,
   SITES_ORG_ADDRESS_LINE_1,
   SITES_ORG_ADDRESS_LINE_2,
