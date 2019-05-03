@@ -89,7 +89,7 @@ export default class SettingsScreen extends React.Component {
       console.log(e);
       if (e.response) {
         Toast.show({
-          text: 'Profile updated',
+          text: 'Error updating profile',
           buttonText: 'Okay',
           type: 'warning',
           duration: 3000

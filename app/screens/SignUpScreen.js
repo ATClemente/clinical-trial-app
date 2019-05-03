@@ -24,6 +24,8 @@ export default class SignUpScreen extends React.Component {
       username: '',
       password: '',
       verifyPwd: '',
+      location: '',
+      gender: false,
       loading: false,
       errors: {}
     }

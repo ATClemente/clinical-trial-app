@@ -1,6 +1,7 @@
 import React from 'react';
 import DropdownMenu from 'react-native-dropdown-menu';
 import {
+  AsyncStorage,
   Image,
   Platform,
   ScrollView,
@@ -25,6 +26,7 @@ import Colors from '../constants/Colors';
 import ClinicalTrialAPIUtil from '../components/ClinicalTrialAPIUtil.js';
 import * as QueryConstants from '../constants/MainSearchQueryParams.js';
 import ClinicalTrialSearchResults from '../components/ClinicalTrialSearchResults';
+import SearchLocationModal from '../components/SearchLocationModal';
 
 export default class ClinicalTrialSearchScreen extends React.Component {
   static navigationOptions = {
@@ -48,25 +50,54 @@ export default class ClinicalTrialSearchScreen extends React.Component {
         desiredDistance: "10",
         desiredDistanceType: "mi",
         currentPage: 1,
-        text:' '
+        text:'',
+        profile: {},
+        showLocationModal: false
     };
+  }
 
+  componentWillMount() {
+    AsyncStorage.getItem('profile')
+    .then(res => JSON.parse(res))
+    .then(profile => {
+      this.setState({
+        profile: {
+          username: profile.username,
+          email: profile.email || '',
+          dob: profile.dob || '',
+          gender: profile.gender,
+          location: profile.location || '',
+          cancerType: profile.cancerType || ''
+        }
+      });
+      if(!this.state.profile.location) {
+        this.setState({ showLocationModal: true });
+      }
+    })
+    .catch(e => {
+      console.log(e);
+    });
   }
 
   render() {
-
+    const disableSearch = (this.state.keyWordText && this.state.zipCodeText) ? false : true;
     return (
       <SafeAreaView style={styles.container}>
+
+        <SearchLocationModal
+          visible={this.state.showLocationModal}
+          setLocationModal={this.setLocationModal}
+        />
+
         <View style={styles.inputView}>
 
           <SearchBar
             placeholder="Keywords"
             onChangeText={text => this.setState({ keyWordText: text})}
             value={this.state.keyWordText}
-            platform='ios'
-            containerStyle={{ backgroundColor: '#fff', marginTop: Platform.OS === 'ios' ? 0 : 20, height: 35 }}
-            inputContainerStyle={{ backgroundColor: '#eee' }}
             searchIcon={{ name: 'md-key', type: 'ionicon' }}
+            containerStyle={[styles.searchBarContainer, {marginBottom: 10}]}
+            inputContainerStyle={styles.searchBarInput}
             returnKeyType='search'
             onSubmitEditing={()=> this._doAPISearch()}
           />
@@ -77,20 +108,18 @@ export default class ClinicalTrialSearchScreen extends React.Component {
               placeholder="Zip Code"
               onChangeText={(text) => this.onZipCodeChanged(text)}
               value={this.state.zipCodeText}
-              platform='ios'
-              containerStyle={{ backgroundColor: '#fff', marginTop: 10, height: 35, width: '60%' }}
-              inputContainerStyle={{ backgroundColor: '#eee' }}
               searchIcon={{ name: 'md-pin', type: 'ionicon' }}
+              containerStyle={[styles.searchBarContainer, {width: '45%'}]}
+              inputContainerStyle={styles.searchBarInput}
               returnKeyType='search'
               keyboardType='numeric'
               maxLength={5}
               onSubmitEditing={() => this._doAPISearch()}
             />
 
-
             <Picker
                 selectedValue={this.state.desiredDistance}
-                style={Platform.OS === 'ios' ? { height: 45, width: '20%', marginTop: 7 } : { height: 50, width: '40%' }}
+                style={Platform.OS === 'ios' ? { height: 45, width: '30%', marginTop: 2 } : { height: 50, width: '40%' }}
                 itemStyle={Platform.OS === 'ios' ? { height: 38, borderWidth: 0, fontSize: 18 } : { height: 50 }}
                 mode='dropdown'
                 onValueChange={(itemValue, itemIndex) =>
@@ -108,35 +137,21 @@ export default class ClinicalTrialSearchScreen extends React.Component {
                 <Picker.Item label="100mi" value="100" />
             </Picker>
 
-
-                    <View style={{ alignSelf: 'center', width: '20%', marginTop: 5, zIndex: 1, fontWeight: 'bold' }}>
-
-                        <GradientButton
-                            colors={[Colors.blueOne, Colors.blueTwo]}
-                            handleClick={() => this._doAPISearch()}
-                            loading={false}
-                            text='Search'
-                            textStyle={{ fontWeight: 'bold' }}
-                            impact
-                            impactStyle='Light'
-                            
-                        />
-                    </View>
+            <View style={{ alignSelf: 'center', width: '25%', height: 45 }}>
+                <GradientButton
+                    colors={[Colors.blueOne, Colors.blueTwo]}
+                    handleClick={() => this._doAPISearch()}
+                    loading={false}
+                    disabled={disableSearch}
+                    text='Search'
+                    textStyle={{ fontWeight: 'bold' }}
+                    impact
+                    impactStyle='Light'
+                />
+            </View>
 
           </View>
-
-            
-
-                
-
-                    {/*
-                    <TextInput
-                        placeholder = "het"
-                        returnKeyType= "search"
-                        onSubmitEditing={() => this._doAPISearch()
-                        } />
-                        */}
-          </View>
+        </View>
 
         <View style={styles.pagingButtons}>
 
@@ -307,6 +322,10 @@ export default class ClinicalTrialSearchScreen extends React.Component {
 
   onZipCodeChanged(text){
     this.setState({zipCodeText: text.replace(/[^0-9]/g, '').substring(0,5)});
+  }
+
+  setLocationModal = visible => {
+    this.setState({ showLocationModal: visible });
   }
 
   _testFunc(){
@@ -524,5 +543,14 @@ const styles = StyleSheet.create({
     marginRight: 15,
     marginTop: 1,
     justifyContent: "space-between"
+  },
+  searchBarContainer: {
+    backgroundColor: '#fff', 
+    padding: 0,
+    borderTopWidth: 0,
+    borderBottomWidth: 0
+  },
+  searchBarInput: {
+    backgroundColor: '#eee'
   }
 });

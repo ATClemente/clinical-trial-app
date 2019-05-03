@@ -157,19 +157,20 @@ app.use('/user', async (req, res, next) => {
 
 app.put('/user/profile', async (req, res) => {
   try {
+    let user = await findOne(req.profile.username);
     await db.query(
       'UPDATE users SET email=$1, dob=$2, gender=$3, zip=$4, cancertype=$5 WHERE username=$6',
       [
-        req.body.email,
-        req.body.dob,
-        req.body.gender,
-        req.body.location,
-        req.body.cancerType,
+        req.body.email || req.profile.email,
+        req.body.dob || req.profile.dob,
+        req.body.gender || req.profile.gender,
+        req.body.location || req.profile.location,
+        req.body.cancerType || req.profile.cancerType,
         req.profile.username
       ]
     );
     const token = jwtSign(req.profile.username);
-    const user = await findOne(req.profile.username);
+    user = await findOne(req.profile.username);
     const profile = {
       username: user.username,
       email: user.email,
