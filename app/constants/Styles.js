@@ -24,6 +24,9 @@ export default StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     marginBottom: 10
   },
+  error: {
+    borderColor: 'red'
+  },
   button: {
     width: '100%',
     alignItems: 'center',

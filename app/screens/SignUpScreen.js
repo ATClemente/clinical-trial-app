@@ -24,16 +24,27 @@ export default class SignUpScreen extends React.Component {
       username: '',
       password: '',
       verifyPwd: '',
-      loading: false
+      loading: false,
+      errors: {}
     }
   }
 
+  _timeOut = (verifyPwd) => {
+    setTimeout(() => {
+      this.setState({verifyPwd});
+      if (this.state.password !== this.state.verifyPwd) {
+        Alert.alert('passwords dont match');
+      }
+    }, 1000);
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.timer);
+  }
+
   render() {
-    const btnDisabled = !this.state.username || !this.state.password || !this.state.verifyPwd;
-    const btnStyle = [Styles.button, 
-      btnDisabled 
-      ? Styles.disabled 
-      : Styles.enabled ];
+    const btnDisabled = !this.state.username || !this.state.password || !this.state.verifyPwd || (this.state.password !== this.state.verifyPwd);
+    const verifyPwdStyle = this.state.verifyPwd && this.state.password !== this.state.verifyPwd ? [Styles.formInput, Styles.error] : Styles.formInput;
     return (      
       <Container style={{
         flex: 1,
@@ -54,13 +65,15 @@ export default class SignUpScreen extends React.Component {
             style={Styles.formInput}
             placeholder='Password'
             secureTextEntry
+            autoCapitalize='none'
             onChangeText={password => this.setState({password})}
           />
           <TextInput
-            style={Styles.formInput}
+            style={verifyPwdStyle}
             placeholder='Verify Password'
             secureTextEntry
-            onChangeText={verifyPwd => this.setState({verifyPwd})}
+            autoCapitalize='none'
+            onChangeText={verifyPwd => this.setState({ verifyPwd })}
           />
           <View style={{ marginTop: 15, marginBottom: 20 }}>
             <GradientButton

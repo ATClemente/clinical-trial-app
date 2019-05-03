@@ -46,6 +46,7 @@ export default class SignInScreen extends React.Component {
             style={Styles.formInput}
             placeholder='Password'
             secureTextEntry
+            autoCapitalize='none'
             onChangeText={(password) => this.setState({password})}
           />
           <View style={{ marginTop: 15, marginBottom: 20 }}>
