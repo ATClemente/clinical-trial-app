@@ -72,7 +72,7 @@ export default class CancerRSS extends React.Component {
                 }, function () {
 
                 });
-
+                console.log(this.state.dataSource);
             })
             .catch((error) => {
                 console.error(error);
@@ -145,7 +145,7 @@ export default class CancerRSS extends React.Component {
 
                         </View>
                     }
-                    keyExtractor={({ id }, index) => id}
+                    keyExtractor={(item, index) => item.guid}
                 />
             </View>
 

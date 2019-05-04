@@ -1,8 +1,19 @@
 import React from 'react';
-import { FlatList, Linking,AppRegistry, StyleSheet,ActivityIndicator, Text, WebView, View, Button, AsyncStorage} from 'react-native';
-import { ExpoConfigView } from '@expo/samples';
-
-
+import { 
+    FlatList, 
+    Linking,
+    AppRegistry, 
+    StyleSheet,
+    ActivityIndicator, 
+    Text, 
+    WebView, 
+    View, 
+    Button, 
+    AsyncStorage
+} from 'react-native';
+import { Card, CardItem, Left, Body, Container, Content } from 'native-base';
+import GradientButton from '../components/GradientButton';
+import Colors from '../constants/Colors';
 
 export default class CancerNews extends React.Component {
    //Cite: https://facebook.github.io/react-native/docs/network
@@ -32,7 +43,7 @@ export default class CancerNews extends React.Component {
 
 
     render() {
-
+        // console.log(this.state.dataSource);
         if (this.state.isLoading) {
             return (
                 <View style={{ flex: 1, padding: 20 }}>
@@ -42,50 +53,53 @@ export default class CancerNews extends React.Component {
         }
 
         return (
-            <View style={{ flex: 1, paddingTop: 1, justifyContent: 'space-between'}}>
-                {/* <Text style={styles.title}> Latest Cancer Research </Text> */}
-
-                <FlatList
-                    data={this.state.dataSource}
-
-                    renderItem={({ item }) =>
-                        //<Text style={styles.body}>{item.title}, {item.publicationDate}, {item.abstract}</Text>}
-
-                        <View style={{ padding: 1 }}>
-
-                            <Text style={styles.pubDate} >Publication Date:{item.publicationDate} </Text>
-
-                            <Text style={styles.articleTitle}
-                                onPress={() => Linking.openURL(item.url[0].value)}>
-                                {item.title}
-                            </Text>
-
-
-                            <Text style={styles.abstract}> {item.abstract} </Text>
-
-                            
-                            <Text style={styles.doi}
-                                onPress={() => Linking.openURL(item.url[0].value)}>
-                                {item.doi}
-                            </Text>
-                  
-
-                            <View
-                                style={{
-                                    borderBottomColor: 'grey',
-                                    borderBottomWidth: 1,
-         
-                                    borderRadius: 5,
-                                    padding: 5
-                                }}
-                            />
-                            
-                            </View>
-                   }
-                    keyExtractor={({ id }, index) => id}    
-                />
-            </View>
+            <Container style={{ paddingHorizontal: 5, backgroundColor: '#ddd' }}>
+                <Content >
+                    <FlatList
+                        style={{ marginVertical: 4 }}
+                        data={this.state.dataSource}
+                        renderItem={this._renderItem}
+                        keyExtractor={(item, index) => item.doi}    
+                    />
+                </Content>
+            </Container>
         );
+    }
+
+    _renderItem = ({ item, index }) => {
+        //<Text style={styles.body}>{item.title}, {item.publicationDate}, {item.abstract}</Text>}
+        return (
+            <Card>
+                <CardItem bordered style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+                    <Text 
+                        style={styles.articleTitle}
+                        onPress={() => Linking.openURL(item.url[0].value)}
+                    >
+                        {item.title}
+                    </Text>
+                    <Text style={{ color: '#999' }}>Publication Date: {item.publicationDate}</Text>
+                </CardItem>
+                <CardItem>
+                    <Body>
+                        <Text>
+                            {item.abstract}
+                        </Text>
+                    </Body>
+                </CardItem>
+                <CardItem style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                    <View style={{ width: '100%', marginBottom: 5 }}>
+                    <GradientButton
+                        colors={[Colors.blueOne, Colors.blueTwo]}
+                        handleClick={() => Linking.openURL(item.url[0].value)}
+                        loading={false}
+                        disabled={false}
+                        text='View Article'
+                        padding={10}
+                    />
+                    </View>
+                </CardItem>
+            </Card>
+        )
     }
 }
 
@@ -102,13 +116,7 @@ const styles = StyleSheet.create({
     articleTitle: {
         fontWeight: 'bold',
         fontSize: 17,
-        padding:5,
-       // alignItems: 'center',
-       // textAlign: 'center',
-        marginLeft: 15,
-        marginRight: 15
-
-
+        marginBottom: 3
     },
 
     doi: {
