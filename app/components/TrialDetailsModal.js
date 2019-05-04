@@ -31,6 +31,7 @@ import MapView from 'react-native-maps';
 import { Card } from 'react-native-elements';
 import axios from 'axios';
 import Urls from '../constants/Urls';
+import { Ionicons } from '@expo/vector-icons';
 
 export default class TrialDetailsModal extends React.Component {
     constructor(props) {
@@ -61,7 +62,13 @@ export default class TrialDetailsModal extends React.Component {
                 onRequestClose={() => { this.props.setModalVisible(false) }}>
                 <SafeAreaView style={styles.mainView}>
                     <TouchableHighlight onPress = {() => { this.props.setModalVisible(false) }}>
-                        <Text style={{borderWidth: StyleSheet.hairlineWidth}}>X</Text>
+                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <Ionicons 
+                          style={{ marginHorizontal: 5 }}
+                          size={24}
+                          name='ios-arrow-dropleft' />
+                        <Text>Back</Text>
+                      </View>
                     </TouchableHighlight>
                     <Text style={{fontWeight: "bold", textDecorationLine: "underline", textAlign: "center", marginBottom: 5}}>Trial Details</Text>
                     <View style={{borderBottomWidth: StyleSheet.hairlineWidth, marginBottom: 5}}></View>
