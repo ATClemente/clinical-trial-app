@@ -121,14 +121,14 @@ export default class SignUpScreen extends React.Component {
           text: e.response.data.status,
           buttonText: 'Okay',
           type: 'warning',
-          duration: 3000
+          duration: 2000
         });
       } else {
         Toast.show({
           text: e,
           buttonText: 'Okay',
           type: 'warning',
-          duration: 3000
+          duration: 2000
         });
       }
       this.setState({ loading: false });

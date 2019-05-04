@@ -81,7 +81,7 @@ export default class SettingsScreen extends React.Component {
         text: data.status,
         buttonText: 'Okay',
         type: 'success',
-        duration: 3000
+        duration: 2000
       });
     } catch (e) {
       console.log(e);
@@ -90,7 +90,7 @@ export default class SettingsScreen extends React.Component {
           text: 'Error updating profile',
           buttonText: 'Okay',
           type: 'warning',
-          duration: 3000
+          duration: 2000
         });      
       } else {
         Alert.alert(JSON.stringify(e));
