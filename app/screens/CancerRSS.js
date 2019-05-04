@@ -9,7 +9,7 @@ export default class CancerRSS extends React.Component {
     constructor(props) {
         super(props);
        
-        this.state = { }
+        this.state = { isLoading: true}
 
 
         var xmlText = "<?xml version='1.0' encoding='utf-8'?>\
@@ -30,7 +30,7 @@ export default class CancerRSS extends React.Component {
 
         var xml = new XMLParser().parseFromString(xmlText);    // Assume xmlText contains the example XML
 
-      //  console.log(xml);
+       console.log(xml);
 
      //   console.log(xml.getElementsByTagName('Name'));
 
@@ -39,8 +39,8 @@ export default class CancerRSS extends React.Component {
     //Cite: https://gist.github.com/PhilipFlyvholm/d4171a16900cef6146b097a7ed432515
 
     componentDidMount() {
-        const rssURL = 'https://api.rss2json.com/v1/api.json?rss_url=https://feed.rssunify.com/5cbc0dbe0657c/rss.xml'
-
+      // const rssURL = 'https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Ffeed.rssunify.com%2F5cbc0dbe0657c%2Frss.xml&api_key=aw46lnwivmgetk7aos9xwiv1yb8xur8ogewi0epn&order_by=pubDate&order_dir=desc&count=50'
+        const rssURL = 'https://api.rss2json.com/v1/api.json?rss_url=http://feeds.feedburner.com/ncinewsreleases&api_key=aw46lnwivmgetk7aos9xwiv1yb8xur8ogewi0epn&order_by=pubDate&order_dir=desc&count=50'
         /*
         fetch(rssUrl)
             .then(response => response.json())
@@ -59,8 +59,6 @@ export default class CancerRSS extends React.Component {
             });
 
 */
-
-
         return fetch(rssURL)
             .then((response) => response.json())
             .then((responseJson) => {
@@ -99,6 +97,15 @@ export default class CancerRSS extends React.Component {
 
 */
     render() {
+
+
+        if (this.state.isLoading) {
+            return (
+                <View style={{ flex: 1, padding: 20 }}>
+                    <ActivityIndicator />
+                </View>
+            )
+        }
         return (
 
             <View style={{ flex: 1, paddingTop: 1, justifyContent: 'space-between' }}>
@@ -112,8 +119,18 @@ export default class CancerRSS extends React.Component {
 
                         <View style={{ padding: 1 }}>
 
-                            <Text style>Publication Date:{item.content} </Text>
+                            <Text style>Publication Date:{item.pubDate} </Text>
 
+                            <Text
+                                onPress={() => Linking.openURL(item.link)}>
+                                {item.title}
+                            </Text>
+
+
+                            <Text style>Description:{item.description} </Text>
+                            <Text style>Link:{item.link} </Text> 
+
+      
 
                             {/*
                             <Text style={styles.pubDate} >Publication Date:{item.publicationDate} </Text>
