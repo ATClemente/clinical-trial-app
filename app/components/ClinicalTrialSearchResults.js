@@ -44,19 +44,16 @@ export default class ClinicalTrialSearchResults extends React.Component {
     else{
         return (
             <View style={styles.allResultsView}>
-              <View style={styles.pageIndicator}>
-                <Text>Page {this.props.currentPage.toString()} of {this._getTotalPageCount()}</Text>
-              </View>
               <TrialDetailsModal
                 modalVisible = { this.state.displayTrialDetails }
                 setModalVisible = { (vis) => { this.setModalVisible(vis) }}
                 trial = { this.state.currentTrial }
             />
               <FlatList
-                  data={this.props.searchData.trials}
-                  renderItem={this._renderItem}
-                  keyExtractor={(item) => item[QueryConstants.NCT_ID]}
-                  //ItemSeparatorComponent={this._renderSeparator} 
+                style={{ marginBottom: 15 }}
+                data={this.props.searchData.trials}
+                renderItem={this._renderItem}
+                keyExtractor={(item) => item[QueryConstants.NCT_ID]}
               />
             </View>
         );
@@ -114,21 +111,17 @@ export default class ClinicalTrialSearchResults extends React.Component {
     );
   };
 
-  _getTotalPageCount = () => {
-    let totalPages = Math.ceil(this.props.searchData.total / this.props.searchSize);
-    return totalPages.toString();
-  }
+  // _getTotalPageCount = () => {
+  //   let totalPages = Math.ceil(this.props.searchData.total / this.props.searchSize);
+  //   return totalPages.toString();
+  // }
 
 
 }
 
 const styles = StyleSheet.create({ 
   allResultsView:{
-    //padding: 20,
-    paddingLeft: 10,
-    paddingRight: 10,
-    paddingBottom:20,
-    flex: 1
+    flex: 1,
   },
   noResultsView:{
     paddingLeft: 20,

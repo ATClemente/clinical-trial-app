@@ -105,7 +105,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
             inputContainerStyle={styles.searchBarInput}
             inputStyle={{ color: '#222' }}
             placeholderTextColor='#aaa'
-            returnKeyType='done'
+            returnKeyType='search'
             onSubmitEditing={()=> this._doAPISearch()}
           />
 
@@ -120,7 +120,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
               inputContainerStyle={styles.searchBarInput}
               inputStyle={{ color: '#222' }}
               placeholderTextColor='#aaa'
-              returnKeyType='done'
+              returnKeyType='search'
               keyboardType='numeric'
               maxLength={5}
               onSubmitEditing={() => this._doAPISearch()}
@@ -154,9 +154,6 @@ export default class ClinicalTrialSearchScreen extends React.Component {
                     disabled={disableSearch}
                     text='Search'
                     padding={10}
-                    // textStyle={{ fontWeight: 'bold' }}
-                    // impact
-                    // impactStyle='Light'
                 />
             </View>
 
@@ -166,10 +163,17 @@ export default class ClinicalTrialSearchScreen extends React.Component {
         <View style={styles.pagingButtons}>
 
           <Button
-              disabled={this.state.prevParams == {} || this.state.currentPage == 1}
-              onPress={() => this._doAPISearch(true, -1)}
-              title="Prev"
+            disabled={this.state.prevParams == {} || this.state.currentPage == 1}
+            onPress={() => this._doAPISearch(true, -1)}
+            title="Prev"
           />
+
+          { (this.state.searchData.total != undefined) && 
+            <View style={{ paddingTop: 12 }}>
+              <Text>Page {this.state.currentPage.toString()} of {Math.ceil(this.state.searchData.total / this.state.searchSize)}</Text>
+            </View>
+          }
+
           <Button
             disabled={this.state.prevParams == {} || this.state.currentPage == Math.ceil(this.state.searchData.total / this.state.searchSize)}
             onPress={() => this._doAPISearch(true)}
@@ -341,6 +345,11 @@ export default class ClinicalTrialSearchScreen extends React.Component {
   setProfileLocation = location => {
     this.setState({ location });
     this.setState({ zipCodeText: location });
+  }
+
+  _getTotalPageCount = () => {
+    let totalPages = Math.ceil(this.props.searchData.total / this.props.searchSize);
+    return totalPages.toString();
   }
 
   _testFunc(){

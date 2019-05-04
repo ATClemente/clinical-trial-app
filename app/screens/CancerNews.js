@@ -115,12 +115,12 @@ const styles = StyleSheet.create({
 
     articleTitle: {
         fontWeight: 'bold',
+        color: '#3961a3',
         fontSize: 17,
         marginBottom: 3
     },
 
     doi: {
-
         color: 'blue',
         marginLeft: 15,
         marginRight: 15
