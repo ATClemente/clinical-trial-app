@@ -4,20 +4,22 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  View,
 } from 'react-native';
 import { LinearGradient } from 'expo';
 import Colors from '../constants/Colors';
 
-const GradientButton = ({ text, colors, handleClick, disabled, loading }) => {
+const GradientButton = ({ text, colors, handleClick, disabled, loading, padding }) => {
   const btnStyle = disabled ? styles.off: styles.on;
   const disableStatus = disabled ? disabled : false;
+  const pad = padding ? padding : 12;
   return (
     <TouchableOpacity 
     style={btnStyle} 
     onPress={handleClick}
     disabled={disableStatus}>
     <LinearGradient 
-      style={styles.gradient}
+      style={[styles.gradient, { paddingVertical: pad }]}
       colors={colors}
       start={[0, 0.5]}
       end={[1, 0.5]}
@@ -34,7 +36,6 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 12,
     borderRadius: 5
   },
   buttonText: {

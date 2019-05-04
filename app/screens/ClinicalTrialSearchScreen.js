@@ -51,8 +51,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
         desiredDistanceType: "mi",
         currentPage: 1,
         text:'',
-        profile: {},
-        showLocationModal: false
+        showLocationModal: true
     };
   }
 
@@ -61,17 +60,16 @@ export default class ClinicalTrialSearchScreen extends React.Component {
     .then(res => JSON.parse(res))
     .then(profile => {
       this.setState({
-        profile: {
-          username: profile.username,
-          email: profile.email || '',
-          dob: profile.dob || '',
-          gender: profile.gender,
-          location: profile.location || '',
-          cancerType: profile.cancerType || ''
-        }
+        username: profile.username,
+        email: profile.email || '',
+        dob: profile.dob || '',
+        gender: profile.gender,
+        location: profile.location || '',
+        cancerType: profile.cancerType || ''
       });
-      if(!this.state.profile.location) {
-        this.setState({ showLocationModal: true });
+      if(this.state.location) {
+        this.setState({ showLocationModal: false });
+        this.setState({ zipCodeText: this.state.location });
       }
     })
     .catch(e => {
@@ -87,6 +85,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
         <SearchLocationModal
           visible={this.state.showLocationModal}
           setLocationModal={this.setLocationModal}
+          setProfileLocation={this.setProfileLocation}
         />
 
         <View style={styles.inputView}>
@@ -96,9 +95,15 @@ export default class ClinicalTrialSearchScreen extends React.Component {
             onChangeText={text => this.setState({ keyWordText: text})}
             value={this.state.keyWordText}
             searchIcon={{ name: 'md-key', type: 'ionicon' }}
-            containerStyle={[styles.searchBarContainer, {marginBottom: 10}]}
+            containerStyle={[
+              styles.searchBarContainer, 
+              {marginBottom: 10},
+              Platform.OS === 'ios' ? { marginTop: 0 } : { marginTop: 20}
+            ]}
             inputContainerStyle={styles.searchBarInput}
-            returnKeyType='search'
+            inputStyle={{ color: '#222' }}
+            placeholderTextColor='#aaa'
+            returnKeyType='done'
             onSubmitEditing={()=> this._doAPISearch()}
           />
 
@@ -111,7 +116,9 @@ export default class ClinicalTrialSearchScreen extends React.Component {
               searchIcon={{ name: 'md-pin', type: 'ionicon' }}
               containerStyle={[styles.searchBarContainer, {width: '45%'}]}
               inputContainerStyle={styles.searchBarInput}
-              returnKeyType='search'
+              inputStyle={{ color: '#222' }}
+              placeholderTextColor='#aaa'
+              returnKeyType='done'
               keyboardType='numeric'
               maxLength={5}
               onSubmitEditing={() => this._doAPISearch()}
@@ -139,14 +146,15 @@ export default class ClinicalTrialSearchScreen extends React.Component {
 
             <View style={{ alignSelf: 'center', width: '25%', height: 45 }}>
                 <GradientButton
-                    colors={[Colors.blueOne, Colors.blueTwo]}
+                    colors={['#0072ff', '#00c6ff']}
                     handleClick={() => this._doAPISearch()}
                     loading={false}
                     disabled={disableSearch}
                     text='Search'
-                    textStyle={{ fontWeight: 'bold' }}
-                    impact
-                    impactStyle='Light'
+                    padding={10}
+                    // textStyle={{ fontWeight: 'bold' }}
+                    // impact
+                    // impactStyle='Light'
                 />
             </View>
 
@@ -326,6 +334,11 @@ export default class ClinicalTrialSearchScreen extends React.Component {
 
   setLocationModal = visible => {
     this.setState({ showLocationModal: visible });
+  }
+
+  setProfileLocation = location => {
+    this.setState({ location });
+    this.setState({ zipCodeText: location });
   }
 
   _testFunc(){

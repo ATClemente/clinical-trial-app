@@ -1,17 +1,20 @@
 import React from 'react';
 import { 
+  Alert,
+  AsyncStorage,
   Modal,
   Keyboard,
   SafeAreaView,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from 'react-native';
 import FormInput from './FormInput';
 import FormSwitch from './FormSwitch';
 import GradientButton from './GradientButton';
 import Colors from '../constants/Colors';
+import axios from 'axios';
+import Urls from '../constants/Urls';
 
 export default class SearchLocationModal extends React.PureComponent{
   constructor(props) {
@@ -19,12 +22,22 @@ export default class SearchLocationModal extends React.PureComponent{
     this.state = {
       gender: false,
       location: '',
-      isLoading: false
+      isLoading: true,
+      isSubmitting: false,
     }
   }
 
+  componentWillMount() {
+    AsyncStorage.getItem('profile')
+    .then(res => JSON.parse(res))
+    .then(profile => {
+      this.setState( { gender: profile.gender, location: profile.location })
+      this.setState({ isLoading: false });
+    });
+  }
+
   _updateProfileAsync = async () => {
-    await this.setState({ isLoading: true });
+    await this.setState({ isSubmitting: true });
     const token = await AsyncStorage.getItem('jwt');
     // console.log(token);
     try {
@@ -41,31 +54,23 @@ export default class SearchLocationModal extends React.PureComponent{
           }
         }
       );
+      console.log(data);
       await AsyncStorage.setItem('jwt', data.jwt);
       await AsyncStorage.setItem('profile', JSON.stringify(data.profile));
       Object.keys(data.profile).forEach(item => {
         this.setState({ item });
       });
-      Toast.show({
-        text: data.status,
-        buttonText: 'Okay',
-        type: 'success',
-        duration: 3000
-      });
+      this.props.setProfileLocation(data.profile.location);
+      this.props.setLocationModal(false);
     } catch (e) {
       console.log(e);
       if (e.response) {
-        Toast.show({
-          text: 'Error updating profile',
-          buttonText: 'Okay',
-          type: 'warning',
-          duration: 3000
-        });      
+        Alert.alert(e.response.data.status);  
       } else {
         Alert.alert(JSON.stringify(e));
       }
     } finally {
-      this.setState({ isLoading: false });
+      this.setState({ isSubmitting: false });
     }
   };
 
@@ -73,6 +78,7 @@ export default class SearchLocationModal extends React.PureComponent{
     return(
       <Modal
         visible={this.props.visible}
+        onRequestClose={() => this.props.setLocationModal(false)}
       >
         <SafeAreaView style={{ 
           flex:1, 
@@ -115,7 +121,7 @@ export default class SearchLocationModal extends React.PureComponent{
             <View style={{ marginTop: 15, marginBottom: 20 }}>
               <GradientButton
                 colors={[Colors.radar2, Colors.radar3]}
-                loading={ this.state.isLoading }
+                loading={ this.state.isSubmitting }
                 handleClick={ this._updateProfileAsync }
                 disabled={ !this.state.location }
                 text='Update Profile'
