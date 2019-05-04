@@ -42,8 +42,15 @@ export default class TrialDetailsModal extends React.Component {
             activeSections: [],
             eligibilityCollapsed: true,
             leadOrgCollapsed: true,
-            locationsCollapsed: true
+            locationsCollapsed: true,
+            locationFilter: null,
+            genderFilter: null, //true = male
+            waitForLoading: true
         };
+    }
+
+    componentWillMount(){
+        this.setProfileData();
     }
 
     componentWillReceiveProps(nextProps) {
@@ -128,6 +135,12 @@ export default class TrialDetailsModal extends React.Component {
                             />
                         </View>
 
+                        {this.state.waitForLoading &&
+                            <View style={styles.profileLoading}>
+                                <ActivityIndicator size='large' color="#0000ff" />
+                            </View>
+                        }
+
                     </ScrollView>
                 </SafeAreaView>
             </Modal>
@@ -150,7 +163,14 @@ export default class TrialDetailsModal extends React.Component {
         );
         
         if(response.data.success == true){
-            Alert.alert("Trial Saved!");
+            Alert.alert(
+                'Trial saved',
+                'This clinical trial was successfully saved to your account!',
+                [
+                  {text: 'OK', onPress: () => {}},
+                ],
+                { cancelable: false }
+              );
         }
         else{
             Alert.alert("There was a problem saving your trial");
@@ -269,24 +289,25 @@ export default class TrialDetailsModal extends React.Component {
     }
 
     renderLocations(trial){
-        /*console.log(trial[QueryConstants.SITES].length)
-        var count = 0;
-        var sites = trial[QueryConstants.SITES];
-        var types = [];
+
+        /*console.log("Pre filter total: " + trial[QueryConstants.SITES].length);
+        var activeCount = 0;
+        var sites = trial[QueryConstants.SITES]
         for (var site in sites){
             //console.log(site);
-            if(sites[site][QueryConstants.ORG_STATUS].toLowerCase() == "nullified" || sites[site][QueryConstants.ORG_STATUS].toLowerCase() == "inactive"){
-                count++;
-            }
-            if(types.indexOf(sites[site][QueryConstants.ORG_STATUS].toLowerCase()) === -1){
-                types.push(sites[site][QueryConstants.ORG_STATUS].toLowerCase());
+            if(sites[site][QueryConstants.RECRUIT_STATUS].toLowerCase() == "active"){
+                activeCount++;
             }
         }
-        console.log(types);
-        console.log("Bad trial sites: " + count.toString());*/
+        console.log("Total active sites: " + activeCount);
+        var filteredSites = trial[QueryConstants.SITES].filter(this.filterToActiveSites);
+        console.log("Post filter: " + filteredSites.length);*/
+        //this.filterToActiveSites(trial[QueryConstants.SITES]);
+
+        var filteredSites = trial[QueryConstants.SITES].filter(this.filterToActiveSites);
         return(
             <FlatList
-                data={trial[QueryConstants.SITES]}
+                data={filteredSites}
                 renderItem={this._renderLocationItem}
                 keyExtractor={(item, index) => index.toString()}
                 removeClippedSubviews={true}
@@ -306,7 +327,7 @@ export default class TrialDetailsModal extends React.Component {
         const contact_name = item[QueryConstants.CONTACT_NAME];
         const contact_phone = item[QueryConstants.CONTACT_PHONE];
         const contact_email = item[QueryConstants.CONTACT_EMAIL];
-        var site_status = item[QueryConstants.ORG_STATUS].toLowerCase();
+        var site_status = item[QueryConstants.RECRUIT_STATUS].toLowerCase();
         site_status = site_status.charAt(0).toUpperCase() + site_status.slice(1);
         var site_lat;
         var site_lon;
@@ -353,6 +374,43 @@ export default class TrialDetailsModal extends React.Component {
           </Card>
         );
     }
+
+    filterToActiveSites(site){
+
+        return site[QueryConstants.RECRUIT_STATUS].toLowerCase() == "active";
+
+        //Fix this part with what it should do:
+        //Totally different
+        /*for (var i = 0; i < sites.length; i++){
+            //console.log(site);
+            if(sites[site][QueryConstants.ORG_STATUS].toLowerCase() == "nullified" || sites[site][QueryConstants.ORG_STATUS].toLowerCase() == "inactive"){
+                count++;
+            }
+            if(types.indexOf(sites[site][QueryConstants.ORG_STATUS].toLowerCase()) === -1){
+                types.push(sites[site][QueryConstants.ORG_STATUS].toLowerCase());
+            }
+        }
+        
+
+        return filteredSites;*/
+    }
+
+    filterLocations = () => {
+
+
+    }
+
+
+    setProfileData = () =>{
+        AsyncStorage.getItem('profile')
+        .then(res => JSON.parse(res))
+        .then(profile => {
+          this.setState( { genderFilter: profile.gender, locationFilter: profile.location })
+          this.setState({ waitForLoading: false });
+          console.log(profile);
+        });
+    }
+
 
     isTrialEmpty(trial){
         for (var key in trial) {
@@ -445,6 +503,18 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#fff',
     borderWidth: StyleSheet.hairlineWidth
+  },
+  profileLoading: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    opacity: 0.80,
+    backgroundColor: 'white',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 10 //Part of said hack
   }
 });
 

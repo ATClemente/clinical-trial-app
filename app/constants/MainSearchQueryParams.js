@@ -33,6 +33,7 @@ export const SITES_ORG_STATE_OR_PROVINCE = 'sites.org_state_or_province';
 export const SITES_ORG_POSTAL_CODE = 'sites.org_postal_code';
 export const SITES_ORG_CORRDINATES = 'sites.org_coordinates';
 export const SITES_ORG_STATUS = 'sites.org_status';
+export const SITES_ORG_RECRUIT_STATUS = 'sites.recruitment_status';
 export const DISEASES_DISEASE_CODE = 'diseases.disease_code';
 export const DISEASES_NCI_THESAURUS_CONCEPT_ID =
   'diseases.nci_thesaurus_concept_id';
@@ -83,6 +84,7 @@ export const ORG_STATE_OR_PROVINCE = 'org_state_or_province';
 export const ORG_POSTAL_CODE = 'org_postal_code';
 export const ORG_CORRDINATES = 'org_coordinates';
 export const ORG_STATUS = 'org_status';
+export const RECRUIT_STATUS = 'recruitment_status';
 export const LAT = 'lat';
 export const LON = 'lon';
 
@@ -109,7 +111,7 @@ export const INCLUDE_ARR = [
   SITES_ORG_STATE_OR_PROVINCE,
   SITES_ORG_POSTAL_CODE,
   SITES_ORG_CORRDINATES,
-  SITES_ORG_STATUS,
+  SITES_ORG_RECRUIT_STATUS,
   DISEASES_DISEASE_CODE,
   DISEASES_NCI_THESAURUS_CONCEPT_ID,
   DISEASES_PREFERRED_NAME,
