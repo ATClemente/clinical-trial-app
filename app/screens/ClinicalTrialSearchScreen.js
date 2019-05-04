@@ -51,7 +51,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
         desiredDistanceType: "mi",
         currentPage: 1,
         text:'',
-        showLocationModal: true
+        showLocationModal: false
     };
   }
 
@@ -70,6 +70,8 @@ export default class ClinicalTrialSearchScreen extends React.Component {
       if(this.state.location) {
         this.setState({ showLocationModal: false });
         this.setState({ zipCodeText: this.state.location });
+      } else {
+        this.setState({ showLocationModal: true });
       }
     })
     .catch(e => {
@@ -97,7 +99,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
             searchIcon={{ name: 'md-key', type: 'ionicon' }}
             containerStyle={[
               styles.searchBarContainer, 
-              {marginBottom: 10},
+              {marginBottom: 8},
               Platform.OS === 'ios' ? { marginTop: 0 } : { marginTop: 20}
             ]}
             inputContainerStyle={styles.searchBarInput}
@@ -114,7 +116,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
               onChangeText={(text) => this.onZipCodeChanged(text)}
               value={this.state.zipCodeText}
               searchIcon={{ name: 'md-pin', type: 'ionicon' }}
-              containerStyle={[styles.searchBarContainer, {width: '45%'}]}
+              containerStyle={[styles.searchBarContainer, {width: '40%', marginTop: 4 }]}
               inputContainerStyle={styles.searchBarInput}
               inputStyle={{ color: '#222' }}
               placeholderTextColor='#aaa'
@@ -126,7 +128,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
 
             <Picker
                 selectedValue={this.state.desiredDistance}
-                style={Platform.OS === 'ios' ? { height: 45, width: '30%', marginTop: 2 } : { height: 50, width: '40%' }}
+                style={Platform.OS === 'ios' ? { height: 45, width: '35%', marginTop: 2 } : { height: 50, width: '35%' }}
                 itemStyle={Platform.OS === 'ios' ? { height: 38, borderWidth: 0, fontSize: 18 } : { height: 50 }}
                 mode='dropdown'
                 onValueChange={(itemValue, itemIndex) =>
@@ -144,9 +146,9 @@ export default class ClinicalTrialSearchScreen extends React.Component {
                 <Picker.Item label="100mi" value="100" />
             </Picker>
 
-            <View style={{ alignSelf: 'center', width: '25%', height: 45 }}>
+            <View style={{ alignSelf: 'center', width: '25%' }}>
                 <GradientButton
-                    colors={['#0072ff', '#00c6ff']}
+                    colors={[Colors.blueOne, Colors.blueTwo]}
                     handleClick={() => this._doAPISearch()}
                     loading={false}
                     disabled={disableSearch}

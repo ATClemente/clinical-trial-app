@@ -2,8 +2,6 @@ import React from 'react';
 import { 
   Alert,
   AsyncStorage,
-  Button, 
-  ScrollView,
   Text,
   View,
  } from 'react-native';
@@ -154,7 +152,7 @@ export default class SettingsScreen extends React.Component {
               value={this.state.cancerType}
               onChangeText={cancerType => this.setState({ cancerType })}
             />
-            <View style={{ marginTop: 15, marginBottom: 12 }}>
+            <View style={{ marginTop: 8, marginBottom: 14 }}>
               <GradientButton
                 colors={[Colors.radar2, Colors.radar3]}
                 handleClick={ this._updateProfileAsync }
@@ -162,7 +160,12 @@ export default class SettingsScreen extends React.Component {
                 text='Update Profile'
               />
             </View>
-            <Button title='Sign Out' onPress={this._signOutAsync} />
+            <Text
+              style={{ alignSelf: 'center', fontSize: 16, color: '#1b6ae8' }}
+              onPress={this._signOutAsync} 
+            >
+              Sign Out
+            </Text>
           </View>
         </View>
       </View>
