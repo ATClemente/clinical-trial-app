@@ -26,5 +26,6 @@ export default {
   radar3: '#FDB99B',
   radar4: '#fda69b',
   fbBlue1: '#0072ff',
-  fbBlue2: '#00c6ff'
+  fbBlue2: '#00c6ff',
+  btnBlue: '#1b6ae8'
 };

@@ -50,7 +50,6 @@ export default class ClinicalTrialSearchResults extends React.Component {
                 trial = { this.state.currentTrial }
             />
               <FlatList
-                style={{ marginBottom: 15 }}
                 data={this.props.searchData.trials}
                 renderItem={this._renderItem}
                 keyExtractor={(item) => item[QueryConstants.NCT_ID]}
@@ -122,6 +121,8 @@ export default class ClinicalTrialSearchResults extends React.Component {
 const styles = StyleSheet.create({ 
   allResultsView:{
     flex: 1,
+    marginTop: 10,
+    marginBottom: 10,
   },
   noResultsView:{
     paddingLeft: 20,

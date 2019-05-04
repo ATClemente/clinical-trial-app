@@ -17,9 +17,9 @@ import {
   ReturnKeyType,
   Picker
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import GradientButton from '../components/GradientButton';
 import { SearchBar } from 'react-native-elements';
-import IOSPicker from 'react-native-ios-picker';
 import { WebBrowser } from 'expo';
 import { MonoText } from '../components/StyledText';
 import Colors from '../constants/Colors';
@@ -81,6 +81,11 @@ export default class ClinicalTrialSearchScreen extends React.Component {
 
   render() {
     const disableSearch = (this.state.keyWordText && this.state.zipCodeText) ? false : true;
+    const disablePrev = this.state.prevParams == {} || this.state.currentPage == 1;
+    const disableNext = this.state.prevParams == {} || this.state.currentPage == Math.ceil(this.state.searchData.total / this.state.searchSize);
+    const prevStyle = disablePrev ? [styles.pageButton, styles.disabled] : styles.pageButton;
+    const nextStyle = disableNext ? [styles.pageButton, styles.disabled] : styles.pageButton;
+    const tabColor = Colors.btnBlue;
     return (
       <SafeAreaView style={styles.container}>
 
@@ -100,17 +105,15 @@ export default class ClinicalTrialSearchScreen extends React.Component {
             containerStyle={[
               styles.searchBarContainer, 
               {marginBottom: 8},
-              Platform.OS === 'ios' ? { marginTop: 0 } : { marginTop: 20}
             ]}
             inputContainerStyle={styles.searchBarInput}
-            inputStyle={{ color: '#222' }}
+            inputStyle={styles.searchBarText}
             placeholderTextColor='#aaa'
             returnKeyType='search'
             onSubmitEditing={()=> this._doAPISearch()}
           />
 
           <View style={{ flexDirection: 'row' }}>
-
             <SearchBar
               placeholder="Zip Code"
               onChangeText={(text) => this.onZipCodeChanged(text)}
@@ -118,7 +121,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
               searchIcon={{ name: 'md-pin', type: 'ionicon' }}
               containerStyle={[styles.searchBarContainer, {width: '40%', marginTop: 4 }]}
               inputContainerStyle={styles.searchBarInput}
-              inputStyle={{ color: '#222' }}
+              inputStyle={styles.searchBarText}
               placeholderTextColor='#aaa'
               returnKeyType='search'
               keyboardType='numeric'
@@ -128,8 +131,8 @@ export default class ClinicalTrialSearchScreen extends React.Component {
 
             <Picker
                 selectedValue={this.state.desiredDistance}
-                style={Platform.OS === 'ios' ? { height: 45, width: '35%', marginTop: 2 } : { height: 50, width: '35%' }}
-                itemStyle={Platform.OS === 'ios' ? { height: 38, borderWidth: 0, fontSize: 18 } : { height: 50 }}
+                style={Platform.OS === 'ios' ? { height: 45, width: '35%', marginTop: 2 } : { height: 45, width: '35%' }}
+                itemStyle={Platform.OS === 'ios' ? { height: 38, borderWidth: 0, fontSize: 18 } : { height: 45 }}
                 mode='dropdown'
                 onValueChange={(itemValue, itemIndex) =>
                     this.setState({desiredDistance: itemValue})
@@ -153,7 +156,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
                     loading={false}
                     disabled={disableSearch}
                     text='Search'
-                    padding={10}
+                    padding={8}
                 />
             </View>
 
@@ -162,23 +165,52 @@ export default class ClinicalTrialSearchScreen extends React.Component {
 
         <View style={styles.pagingButtons}>
 
-          <Button
-            disabled={this.state.prevParams == {} || this.state.currentPage == 1}
+          <TouchableOpacity
+            style={prevStyle}
+            disabled={disablePrev}
             onPress={() => this._doAPISearch(true, -1)}
-            title="Prev"
-          />
+          >
+            <View style={{ 
+              alignSelf: 'flex-start',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'flex-start' 
+            }}>
+              <Ionicons 
+                style={{ marginRight: 6, color: disablePrev ? 'grey' : tabColor }}
+                size={24}
+                name='ios-arrow-dropleft' />
+              <Text style={{ color: disablePrev ? 'grey' : tabColor }}>Prev</Text>
+            </View>
+          </TouchableOpacity>
 
           { (this.state.searchData.total != undefined) && 
-            <View style={{ paddingTop: 12 }}>
+            <View style={{ 
+              height: 24,
+              paddingTop: 3,
+            }}>
               <Text>Page {this.state.currentPage.toString()} of {Math.ceil(this.state.searchData.total / this.state.searchSize)}</Text>
             </View>
           }
 
-          <Button
-            disabled={this.state.prevParams == {} || this.state.currentPage == Math.ceil(this.state.searchData.total / this.state.searchSize)}
+          <TouchableOpacity
+            style={nextStyle}
+            disabled={disableNext}
             onPress={() => this._doAPISearch(true)}
-            title="Next"
-          />
+          >
+            <View style={{
+              alignSelf: 'flex-end',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'flex-end'
+            }}>
+              <Text style={{ color: disableNext ? 'grey' : tabColor }}>Next</Text>
+              <Ionicons 
+                style={{ marginLeft: 6, color: disableNext ? 'grey' : tabColor }}
+                size={24}
+                name='ios-arrow-dropright' />
+            </View>
+          </TouchableOpacity>
         </View>
 
         {this.state.searchLoading &&
@@ -412,89 +444,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     width: '100%'
   },
-  developmentModeText: {
-    marginBottom: 20,
-    color: 'rgba(0,0,0,0.4)',
-    fontSize: 14,
-    lineHeight: 19,
-    textAlign: 'center',
-  },
-  contentContainer: {
-    paddingTop: 30,
-  },
-  welcomeContainer: {
-    alignItems: 'center',
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  welcomeImage: {
-    width: 100,
-    height: 80,
-    resizeMode: 'contain',
-    marginTop: 3,
-    marginLeft: -10,
-  },
-  getStartedContainer: {
-    alignItems: 'center',
-    marginHorizontal: 50,
-    zIndex: 1 //Hacky for now. Gets ActivityIndicator to appear above button.
-  },
-  homeScreenFilename: {
-    marginVertical: 7,
-  },
-  codeHighlightText: {
-    color: 'rgba(96,100,109, 0.8)',
-  },
-  codeHighlightContainer: {
-    backgroundColor: 'rgba(0,0,0,0.05)',
-    borderRadius: 3,
-    paddingHorizontal: 4,
-  },
-  getStartedText: {
-    fontSize: 17,
-    color: 'rgba(96,100,109, 1)',
-    lineHeight: 24,
-    textAlign: 'center',
-  },
-  tabBarInfoContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    ...Platform.select({
-      ios: {
-        shadowColor: 'black',
-        shadowOffset: { height: -3 },
-        shadowOpacity: 0.1,
-        shadowRadius: 3,
-      },
-      android: {
-        elevation: 20,
-      },
-    }),
-    alignItems: 'center',
-    backgroundColor: '#fbfbfb',
-    paddingVertical: 20,
-  },
-  tabBarInfoText: {
-    fontSize: 17,
-    color: 'rgba(96,100,109, 1)',
-    textAlign: 'center',
-  },
-  navigationFilename: {
-    marginTop: 5,
-  },
-  helpContainer: {
-    marginTop: 15,
-    alignItems: 'center',
-  },
-  helpLink: {
-    paddingVertical: 15,
-  },
-  helpLinkText: {
-    fontSize: 14,
-    color: '#2e78b7',
-  },
   searchLoading: {
     position: 'absolute',
     left: 0,
@@ -507,39 +456,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     zIndex: 10 //Part of said hack
   },
-  keyWordSearchBox:{
-    marginTop: 2,
-    marginLeft: 15,
-    marginRight: 15,
-    marginBottom: 15,
-    height: 40,
-    borderColor: 'grey',
-    borderWidth: 2,
-      paddingLeft: 6,
-      borderRadius: 3,
-      paddingRight: 6,
-    shadowColor:'grey',
-      color: 'rgb(80,80,80)',
-      fontWeight: 'bold', 
-
-    },
-
-  zipCodeSearchBox:{
-    marginTop: 2,
-    //marginLeft: 45,
-    marginRight: 20,
-    marginBottom: 5,
-      height: 40,
-    borderRadius:3,
-    borderColor: 'grey',
-    borderWidth: 2,
-    paddingLeft: 6,
-      paddingRight: 6,
-      color: 'rgb(80,80,80)',
-      fontWeight: 'bold',
-      shadowColor: 'grey', 
-      shadowRadius: 2
-  },
   distanceSelectPicker:{
     height: 50, 
     width: 50,
@@ -548,7 +464,9 @@ const styles = StyleSheet.create({
     borderColor: '#7a42f4'
   },
   inputView:{
-    padding: 20
+    marginTop: Platform.OS === 'ios' ? 5 : 40,
+    paddingLeft: 20,
+    paddingRight: 20,
   },
   distanceInputs:{
     flexDirection: "row"
@@ -561,20 +479,33 @@ const styles = StyleSheet.create({
     zIndex: 1 //Hacky for now. Gets ActivityIndicator to appear above button.
   },
   pagingButtons: {
-    zIndex: 1,
-    flexDirection: "row",
-    marginLeft: 15,
-    marginRight: 15,
-    marginTop: 1,
+    marginTop: Platform.OS === 'ios' ? 5 : 10,
+    flexDirection: 'row',
+    marginHorizontal: 20,
     justifyContent: "space-between"
+  },
+  pageButton: {
+    height: 24,
+    width: '20%',
+  },
+  pageButtonText: {
+    // color: Colors.fbBlue1
   },
   searchBarContainer: {
     backgroundColor: '#fff', 
     padding: 0,
     borderTopWidth: 0,
-    borderBottomWidth: 0
+    borderBottomWidth: 0,
   },
   searchBarInput: {
-    backgroundColor: '#eee'
+    backgroundColor: '#eee',
+    height: 35
+  },
+  searchBarText: {
+    color: '#222',
+    fontSize: 16
+  },
+  disabled: {
+    opacity: 0.5
   }
 });
