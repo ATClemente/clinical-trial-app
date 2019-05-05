@@ -47,6 +47,7 @@ export default class ClinicalTrialSearchResults extends React.Component {
               <TrialDetailsModal
                 modalVisible = { this.state.displayTrialDetails }
                 setModalVisible = { (vis) => { this.setModalVisible(vis) }}
+                searchRadius = {this.props.searchRadius}
                 trial = { this.state.currentTrial }
             />
               <FlatList

@@ -221,7 +221,11 @@ export default class ClinicalTrialSearchScreen extends React.Component {
 
 
         {!this.state.searchLoading &&
-          <ClinicalTrialSearchResults searchData = {this.state.searchData} currentPage = {this.state.currentPage} searchSize = {this.state.searchSize}/>
+          <ClinicalTrialSearchResults 
+            searchData = {this.state.searchData} 
+            currentPage = {this.state.currentPage}
+            searchSize = {this.state.searchSize}
+            searchRadius = {Number(this.state.desiredDistance)}/>
         }
 
       </SafeAreaView>

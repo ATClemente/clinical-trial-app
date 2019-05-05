@@ -32,6 +32,7 @@ import { Card } from 'react-native-elements';
 import axios from 'axios';
 import Urls from '../constants/Urls';
 import { Ionicons } from '@expo/vector-icons';
+import geolib from 'geolib';
 
 export default class TrialDetailsModal extends React.Component {
     constructor(props) {
@@ -44,20 +45,26 @@ export default class TrialDetailsModal extends React.Component {
             leadOrgCollapsed: true,
             locationsCollapsed: true,
             locationFilter: null,
+            locationFilterLat: null,
+            locationFilterLon: null,
             genderFilter: null, //true = male
+            locationDistanceFilter: null,
             waitForLoading: true
         };
     }
 
     componentWillMount(){
         this.setProfileData();
+        this.setUserLocationCoordinates();
     }
 
     componentWillReceiveProps(nextProps) {
         this.setState({
+            locationDistanceFilter: nextProps.searchRadius,
             modalVisible: nextProps.modalVisible,
             trial: nextProps.trial
         })
+        console.log("Radius that was searched: " + this.state.locationDistanceFilter);
     }
 
     render() {
@@ -304,10 +311,14 @@ export default class TrialDetailsModal extends React.Component {
         console.log("Post filter: " + filteredSites.length);*/
         //this.filterToActiveSites(trial[QueryConstants.SITES]);
 
-        var filteredSites = trial[QueryConstants.SITES].filter(this.filterToActiveSites);
+        var activeSites = trial[QueryConstants.SITES].filter(this.checkForActiveSites);
+        var finalSites = activeSites.filter(this.checkForLocationProximity);
+        //var finalSites = activeSites;
+        //console.log("final sites not length: " + finalSites);
+
         return(
             <FlatList
-                data={filteredSites}
+                data={finalSites}
                 renderItem={this._renderLocationItem}
                 keyExtractor={(item, index) => index.toString()}
                 removeClippedSubviews={true}
@@ -375,7 +386,7 @@ export default class TrialDetailsModal extends React.Component {
         );
     }
 
-    filterToActiveSites(site){
+    checkForActiveSites(site){
 
         return site[QueryConstants.RECRUIT_STATUS].toLowerCase() == "active";
 
@@ -395,13 +406,90 @@ export default class TrialDetailsModal extends React.Component {
         return filteredSites;*/
     }
 
-    filterLocations = () => {
+    async setUserLocationCoordinates(){
+
+        try {
+            const response = await fetch('https://gist.githubusercontent.com/erichurst/7882666/raw/5bdc46db47d9515269ab12ed6fb2850377fd869e/US%2520Zip%2520Codes%2520from%25202013%2520Government%2520Data', {
+              method: 'GET'
+            });
+
+            //console.log(zipCoordData);
+
+            //for (var key in response) {
+                //if (trial[key] !== null && trial[key] != "")
+                //    return false;
+            //    console.log(key);
+            //}
+
+            //console.log(response.text());
+
+            await response.text().then(function (text) {
+                zipCoordData = text;
+              });
 
 
+            //console.log(zipCoordData);
+            var searchstring = this.state.locationFilter + ","; 
+            var searchForZip = zipCoordData.indexOf(searchstring);
+
+            //console.log(searchstring);
+             
+            if (searchForZip != -1) {
+              var firstCoordStart = searchForZip + 6;
+              var firstCoordEnd = firstCoordStart + 9;
+              var secondCoordStart = firstCoordEnd + 1;
+              var secondCoordEnd = secondCoordStart + 10;
+              var latString = zipCoordData.slice(firstCoordStart, firstCoordEnd);
+              var longString = zipCoordData.slice(secondCoordStart, secondCoordEnd);
+              this.setState({locationFilterLat: geolib.useDecimal(latString)});
+              this.setState({locationFilterLon: geolib.useDecimal(longString)});
+            } else { 
+              var coordinates = []; 
+              coordinates.latitude = 37.4419;
+              coordinates.longitude = -122.1430;
+            }
+
+            this.setState({locationFilterCoords: coordinates});
+
+
+
+        } catch (err) {
+            console.error(err);
+        }
+
+        //console.log("Coordinates of user: ");
+        //console.log("Lat: " + this.state.locationFilterCoords.latitude);
+        //console.log("Long: " + this.state.locationFilterCoords.longitude);
+    }
+
+    checkForLocationProximity = (site) => {
+        //this.state.locationDistanceFilter;
+        //this.state.locationFilter;
+        try{
+            var siteCoords = {};
+
+            siteCoords.latitude = geolib.useDecimal(site[QueryConstants.ORG_CORRDINATES][QueryConstants.LAT]);
+            siteCoords.longitude = geolib.useDecimal(site[QueryConstants.ORG_CORRDINATES][QueryConstants.LON]);
+    
+            if(siteCoords.latitude == 0 || siteCoords.longitude == 0){
+                return false;
+            }
+            //console.log(geolib.getDistance(this.state.locationFilterCoords, siteCoords, 10) / 1609.344);
+            //return (geolib.getDistance(this.state.locationFilterCoords, siteCoords, 10, 1) / 1609.344) <= (this.site.locationDistanceFilter * 1.05); 
+            
+            //This works:
+            return (geolib.getDistance(
+               {latitude: this.state.locationFilterLat, longitude: this.state.locationFilterLon}, 
+               {latitude: siteCoords.latitude, longitude: siteCoords.longitude}, 10, 1) / 1609.344) <= (this.state.locationDistanceFilter * 1.05); 
+        }
+        catch(e){
+            return false;
+        }
     }
 
 
     setProfileData = () =>{
+        this.setState({ waitForLoading: true });
         AsyncStorage.getItem('profile')
         .then(res => JSON.parse(res))
         .then(profile => {
