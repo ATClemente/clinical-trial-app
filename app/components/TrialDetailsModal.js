@@ -429,13 +429,13 @@ export default class TrialDetailsModal extends React.Component {
 
 
             //console.log(zipCoordData);
-            var searchstring = this.state.locationFilter + ","; 
+            var searchstring = "\n" + this.state.locationFilter + ","; 
             var searchForZip = zipCoordData.indexOf(searchstring);
 
             //console.log(searchstring);
              
             if (searchForZip != -1) {
-              var firstCoordStart = searchForZip + 6;
+              var firstCoordStart = searchForZip + 7;
               var firstCoordEnd = firstCoordStart + 9;
               var secondCoordStart = firstCoordEnd + 1;
               var secondCoordEnd = secondCoordStart + 10;
@@ -445,11 +445,9 @@ export default class TrialDetailsModal extends React.Component {
               this.setState({locationFilterLon: geolib.useDecimal(longString)});
             } else { 
               var coordinates = []; 
-              coordinates.latitude = 37.4419;
-              coordinates.longitude = -122.1430;
+              coordinates.latitude = 0;
+              coordinates.longitude = 0;
             }
-
-            this.setState({locationFilterCoords: coordinates});
 
 
 
