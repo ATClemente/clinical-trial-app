@@ -20,6 +20,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import GradientButton from '../components/GradientButton';
 import { SearchBar } from 'react-native-elements';
+import { Toast } from 'native-base';
 import { WebBrowser } from 'expo';
 import { MonoText } from '../components/StyledText';
 import Colors from '../constants/Colors';
@@ -51,7 +52,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
         desiredDistanceType: "mi",
         currentPage: 1,
         text:'',
-        showLocationModal: false
+        showLocationModal: false,
     };
   }
 
@@ -381,6 +382,12 @@ export default class ClinicalTrialSearchScreen extends React.Component {
   setProfileLocation = location => {
     this.setState({ location });
     this.setState({ zipCodeText: location });
+    Toast.show({
+      text: 'Profile updated',
+      buttonText: 'Okay',
+      type: 'success',
+      duration: 2000
+    });
   }
 
   _getTotalPageCount = () => {

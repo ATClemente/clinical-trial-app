@@ -2,13 +2,13 @@ import React from 'react';
 import { 
   Alert,
   AsyncStorage,
-  Modal,
   Keyboard,
   SafeAreaView,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
+import Modal from 'react-native-modal';
 import FormInput from './FormInput';
 import FormSwitch from './FormSwitch';
 import GradientButton from './GradientButton';
@@ -54,7 +54,6 @@ export default class SearchLocationModal extends React.PureComponent{
           }
         }
       );
-      console.log(data);
       await AsyncStorage.setItem('jwt', data.jwt);
       await AsyncStorage.setItem('profile', JSON.stringify(data.profile));
       Object.keys(data.profile).forEach(item => {
@@ -77,16 +76,20 @@ export default class SearchLocationModal extends React.PureComponent{
   render() {
     return(
       <Modal
-        visible={this.props.visible}
+        isVisible={this.props.visible}
+        avoidKeyboard={true}
         onRequestClose={() => this.props.setLocationModal(false)}
       >
         <SafeAreaView style={{ 
-          flex:1, 
           flexDirection: 'column', 
           alignItems: 'center', 
-          justifyContent: 'center', 
+          justifyContent: 'center',
+          backgroundColor: '#fff',
+          borderRadius: 4,
+          paddingVertical: 20,
+          paddingHorizontal: 20,
         }}>
-          <View style={{ width: '85%' }}>
+          <View>
             <View style={{
               paddingBottom: 15,
               marginBottom: 20, 

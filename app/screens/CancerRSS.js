@@ -63,14 +63,14 @@ export default class CancerRSS extends React.Component {
             .then((response) => response.json())
             .then((responseJson) => {
 
-                console.log(responseJson.items)
+                // console.log(responseJson.items)
                 this.setState({
                     isLoading: false,
                     dataSource: responseJson.items,
                 }, function () {
 
                 });
-                console.log(this.state.dataSource);
+                // console.log(this.state.dataSource);
             })
             .catch((error) => {
                 console.error(error);

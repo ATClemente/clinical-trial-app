@@ -25,6 +25,7 @@
     "react-native-dropdown-menu": "^2.0.0",
     "react-native-elements": "^1.1.0",
     "react-native-ios-picker": "^1.0.0",
+    "react-native-modal": "^10.0.0",
     "react-native-view-more-text": "^2.1.0",
     "react-navigation": "^3.0.9",
     "react-xml-parser": "^1.1.2",
