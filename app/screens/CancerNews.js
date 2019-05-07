@@ -87,9 +87,7 @@ export default class CancerNews extends React.Component {
     }
     _renderItem = ({ item, index }) => {
         //<Text style={styles.body}>{item.title}, {item.publicationDate}, {item.abstract}</Text>}
-        var abstract = item.abstract
-        abstract = abstract.replace('Abstract', ' ')
-        abstract = abstract.replace('Purpose', ' ')
+       
         return (
 
 
