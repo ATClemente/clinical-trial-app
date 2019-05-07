@@ -1,32 +1,23 @@
 import React from 'react';
 import {
-  Image,
-  Platform,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-  Button,
   ActivityIndicator,
   Alert,
-  TextInput,
-  Picker,
   FlatList,
   SafeAreaView,
   Modal,
   TouchableHighlight,
   AsyncStorage
 } from 'react-native';
-import { WebBrowser } from 'expo';
-import { MonoText } from '../components/StyledText';
 import Colors from '../constants/Colors';
 import GradientButton from '../components/GradientButton';
 import * as QueryConstants from '../constants/MainSearchQueryParams.js';
-import ClinicalTrialAPIUtil from '../components/ClinicalTrialAPIUtil.js';
 import ViewMoreText from 'react-native-view-more-text';
 import Collapsible from 'react-native-collapsible';
-import Accordion from 'react-native-collapsible/Accordion';
 import MapView from 'react-native-maps';
 import { Card } from 'react-native-elements';
 import axios from 'axios';
@@ -64,7 +55,6 @@ export default class TrialDetailsModal extends React.Component {
             modalVisible: nextProps.modalVisible,
             trial: nextProps.trial
         })
-        console.log("Radius that was searched: " + this.state.locationDistanceFilter);
     }
 
     render() {
@@ -202,71 +192,52 @@ export default class TrialDetailsModal extends React.Component {
     }
 
 
-    /*_renderSectionTitle = section => {
-        return (
-          <View style={styles.content}>
-            <Text>Section TITLE</Text>
-          </View>
-        );
-    };*/
-    
-    /*_renderHeader = section => {
-        return (
-            <View style={styles.header}>
-                <Text style={styles.headerText}>{section.title}</Text>
-            </View>
-        );
-    };*/
-    
-    /*_renderContent = section => {
-        //console.log("render Content was called")
-        return (
-            <View style={styles.content}>
-            {this.renderProperSection(section, this.state.trial)}
-            </View>
-        );
-    };*/
-    
-    /*_updateSections = activeSections => {
-        this.setState({ activeSections });
-    };*/
-    
 
-    /*toggleExpanded = () => {
-        this.setState({ collapsed: !this.state.collapsed });
-    };*/
-
-
-    /*renderProperSection(section, trial){
-
-        if(section.number === 1){
-            //Do something
-            return(this.renderEligibilityCriteria(trial));
-        }
-        else if(section.number === 2){
-            return(this.renderLeadOrganization(trial));
-        }
-        else if(section.number === 3){
-            return(this.renderLocations(trial));
-        }
-    }*/
 
     renderEligibilityCriteria(trial){
-        //console.log("render eligibility criteria called");
-        //if(trial == undefined || trial == null || trial[QueryConstants.ELIGIBILITY] == undefined){
-        //    return(<Text>No data</Text>);
-        //}
+
+        var inclusionCriteria = [];
+
+        var exclusionCriteria = [];
+
+        var allCriteria = trial[QueryConstants.ELIGIBILITY][QueryConstants.UNSTRUCTURED];
+
+        for(var i = 0; i < allCriteria.length; i++){
+            if(allCriteria[i][QueryConstants.INCLUSION_INDICATOR] == true){
+                inclusionCriteria.push(allCriteria[i]);
+            }
+            else{
+                exclusionCriteria.push(allCriteria[i]);
+            }
+        }
+
         return(
-            <FlatList
-                data={trial[QueryConstants.ELIGIBILITY][QueryConstants.UNSTRUCTURED]}
-                renderItem={this._renderEligibilityItem}
-                keyExtractor={(item) => item[QueryConstants.DISPLAY_ORDER].toString()}
-                initialNumToRender={10}
-                maxToRenderPerBatch={5}
-                windowSize={5}
-                onEndReachedThreshold={0.5}
-                //ItemSeparatorComponent={this._renderSeparator} 
-            />
+            <View>
+                <Text>Inclusion Criteria:</Text>
+                <FlatList
+                    data={inclusionCriteria}
+                    renderItem={this._renderEligibilityItem}
+                    keyExtractor={(item) => item[QueryConstants.DISPLAY_ORDER].toString()}
+                    ListEmptyComponent={this.noInclusionCriteria}
+                    initialNumToRender={10}
+                    maxToRenderPerBatch={5}
+                    windowSize={5}
+                    onEndReachedThreshold={0.5}
+                    //ItemSeparatorComponent={this._renderSeparator} 
+                />
+                <Text style={{marginTop: 10}}>Exclusion Criteria:</Text>
+                <FlatList
+                    data={exclusionCriteria}
+                    renderItem={this._renderEligibilityItem}
+                    keyExtractor={(item) => item[QueryConstants.DISPLAY_ORDER].toString()}
+                    ListEmptyComponent={this.noExlusionCriteria}
+                    initialNumToRender={10}
+                    maxToRenderPerBatch={5}
+                    windowSize={5}
+                    onEndReachedThreshold={0.5}
+                    //ItemSeparatorComponent={this._renderSeparator} 
+                />
+            </View>
         );
     }
 
@@ -286,48 +257,64 @@ export default class TrialDetailsModal extends React.Component {
     
     };
 
+    noInclusionCriteria(){
+        return(
+            <Text style={{fontWeight: "bold"}}>This trial has no inclusion criteria</Text>
+        );
+    }
+
+    noExlusionCriteria(){
+        return(
+            <Text style={{fontWeight: "bold"}}>This trial has no exclusion criteria</Text>
+        );
+    }
+
     renderLeadOrganization(trial){
         return(
             <View>
-                <Text style={{fontWeight: "bold"}}>{trial[QueryConstants.LEAD_ORG]}</Text>
-                <Text>Principal Investigator: {trial[QueryConstants.PRINCIPAL_INVESTIGATOR]}</Text>
+                <Text style={{fontWeight: "bold"}}>{this.getLeadOrg(trial)}</Text>
+                <Text>Principal Investigator: {this.getPrincipalInvestigator(trial)}</Text>
             </View>
         );
     }
 
-    renderLocations(trial){
-
-        /*console.log("Pre filter total: " + trial[QueryConstants.SITES].length);
-        var activeCount = 0;
-        var sites = trial[QueryConstants.SITES]
-        for (var site in sites){
-            //console.log(site);
-            if(sites[site][QueryConstants.RECRUIT_STATUS].toLowerCase() == "active"){
-                activeCount++;
-            }
+    getLeadOrg(trial){
+        if(trial[QueryConstants.LEAD_ORG]){
+            return trial[QueryConstants.LEAD_ORG];
         }
-        console.log("Total active sites: " + activeCount);
-        var filteredSites = trial[QueryConstants.SITES].filter(this.filterToActiveSites);
-        console.log("Post filter: " + filteredSites.length);*/
-        //this.filterToActiveSites(trial[QueryConstants.SITES]);
+        else{
+            return "No lead organization specified";
+        }
+    }
+
+    getPrincipalInvestigator(trial){
+        if(trial[QueryConstants.PRINCIPAL_INVESTIGATOR]){
+            return trial[QueryConstants.PRINCIPAL_INVESTIGATOR];
+        }
+        else{
+            return "No principal investigator specified";
+        }
+    }
+
+    renderLocations(trial){
 
         var activeSites = trial[QueryConstants.SITES].filter(this.checkForActiveSites);
         var finalSites = activeSites.filter(this.checkForLocationProximity);
-        //var finalSites = activeSites;
-        //console.log("final sites not length: " + finalSites);
-
         return(
-            <FlatList
-                data={finalSites}
-                renderItem={this._renderLocationItem}
-                keyExtractor={(item, index) => index.toString()}
-                removeClippedSubviews={true}
-                initialNumToRender={10}
-                maxToRenderPerBatch={5}
-                windowSize={5}
-                onEndReachedThreshold={0.5}
-                //ItemSeparatorComponent={this._renderSeparator} 
-            />
+            <View>
+                <Text>Locations within {this.state.locationDistanceFilter} miles of {this.state.locationFilter}: </Text>
+                <FlatList
+                    data={finalSites}
+                    renderItem={this._renderLocationItem}
+                    keyExtractor={(item, index) => index.toString()}
+                    removeClippedSubviews={true}
+                    //initialNumToRender={10}
+                    //maxToRenderPerBatch={5}
+                    //windowSize={5}
+                    //onEndReachedThreshold={0.5}
+                    //ItemSeparatorComponent={this._renderSeparator} 
+                />
+            </View>
         );
 
     }
@@ -368,16 +355,23 @@ export default class TrialDetailsModal extends React.Component {
                 <Text style={{ color: '#333' }}>{`Contact Email: ${contact_email}`}</Text>
                 <Text style={{ color: '#333' }}>{`Status: ${site_status}`}</Text>
 
-                <View style={{ height: 200, width: 200 }}>
+                <View style={{ height: 200, width: 280 }}>
                     <MapView
                         style={{ flex: 1 }}
-                        initialRegion={{
+                        liteMode= {true}
+                        region={{
                             latitude: site_lat,
                             longitude: site_lon,
                             latitudeDelta: 0.0922,
                             longitudeDelta: 0.0421,
                         }}
                         >
+                            <MapView.Marker
+                                coordinate={{latitude: site_lat,
+                                longitude: site_lon}}
+                                //title={"title"}
+                                //description={"description"}
+                            />
                     </MapView>
                 </View>
 
@@ -389,21 +383,6 @@ export default class TrialDetailsModal extends React.Component {
     checkForActiveSites(site){
 
         return site[QueryConstants.RECRUIT_STATUS].toLowerCase() == "active";
-
-        //Fix this part with what it should do:
-        //Totally different
-        /*for (var i = 0; i < sites.length; i++){
-            //console.log(site);
-            if(sites[site][QueryConstants.ORG_STATUS].toLowerCase() == "nullified" || sites[site][QueryConstants.ORG_STATUS].toLowerCase() == "inactive"){
-                count++;
-            }
-            if(types.indexOf(sites[site][QueryConstants.ORG_STATUS].toLowerCase()) === -1){
-                types.push(sites[site][QueryConstants.ORG_STATUS].toLowerCase());
-            }
-        }
-        
-
-        return filteredSites;*/
     }
 
     async setUserLocationCoordinates(){
@@ -413,27 +392,13 @@ export default class TrialDetailsModal extends React.Component {
               method: 'GET'
             });
 
-            //console.log(zipCoordData);
-
-            //for (var key in response) {
-                //if (trial[key] !== null && trial[key] != "")
-                //    return false;
-            //    console.log(key);
-            //}
-
-            //console.log(response.text());
-
             await response.text().then(function (text) {
                 zipCoordData = text;
               });
 
-
-            //console.log(zipCoordData);
             var searchstring = "\n" + this.state.locationFilter + ","; 
             var searchForZip = zipCoordData.indexOf(searchstring);
 
-            //console.log(searchstring);
-             
             if (searchForZip != -1) {
               var firstCoordStart = searchForZip + 7;
               var firstCoordEnd = firstCoordStart + 9;
@@ -447,22 +412,15 @@ export default class TrialDetailsModal extends React.Component {
               var coordinates = []; 
               coordinates.latitude = 0;
               coordinates.longitude = 0;
+              this.setState({locationFilterLat: geolib.useDecimal(0)});
+              this.setState({locationFilterLon: geolib.useDecimal(0)});
             }
-
-
-
         } catch (err) {
             console.error(err);
         }
-
-        //console.log("Coordinates of user: ");
-        //console.log("Lat: " + this.state.locationFilterCoords.latitude);
-        //console.log("Long: " + this.state.locationFilterCoords.longitude);
     }
 
     checkForLocationProximity = (site) => {
-        //this.state.locationDistanceFilter;
-        //this.state.locationFilter;
         try{
             var siteCoords = {};
 
@@ -472,9 +430,6 @@ export default class TrialDetailsModal extends React.Component {
             if(siteCoords.latitude == 0 || siteCoords.longitude == 0){
                 return false;
             }
-            //console.log(geolib.getDistance(this.state.locationFilterCoords, siteCoords, 10) / 1609.344);
-            //return (geolib.getDistance(this.state.locationFilterCoords, siteCoords, 10, 1) / 1609.344) <= (this.site.locationDistanceFilter * 1.05); 
-            
             //This works:
             return (geolib.getDistance(
                {latitude: this.state.locationFilterLat, longitude: this.state.locationFilterLon}, 
@@ -497,7 +452,6 @@ export default class TrialDetailsModal extends React.Component {
         });
     }
 
-
     isTrialEmpty(trial){
         for (var key in trial) {
             if (trial[key] !== null && trial[key] != "")
@@ -505,31 +459,7 @@ export default class TrialDetailsModal extends React.Component {
         }
         return true;   
     }
-
-    
-
-
 }
-
-
-const SECTIONS = [
-    {
-      title: 'Eligibility Criteria',
-      number: 1,
-      content: ""
-    },
-    {
-      title: 'Lead Organization',
-      number: 2,
-      content: ""
-    },
-    {
-      title: 'Locations',
-      number: 3,
-      content: ""
-    }
-  ];
-
   
 
 const styles = StyleSheet.create({
@@ -603,29 +533,3 @@ const styles = StyleSheet.create({
     zIndex: 10 //Part of said hack
   }
 });
-
-var myLat = 35.9995;
-var myLong = -78.94;
-
-var markers = [{
-  key: 1,
-  title: "hello1",
-  coordinates: {
-      latitude: myLat,
-      longitude: myLong
-    },
-  },{
-    key: 2,
-    title: "hello2",
-    coordinates: {
-      latitude: myLat + 3,
-      longitude: myLong + 3
-    }
-  },{
-    key: 3,
-    title: "hello3",
-    coordinates: {
-      latitude: myLat + 5,
-      longitude: myLong + 5
-    }
-}]
