@@ -55,6 +55,7 @@ export default class CancerNews extends React.Component {
         return (
             <Container style={{ paddingHorizontal: 5, backgroundColor: '#ddd' }}>
                 <Content >
+
                     <FlatList
                         style={{ marginVertical: 4 }}
                         data={this.state.dataSource}
@@ -66,14 +67,41 @@ export default class CancerNews extends React.Component {
         );
     }
 
+    _articleInApp(item) {
+
+      
+
+
+        const url = item.url[0].value;
+        console.log(url);
+        console.log("bark");
+
+                <WebView
+                   // source={{ uri: url }}
+                    source={{uri: 'http://www.google.com'}}
+                    style={{ marginTop: 20 }}
+                />
+       
+        
+      //  console.log(item.title)
+    }
     _renderItem = ({ item, index }) => {
         //<Text style={styles.body}>{item.title}, {item.publicationDate}, {item.abstract}</Text>}
+       
         return (
+
+
+
             <Card>
                 <CardItem bordered style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+
+
                     <Text 
                         style={styles.articleTitle}
-                        onPress={() => Linking.openURL(item.url[0].value)}
+                         onPress={() => Linking.openURL(item.url[0].value)} 
+                       // onPress={() => { this._articleInApp(item) }}
+
+
                     >
                         {item.title}
                     </Text>
@@ -82,7 +110,9 @@ export default class CancerNews extends React.Component {
                 <CardItem>
                     <Body>
                         <Text>
-                            {item.abstract}
+                            {item.abstract.replace('Abstract', '').replace('Purpose', '' ).replace('Background', '').replace('Opinion statement','').replace('Introduction','')}
+                            
+                            
                         </Text>
                     </Body>
                 </CardItem>
