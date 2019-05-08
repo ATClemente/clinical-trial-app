@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'reactn';
 import {
   Alert,
   AsyncStorage,
@@ -26,6 +26,7 @@ export default class SignInScreen extends React.Component {
 
   render() {
     const btnDisabled = !this.state.username || !this.state.password;
+    // console.log(this.context);
     return (      
       <Container style={{
         flex: 1,
@@ -85,8 +86,24 @@ export default class SignInScreen extends React.Component {
           password: this.state.password
         }
       );
+      const trialsResult = await axios.get(
+        Urls.server + '/user/trials',
+        {
+          headers: {
+            Authorization: data.jwt,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      const trialsData = trialsResult.data;
+      this.setGlobal({ 
+        token: data.jwt,
+        profile: data.profile,
+        trials: trialsData.savedTrials,
+      });
       await AsyncStorage.setItem('jwt', data.jwt);
       await AsyncStorage.setItem('profile', JSON.stringify(data.profile));
+      await AsyncStorage.setItem('trials', JSON.stringify(trialsData.savedTrials));
       this.props.navigation.navigate('Main');
     } catch (e) {
       if (e.response) {

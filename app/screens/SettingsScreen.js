@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'reactn';
 import { 
   Alert,
   AsyncStorage,
@@ -18,12 +18,12 @@ export default class SettingsScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      username: '',
-      email: '',
-      dob: '',
-      gender: false,
-      location: '',
-      cancerType: '',
+      username: this.global.profile.username,
+      email: this.global.profile.email,
+      dob: this.global.profile.dob,
+      gender: this.global.profile.gender,
+      location: this.global.profile.location,
+      cancerType: this.global.profile.cancerType,
       isLoading: false,
     }
   }
@@ -33,28 +33,8 @@ export default class SettingsScreen extends React.Component {
     this.props.navigation.navigate('Auth');
   };
 
-  componentDidMount() {
-    AsyncStorage.getItem('profile')
-    .then(res => JSON.parse(res))
-    .then(profile => {
-      this.setState({
-        username: profile.username,
-        email: profile.email || '',
-        dob: profile.dob || '',
-        gender: profile.gender,
-        location: profile.location || '',
-        cancerType: profile.cancerType || ''
-      });
-    })
-    .catch(e => {
-      console.log(e);
-    })
-  }
-
   _updateProfileAsync = async () => {
     await this.setState({ isLoading: true });
-    const token = await AsyncStorage.getItem('jwt');
-    // console.log(token);
     try {
       const { data } = await axios.put(
         Urls.server + '/user/profile',
@@ -67,11 +47,15 @@ export default class SettingsScreen extends React.Component {
         },
         {
           headers: {
-            Authorization: token,
+            Authorization: this.global.token,
             'Content-Type': 'application/json'
           }
         }
       );
+      this.setGlobal({ 
+        token: data.jwt,
+        profile: data.profile,
+      });
       await AsyncStorage.setItem('jwt', data.jwt);
       await AsyncStorage.setItem('profile', JSON.stringify(data.profile));
       Object.keys(data.profile).forEach(item => {

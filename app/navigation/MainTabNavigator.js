@@ -4,13 +4,11 @@ import { createStackNavigator, createBottomTabNavigator } from 'react-navigation
 
 import TabBarIcon from '../components/TabBarIcon';
 import ClinicalTrialSearchScreen from '../screens/ClinicalTrialSearchScreen'
-import AppointmentsScreen from '../screens/AppointmentsScreen'
+import SavedTrialsScreen from '../screens/SavedTrialsScreen'
 import SettingsScreen from '../screens/SettingsScreen';
 import CancerNews from '../screens/CancerNews';
 import CancerRSS from '../screens/CancerRSS';
 import About from '../screens/About'
-
-
 
 const AboutStack = createStackNavigator({
     screen: About,
@@ -26,8 +24,6 @@ AboutStack.navigationOptions = {
     ),
 };
 
-
-
 const TrialSearchStack = createStackNavigator({
   TrialSearch: ClinicalTrialSearchScreen,
 });
@@ -42,21 +38,21 @@ TrialSearchStack.navigationOptions = {
   ),
 };
 
-const AppointmentsStack = createStackNavigator({
-  Appointments: {
-    screen: AppointmentsScreen,
+const SavedTrialsStack = createStackNavigator({
+  SavedTrials: {
+    screen: SavedTrialsScreen,
     navigationOptions: {
-      title: 'Appointments'
+      title: 'Saved Trials'
     }
-  }
+  },
 });
 
-AppointmentsStack.navigationOptions = {
-  tabBarLabel: 'Appts',
+SavedTrialsStack.navigationOptions = {
+  tabBarLabel: 'Saved Trials',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
-      name={Platform.OS === 'ios' ? 'ios-calendar' : 'md-calendar'}
+      name={Platform.OS === 'ios' ? 'ios-bookmark' : 'md-bookmark'}
     />
   ),
 };
@@ -99,8 +95,6 @@ CancerNewsStack.navigationOptions = {
     ),
 };
 
-
-
 const CancerRSSStack = createStackNavigator({
     RSS: {
         screen: CancerRSS,
@@ -121,12 +115,10 @@ CancerRSSStack.navigationOptions = {
 };
 // Do this last to add a button 
 export default createBottomTabNavigator({
-    AboutStack,
+  AboutStack,
   TrialSearchStack,
-    CancerNewsStack,
-    CancerRSSStack,
-  AppointmentsStack,
-    SettingsStack, 
-
-  
+  SavedTrialsStack,
+  CancerNewsStack,
+  CancerRSSStack,
+  SettingsStack, 
 });

@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'reactn';
 import { 
   Alert,
   AsyncStorage,
@@ -20,26 +20,15 @@ export default class SearchLocationModal extends React.PureComponent{
   constructor(props) {
     super(props);
     this.state = {
-      gender: false,
-      location: '',
+      gender: this.global.profile.gender,
+      location: this.global.profile.location,
       isLoading: true,
       isSubmitting: false,
     }
   }
 
-  componentWillMount() {
-    AsyncStorage.getItem('profile')
-    .then(res => JSON.parse(res))
-    .then(profile => {
-      this.setState( { gender: profile.gender, location: profile.location })
-      this.setState({ isLoading: false });
-    });
-  }
-
   _updateProfileAsync = async () => {
     await this.setState({ isSubmitting: true });
-    const token = await AsyncStorage.getItem('jwt');
-    // console.log(token);
     try {
       const { data } = await axios.put(
         Urls.server + '/user/profile',
@@ -49,11 +38,15 @@ export default class SearchLocationModal extends React.PureComponent{
         },
         {
           headers: {
-            Authorization: token,
+            Authorization: this.global.token,
             'Content-Type': 'application/json'
           }
         }
       );
+      this.setGlobal({ 
+        token: data.jwt,
+        profile: data.profile,
+      });
       await AsyncStorage.setItem('jwt', data.jwt);
       await AsyncStorage.setItem('profile', JSON.stringify(data.profile));
       Object.keys(data.profile).forEach(item => {
@@ -74,6 +67,7 @@ export default class SearchLocationModal extends React.PureComponent{
   };
 
   render() {
+    console.log(this.context);
     return(
       <Modal
         isVisible={this.props.visible}

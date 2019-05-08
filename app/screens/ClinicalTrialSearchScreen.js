@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'reactn';
 import DropdownMenu from 'react-native-dropdown-menu';
 import {
   AsyncStorage,
@@ -52,38 +52,30 @@ export default class ClinicalTrialSearchScreen extends React.Component {
         desiredDistanceType: "mi",
         currentPage: 1,
         text:'',
-        showLocationModal: false,
+        showLocationModal: this.global.showLocationModal,
+        username: this.global.profile.username,
+        email: this.global.profile.email,
+        dob: this.global.profile.dob,
+        gender: this.global.profile.gender,
+        location: this.global.profile.location,
+        cancerType: this.global.profile.cancerType,
     };
   }
 
-  componentWillMount() {
-    AsyncStorage.getItem('profile')
-    .then(res => JSON.parse(res))
-    .then(profile => {
-      this.setState({
-        username: profile.username,
-        email: profile.email || '',
-        dob: profile.dob || '',
-        gender: profile.gender,
-        location: profile.location || '',
-        cancerType: profile.cancerType || ''
-      });
-      if(this.state.location) {
-        this.setState({ showLocationModal: false });
-        this.setState({ zipCodeText: this.state.location });
-      } else {
-        this.setState({ showLocationModal: true });
-      }
-    })
-    .catch(e => {
-      console.log(e);
-    });
+  componentDidMount() {
+    if (this.state.location) {
+      this.setState({ zipCodeText: this.state.location });
+    } else {
+      this.setState({ showLocationModal: true });
+    }
   }
 
   render() {
     const disableSearch = (this.state.keyWordText && this.state.zipCodeText) ? false : true;
     const disablePrev = this.state.prevParams == {} || this.state.currentPage == 1;
-    const disableNext = this.state.prevParams == {} || this.state.currentPage == Math.ceil(this.state.searchData.total / this.state.searchSize);
+    const disableNext = this.state.prevParams == {} 
+      || this.state.currentPage == Math.ceil(this.state.searchData.total / this.state.searchSize)
+      || !this.state.keyWordText.length;
     const prevStyle = disablePrev ? [styles.pageButton, styles.disabled] : styles.pageButton;
     const nextStyle = disableNext ? [styles.pageButton, styles.disabled] : styles.pageButton;
     const tabColor = Colors.btnBlue;
@@ -91,7 +83,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
       <SafeAreaView style={styles.container}>
 
         <SearchLocationModal
-          visible={this.state.showLocationModal}
+          visible={this.showLocationModal}
           setLocationModal={this.setLocationModal}
           setProfileLocation={this.setProfileLocation}
         />

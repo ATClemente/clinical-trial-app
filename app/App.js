@@ -1,5 +1,5 @@
-import React from 'react';
-import { Platform, StatusBar, StyleSheet, View } from 'react-native';
+import React from 'reactn';
+import { AsyncStorage, Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { AppLoading, Asset, Font, Icon } from 'expo';
 import { Root } from "native-base";
 import AppNavigator from './navigation/AppNavigator';
@@ -7,7 +7,20 @@ import AppNavigator from './navigation/AppNavigator';
 export default class App extends React.Component {
   state = {
     isLoadingComplete: false,
-  };
+  }
+
+  async componentDidMount() {
+    const token = await AsyncStorage.getItem('jwt');
+    let data = await AsyncStorage.getItem('profile');
+    const profile = JSON.parse(data);
+    data = await AsyncStorage.getItem('trials');
+    const trials = JSON.parse(data);
+    this.setGlobal({
+      token,
+      profile,
+      trials,
+    });
+  }
 
   render() {
     if (!this.state.isLoadingComplete && !this.props.skipLoadingScreen) {
