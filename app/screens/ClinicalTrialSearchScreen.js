@@ -6,6 +6,7 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
+  Keyboard,
   Text,
   TouchableOpacity,
   View,
@@ -28,6 +29,7 @@ import ClinicalTrialAPIUtil from '../components/ClinicalTrialAPIUtil.js';
 import * as QueryConstants from '../constants/MainSearchQueryParams.js';
 import ClinicalTrialSearchResults from '../components/ClinicalTrialSearchResults';
 import SearchLocationModal from '../components/SearchLocationModal';
+import { toastDelay } from '../constants/Constants';
 
 export default class ClinicalTrialSearchScreen extends React.Component {
   static navigationOptions = {
@@ -52,7 +54,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
         desiredDistanceType: "mi",
         currentPage: 1,
         text:'',
-        showLocationModal: this.global.showLocationModal,
+        showLocationModal: false,
         username: this.global.profile.username,
         email: this.global.profile.email,
         dob: this.global.profile.dob,
@@ -83,7 +85,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
       <SafeAreaView style={styles.container}>
 
         <SearchLocationModal
-          visible={this.showLocationModal}
+          visible={this.state.showLocationModal}
           setLocationModal={this.setLocationModal}
           setProfileLocation={this.setProfileLocation}
         />
@@ -119,6 +121,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
               returnKeyType='search'
               keyboardType='numeric'
               maxLength={5}
+              defaultValue={this.global.profile.location}
               onSubmitEditing={() => this._doAPISearch()}
             />
 
@@ -228,6 +231,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
   _doAPISearch(pageSearch = false, pageDirection = 1, useInclude = true){
 //ClinicalTrialAPIUtil.sendPostRequest(this.state.searchSize, 0, true, "active", "treatment", keyWordArg, zipCodeArg, this.state.distanceSelect)
     this.setState({searchLoading: true});
+    Keyboard.dismiss();
     var params = {};
     if(!pageSearch){
 
@@ -378,7 +382,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
       text: 'Profile updated',
       buttonText: 'Okay',
       type: 'success',
-      duration: 2000
+      duration: toastDelay
     });
   }
 

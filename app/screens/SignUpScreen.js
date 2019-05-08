@@ -16,6 +16,7 @@ import GradientButton from '../components/GradientButton';
 import Colors from '../constants/Colors';
 import Styles from '../constants/Styles';
 import Urls from '../constants/Urls';
+import { toastDelay } from '../constants/Constants';
 
 export default class SignUpScreen extends React.Component {
   constructor(props) {
@@ -99,7 +100,7 @@ export default class SignUpScreen extends React.Component {
         text: "Passwords don't match",
         buttonText: 'Okay',
         type: 'warning',
-        duration: 3000
+        duration: toastDelay
       });
       return;
     }
@@ -121,14 +122,14 @@ export default class SignUpScreen extends React.Component {
           text: e.response.data.status,
           buttonText: 'Okay',
           type: 'warning',
-          duration: 2000
+          duration: toastDelay
         });
       } else {
         Toast.show({
           text: e,
           buttonText: 'Okay',
           type: 'warning',
-          duration: 2000
+          duration: toastDelay
         });
       }
       this.setState({ loading: false });

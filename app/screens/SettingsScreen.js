@@ -13,6 +13,7 @@ import FormInput from '../components/FormInput';
 import FormDatePicker from '../components/FormDatePicker';
 import FormSwitch from '../components/FormSwitch';
 import Colors from '../constants/Colors';
+import { toastDelay } from '../constants/Constants';
 
 export default class SettingsScreen extends React.Component {
   constructor(props) {
@@ -52,11 +53,7 @@ export default class SettingsScreen extends React.Component {
           }
         }
       );
-      this.setGlobal({ 
-        token: data.jwt,
-        profile: data.profile,
-      });
-      await AsyncStorage.setItem('jwt', data.jwt);
+      this.setGlobal({ profile: data.profile });
       await AsyncStorage.setItem('profile', JSON.stringify(data.profile));
       Object.keys(data.profile).forEach(item => {
         this.setState({ item });
@@ -65,7 +62,7 @@ export default class SettingsScreen extends React.Component {
         text: data.status,
         buttonText: 'Okay',
         type: 'success',
-        duration: 2000
+        duration: toastDelay
       });
     } catch (e) {
       console.log(e);
@@ -74,7 +71,7 @@ export default class SettingsScreen extends React.Component {
           text: 'Error updating profile',
           buttonText: 'Okay',
           type: 'warning',
-          duration: 2000
+          duration: toastDelay
         });      
       } else {
         Alert.alert(JSON.stringify(e));
@@ -128,6 +125,7 @@ export default class SettingsScreen extends React.Component {
               keyboardType='number-pad'
               maxLength={5}
               value={this.state.location}
+              defaultValue={this.global.profile.location}
               onChangeText={location => this.setState({ location })}
             />
             <FormInput

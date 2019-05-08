@@ -43,11 +43,7 @@ export default class SearchLocationModal extends React.PureComponent{
           }
         }
       );
-      this.setGlobal({ 
-        token: data.jwt,
-        profile: data.profile,
-      });
-      await AsyncStorage.setItem('jwt', data.jwt);
+      this.setGlobal({ profile: data.profile });
       await AsyncStorage.setItem('profile', JSON.stringify(data.profile));
       Object.keys(data.profile).forEach(item => {
         this.setState({ item });

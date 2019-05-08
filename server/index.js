@@ -155,7 +155,7 @@ app.use('/user', async (req, res, next) => {
   });
 });
 
-app.put('/user/profile', async (req, res) => {
+app.patch('/user/profile', async (req, res) => {
   try {
     let user = await findOne(req.profile.username);
     await db.query(
@@ -169,7 +169,6 @@ app.put('/user/profile', async (req, res) => {
         req.profile.username
       ]
     );
-    const token = jwtSign(req.profile.username);
     user = await findOne(req.profile.username);
     const profile = {
       username: user.username,
@@ -179,7 +178,9 @@ app.put('/user/profile', async (req, res) => {
       location: user.zip,
       cancerType: user.cancertype
     };
-    res.status(200).json(auth(true, 'Updated', token, profile));
+    res
+      .status(200)
+      .json(auth(true, 'Updated', req.header('Authorization'), profile));
   } catch (err) {
     console.log(err);
     res.status(500).json(serverError);

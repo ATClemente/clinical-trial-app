@@ -13,6 +13,7 @@ import Urls from '../constants/Urls';
 import GradientButton from '../components/GradientButton';
 import axios from 'axios';
 import { Toast, Container } from 'native-base';
+import { toastDelay } from '../constants/Constants';
 
 export default class SignInScreen extends React.Component {
   constructor(props) {
@@ -111,14 +112,14 @@ export default class SignInScreen extends React.Component {
           text: e.response.data.status,
           buttonText: 'Okay',
           type: 'warning',
-          duration: 2000
+          duration: toastDelay
         });
       } else {
         Toast.show({
           text: e,
           buttonText: 'Okay',
           type: 'danger',
-          duration: 2000
+          duration: toastDelay
         });      }
       this.setState({ loading: false });
     }

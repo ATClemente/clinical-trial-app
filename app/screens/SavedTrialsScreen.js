@@ -18,6 +18,7 @@ export default class SavedTrialScreen extends React.Component {
     // console.log(this.state.trials);
     return (
       <View>
+        <Text>Location {this.global.profile.location}</Text>
         <FlatList
           style={{ marginVertical: 4 }}
           data={this.state.trials}
