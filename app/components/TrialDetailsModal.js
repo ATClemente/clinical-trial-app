@@ -105,7 +105,7 @@ export default class TrialDetailsModal extends React.Component {
                                 text={this.state.trialSaved ? 'Unsave' : 'Save' }
                                 textColor='#333'
                                 iconColor='#f2c100'
-                                handleTouch={this.state.trialSaved ? this.unsaveTrial.bind(this) : this.saveTrial.bind(this) }
+                                handleTouch={this.state.trialSaved ? this.unsaveTrial : this.saveTrial }
                             />
                         </View>
                     </View>
@@ -161,7 +161,7 @@ export default class TrialDetailsModal extends React.Component {
 
                             <GradientButton
                             colors={[Colors.blueOne, Colors.blueTwo]}
-                            handleClick={ () => this.saveTrial() }
+                            handleClick={this.saveTrial}
                             loading={this.state.modifyTrial}
                             text='Save Trial'
                             disabled={this.state.trialSaved ? true : false}
@@ -180,7 +180,7 @@ export default class TrialDetailsModal extends React.Component {
         )
     }
 
-    async saveTrial(){
+    saveTrial = async () => {
         try {
             this.setState({ modifyTrial: true });
             const { data } = await axios.post(
@@ -210,7 +210,7 @@ export default class TrialDetailsModal extends React.Component {
         }
     }
 
-    async unsaveTrial() {
+    unsaveTrial = async () => {
         try {
             this.setState({ modifyTrial: true });
             const response = await axios.delete(
