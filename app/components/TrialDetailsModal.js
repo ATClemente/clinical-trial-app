@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'reactn';
 import {
   ScrollView,
   StyleSheet,
@@ -23,6 +23,7 @@ import { Card } from 'react-native-elements';
 import axios from 'axios';
 import Urls from '../constants/Urls';
 import { Ionicons } from '@expo/vector-icons';
+import IconButton from '../components/IconButton';
 import geolib from 'geolib';
 
 export default class TrialDetailsModal extends React.Component {
@@ -41,7 +42,10 @@ export default class TrialDetailsModal extends React.Component {
             locationMarkers: [],
             genderFilter: null, //true = male
             locationDistanceFilter: null,
-            waitForLoading: true
+            waitForLoading: true,
+            savedTrials: this.global.trials,
+            trialSaved: false,
+            modifyTrial: false
         };
     }
 
@@ -55,10 +59,19 @@ export default class TrialDetailsModal extends React.Component {
             locationDistanceFilter: nextProps.searchRadius,
             modalVisible: nextProps.modalVisible,
             trial: nextProps.trial
-        })
+        });
+        let savedTrials = this.global.trials;
+        let result = savedTrials.filter(e => e.trialId === nextProps.trial[QueryConstants.NCT_ID]);
+        if (result.length) {
+            this.setState({ trialSaved: true });
+        } else {
+            this.setState({ trialSaved: false })
+        }
     }
 
     render() {
+        // console.log(this.state.trial[QueryConstants.NCT_ID]);
+        // console.log(this.global.trials);
         return (
             <Modal
                 animationType="slide"
@@ -66,16 +79,37 @@ export default class TrialDetailsModal extends React.Component {
                 visible={ this.state.modalVisible }
                 onRequestClose={() => { this.props.setModalVisible(false) }}>
                 <SafeAreaView style={styles.mainView}>
-                    <TouchableHighlight onPress = {() => { this.props.setModalVisible(false) }}>
-                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <Ionicons 
-                          style={{ marginHorizontal: 5 }}
-                          size={24}
-                          name='ios-arrow-dropleft' />
-                        <Text>Back</Text>
-                      </View>
-                    </TouchableHighlight>
-                    <Text style={{fontWeight: "bold", textDecorationLine: "underline", textAlign: "center", marginBottom: 5}}>Trial Details</Text>
+
+                    <View style={{ marginBottom: 5, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <View style={{width: '25%'}}>
+                            <TouchableHighlight 
+                                onPress = {() => { this.props.setModalVisible(false) }}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <Ionicons 
+                                style={{ marginHorizontal: 5 }}
+                                size={24}
+                                name='ios-arrow-dropleft' />
+                                <Text>Back</Text>
+                            </View>
+                            </TouchableHighlight>
+                        </View>
+
+                        <Text style={{fontWeight: "bold", textDecorationLine: "underline", textAlign: "center" }}>Trial Details</Text>
+
+                        <View style={{width: '25%', alignItems: 'flex-end' }}>
+                            <IconButton
+                                style={{ marginRight: 3 }}
+                                icon={this.state.trialSaved ? 'md-star' : 'md-star-outline'}
+                                iconSize={26}
+                                side='right'
+                                text={this.state.trialSaved ? 'Unsave' : 'Save' }
+                                textColor='#333'
+                                iconColor='#f2c100'
+                                handleTouch={this.state.trialSaved ? this.unsaveTrial.bind(this) : this.saveTrial.bind(this) }
+                            />
+                        </View>
+                    </View>
+                    
                     <View style={{borderBottomWidth: StyleSheet.hairlineWidth, marginBottom: 5}}></View>
                     <ScrollView>
                         <Text style={{fontWeight: "bold", textDecorationLine: "underline"}}>Title:</Text>
@@ -128,8 +162,9 @@ export default class TrialDetailsModal extends React.Component {
                             <GradientButton
                             colors={[Colors.blueOne, Colors.blueTwo]}
                             handleClick={ () => this.saveTrial() }
-                            loading={false}
+                            loading={this.state.modifyTrial}
                             text='Save Trial'
+                            disabled={this.state.trialSaved ? true : false}
                             />
                         </View>
 
@@ -146,34 +181,62 @@ export default class TrialDetailsModal extends React.Component {
     }
 
     async saveTrial(){
-        const token = await AsyncStorage.getItem('jwt');
-        const response = await axios.post(
-          Urls.server + '/user/trials',
-          {
-              "trialId": this.state.trial[QueryConstants.NCT_ID]
-          },
-          {
-            headers: {
-              Authorization: token,
-              'Content-Type': 'application/json'
-            }
-          }
-        );
-        
-        if(response.data.success == true){
-            Alert.alert(
-                'Trial saved',
-                'This clinical trial was successfully saved to your account!',
-                [
-                  {text: 'OK', onPress: () => {}},
-                ],
-                { cancelable: false }
+        try {
+            this.setState({ modifyTrial: true });
+            const { data } = await axios.post(
+                Urls.server + '/user/trials',
+                {
+                    "trialId": this.state.trial[QueryConstants.NCT_ID]
+                },
+                {
+                  headers: {
+                    Authorization: this.global.token,
+                    'Content-Type': 'application/json'
+                  }
+                }
               );
+            // Alert.alert('Trial saved');
+            this.setState({ trialSaved: true });
+            this.setGlobal({ trials: data.savedTrials });
+            await AsyncStorage.setItem('trials', JSON.stringify(data.savedTrials));
+            this.setState({ modifyTrial: false });
+        } catch (e) {
+            console.log(e);
+            if (e.response) {
+                Alert.alert(e.response.data.status);
+            } else {
+                Alert.alert('There was a problem saving your trial');
+            }
         }
-        else{
-            Alert.alert("There was a problem saving your trial");
-        }
+    }
 
+    async unsaveTrial() {
+        try {
+            this.setState({ modifyTrial: true });
+            const response = await axios.delete(
+                Urls.server + '/user/trials/' + this.state.trial[QueryConstants.NCT_ID],
+                {
+                  headers: {
+                    Authorization: this.global.token,
+                    'Content-Type': 'application/json'
+                  }
+                }
+              );
+            // Alert.alert('Trial removed from list');
+            this.setState({ trialSaved: false });
+            const allTrials = this.global.trials;
+            const updatedTrials = allTrials.filter(e => e.trialId !== this.state.trial[QueryConstants.NCT_ID]);
+            this.setGlobal({ trials: updatedTrials });
+            await AsyncStorage.setItem('trials', JSON.stringify(updatedTrials));
+            this.setState({ modifyTrial: false });
+        } catch (e) {
+            console.log(e);
+            if (e.response) {
+                Alert.alert(e.response.data.status);
+            } else {
+                Alert.alert('There was a problem deleting this trial from saved list');
+            }
+        }
     }
 
     applyToTrial(){

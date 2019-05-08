@@ -30,6 +30,7 @@ import * as QueryConstants from '../constants/MainSearchQueryParams.js';
 import ClinicalTrialSearchResults from '../components/ClinicalTrialSearchResults';
 import SearchLocationModal from '../components/SearchLocationModal';
 import { toastDelay } from '../constants/Constants';
+import IconButton from '../components/IconButton';
 
 export default class ClinicalTrialSearchScreen extends React.Component {
   static navigationOptions = {
@@ -42,7 +43,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
         searchLoading: false,
         hasNewSearchData: false,
         keyWordText: '',
-        zipCodeText: '',
+        zipCodeText: this.global.profile.location,
         //distanceSelect: "10",
         searchSize: 5,
         resultsFromIndex: 0, //Just add searchSize for next batch when needed.
@@ -77,10 +78,9 @@ export default class ClinicalTrialSearchScreen extends React.Component {
     const disablePrev = this.state.prevParams == {} || this.state.currentPage == 1;
     const disableNext = this.state.prevParams == {} 
       || this.state.currentPage == Math.ceil(this.state.searchData.total / this.state.searchSize)
-      || !this.state.keyWordText.length;
-    const prevStyle = disablePrev ? [styles.pageButton, styles.disabled] : styles.pageButton;
-    const nextStyle = disableNext ? [styles.pageButton, styles.disabled] : styles.pageButton;
+      || !this.state.searchData.total;
     const tabColor = Colors.btnBlue;
+
     return (
       <SafeAreaView style={styles.container}>
 
@@ -99,7 +99,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
             searchIcon={{ name: 'md-key', type: 'ionicon' }}
             containerStyle={[
               styles.searchBarContainer, 
-              {marginBottom: 8},
+              {marginBottom: 4},
             ]}
             inputContainerStyle={styles.searchBarInput}
             inputStyle={styles.searchBarText}
@@ -114,7 +114,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
               onChangeText={(text) => this.onZipCodeChanged(text)}
               value={this.state.zipCodeText}
               searchIcon={{ name: 'md-pin', type: 'ionicon' }}
-              containerStyle={[styles.searchBarContainer, {width: '40%', marginTop: 4 }]}
+              containerStyle={[styles.searchBarContainer, {width: '40%', marginTop: 8 }]}
               inputContainerStyle={styles.searchBarInput}
               inputStyle={styles.searchBarText}
               placeholderTextColor='#aaa'
@@ -127,7 +127,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
 
             <Picker
                 selectedValue={this.state.desiredDistance}
-                style={Platform.OS === 'ios' ? { height: 45, width: '35%', marginTop: 2 } : { height: 45, width: '35%' }}
+                style={Platform.OS === 'ios' ? { height: 45, width: '35%', marginTop: 6 } : { height: 45, width: '35%', marginTop: 2 }}
                 itemStyle={Platform.OS === 'ios' ? { height: 38, borderWidth: 0, fontSize: 18 } : { height: 45 }}
                 mode='dropdown'
                 onValueChange={(itemValue, itemIndex) =>
@@ -145,7 +145,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
                 <Picker.Item label="100mi" value="100" />
             </Picker>
 
-            <View style={{ alignSelf: 'center', width: '25%' }}>
+            <View style={{ alignSelf: 'center', width: '25%', marginTop: Platform.OS === 'ios' ? 0 : 3 }}>
                 <GradientButton
                     colors={[Colors.blueOne, Colors.blueTwo]}
                     handleClick={() => this._doAPISearch()}
@@ -161,24 +161,15 @@ export default class ClinicalTrialSearchScreen extends React.Component {
 
         <View style={styles.pagingButtons}>
 
-          <TouchableOpacity
-            style={prevStyle}
+          <IconButton
+            icon='ios-arrow-dropleft'
+            side='left'
             disabled={disablePrev}
-            onPress={() => this._doAPISearch(true, -1)}
-          >
-            <View style={{ 
-              alignSelf: 'flex-start',
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'flex-start' 
-            }}>
-              <Ionicons 
-                style={{ marginRight: 6, color: disablePrev ? 'grey' : tabColor }}
-                size={24}
-                name='ios-arrow-dropleft' />
-              <Text style={{ color: disablePrev ? 'grey' : tabColor }}>Prev</Text>
-            </View>
-          </TouchableOpacity>
+            handleTouch={() => this._doAPISearch(true, -1)}
+            text='Prev'
+            textColor={tabColor}
+            iconColor={tabColor}
+          />
 
           { (this.state.searchData.total != undefined) && 
             <View style={{ 
@@ -189,24 +180,16 @@ export default class ClinicalTrialSearchScreen extends React.Component {
             </View>
           }
 
-          <TouchableOpacity
-            style={nextStyle}
+          <IconButton
+            icon='ios-arrow-dropright'
+            side='right'
             disabled={disableNext}
-            onPress={() => this._doAPISearch(true)}
-          >
-            <View style={{
-              alignSelf: 'flex-end',
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'flex-end'
-            }}>
-              <Text style={{ color: disableNext ? 'grey' : tabColor }}>Next</Text>
-              <Ionicons 
-                style={{ marginLeft: 6, color: disableNext ? 'grey' : tabColor }}
-                size={24}
-                name='ios-arrow-dropright' />
-            </View>
-          </TouchableOpacity>
+            handleTouch={() => this._doAPISearch(true)}
+            text='Next'
+            textColor={tabColor}
+            iconColor={tabColor}
+          />
+
         </View>
 
         {this.state.searchLoading &&

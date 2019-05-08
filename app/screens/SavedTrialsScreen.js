@@ -21,7 +21,7 @@ export default class SavedTrialScreen extends React.Component {
         <Text>Location {this.global.profile.location}</Text>
         <FlatList
           style={{ marginVertical: 4 }}
-          data={this.state.trials}
+          data={this.global.trials}
           renderItem={this._renderItem}
           keyExtractor={(item, index) => item.createdDate}
         />

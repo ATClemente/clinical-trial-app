@@ -15,7 +15,7 @@ import {
   FlatList,
   Modal
 } from 'react-native';
-import { Card } from 'react-native-elements';
+import { Card, Divider } from 'react-native-elements';
 import { WebBrowser } from 'expo';
 import { MonoText } from '../components/StyledText';
 import Colors from '../constants/Colors';
@@ -69,14 +69,18 @@ export default class ClinicalTrialSearchResults extends React.Component {
         wrapperStyle={{ padding: 10 }}
       >
         <View>
-          <Text style={{ color: '#333' }}>{`${number}. ${trialText}`}</Text>
+          <Text style={{ color: '#333', fontWeight: '500' }}>{`${number}. ${trialText}`}</Text>
+          <Divider
+            backgroundColor='#ccc'
+            style={{ marginVertical: 6 }}
+          />
           <Text>Phase: {ClinicalTrialAPIUtil.getPhase(item)}</Text>
           <Text>Age: {ClinicalTrialAPIUtil.getAgeRestrictions(item)}</Text>
           <Text>Gender: {ClinicalTrialAPIUtil.getGenderRestrictions(item)}</Text>
           <TouchableOpacity 
-            style={{ backgroundColor: '#eee', marginTop: 8 }}
+            style={{ backgroundColor: '#e8efff', borderColor: '#b9ccea', borderWidth: 1, borderRadius: 4, marginTop: 8 }}
             onPress={() => {this.setUpModal(item)}}>
-            <Text style={{ alignSelf: 'center', paddingVertical: 6 }}>View Trial</Text>
+            <Text style={{ color: '#324e7a', alignSelf: 'center', paddingVertical: 6 }}>View Trial</Text>
           </TouchableOpacity>
         </View>
       </Card>
