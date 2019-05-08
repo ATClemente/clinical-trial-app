@@ -18,7 +18,7 @@ import GradientButton from '../components/GradientButton';
 import * as QueryConstants from '../constants/MainSearchQueryParams.js';
 import ViewMoreText from 'react-native-view-more-text';
 import Collapsible from 'react-native-collapsible';
-import MapView from 'react-native-maps';
+import MapView, {Circle, Callout} from 'react-native-maps';
 import { Card } from 'react-native-elements';
 import axios from 'axios';
 import Urls from '../constants/Urls';
@@ -34,10 +34,11 @@ export default class TrialDetailsModal extends React.Component {
             activeSections: [],
             eligibilityCollapsed: true,
             leadOrgCollapsed: true,
-            locationsCollapsed: true,
+            mapCollapsed: true,
             locationFilter: null,
             locationFilterLat: null,
             locationFilterLon: null,
+            locationMarkers: [],
             genderFilter: null, //true = male
             locationDistanceFilter: null,
             waitForLoading: true
@@ -111,14 +112,14 @@ export default class TrialDetailsModal extends React.Component {
                             </View>
                         </Collapsible>
 
-                        <TouchableOpacity onPress={() => {this.setState({locationsCollapsed: !this.state.locationsCollapsed})}}>
+                        <TouchableOpacity onPress={() => {this.setState({mapCollapsed: !this.state.mapCollapsed})}}>
                             <View style={styles.header}>
                             <Text style={styles.headerText}>Locations</Text>
                             </View>
                         </TouchableOpacity>
-                        <Collapsible collapsed={this.state.locationsCollapsed} align="center">
-                            <View style={styles.content}>
-                                {!this.isTrialEmpty(this.state.trial) && this.renderLocations(this.state.trial)}
+                        <Collapsible collapsed={this.state.mapCollapsed} align="center">
+                            <View /*style={styles.content}*/>
+                                {!this.isTrialEmpty(this.state.trial) && this.renderMapview(this.state.trial)}
                             </View>
                         </Collapsible>
 
@@ -296,7 +297,7 @@ export default class TrialDetailsModal extends React.Component {
         }
     }
 
-    renderLocations(trial){
+    /*renderLocations(trial){
 
         var activeSites = trial[QueryConstants.SITES].filter(this.checkForActiveSites);
         var finalSites = activeSites.filter(this.checkForLocationProximity);
@@ -317,9 +318,9 @@ export default class TrialDetailsModal extends React.Component {
             </View>
         );
 
-    }
+    }*/
 
-    _renderLocationItem = ({item, index}) => {
+    /*_renderLocationItem = ({item, index}) => {
         const number = (index+1).toString();
         const site_name = item[QueryConstants.ORG_NAME];
         const contact_name = item[QueryConstants.CONTACT_NAME];
@@ -353,30 +354,129 @@ export default class TrialDetailsModal extends React.Component {
                 <Text style={{ color: '#333' }}>{`Contact Name: ${contact_name}`}</Text>
                 <Text style={{ color: '#333' }}>{`Contact Phone: ${contact_phone}`}</Text>
                 <Text style={{ color: '#333' }}>{`Contact Email: ${contact_email}`}</Text>
-                <Text style={{ color: '#333' }}>{`Status: ${site_status}`}</Text>
-
-                <View style={{ height: 200, width: 280 }}>
-                    <MapView
-                        style={{ flex: 1 }}
-                        liteMode= {true}
-                        region={{
-                            latitude: site_lat,
-                            longitude: site_lon,
-                            latitudeDelta: 0.0922,
-                            longitudeDelta: 0.0421,
-                        }}
-                        >
-                            <MapView.Marker
-                                coordinate={{latitude: site_lat,
-                                longitude: site_lon}}
-                                //title={"title"}
-                                //description={"description"}
-                            />
-                    </MapView>
-                </View>
-
             </View>
           </Card>
+        );
+    }*/
+
+    renderMapview = (trial) => {
+
+        var activeSites = trial[QueryConstants.SITES].filter(this.checkForActiveSites);
+        var finalSites = activeSites.filter(this.checkForLocationProximity);
+
+        var locationMarkers = [];
+
+        for(var i = 0; i < finalSites.length; i++){
+            var currentSite = finalSites[i];
+            var newMarker = {};
+            var site_lat;
+            var site_lon;
+            
+            if(currentSite[QueryConstants.ORG_CORRDINATES] && currentSite[QueryConstants.ORG_CORRDINATES][QueryConstants.LAT] && currentSite[QueryConstants.ORG_CORRDINATES][QueryConstants.LON]){
+
+                site_lat = currentSite[QueryConstants.ORG_CORRDINATES][QueryConstants.LAT];
+                site_lon = currentSite[QueryConstants.ORG_CORRDINATES][QueryConstants.LON];
+
+                newMarker.key = i + 1;
+                newMarker.coordinates = {};
+                newMarker.coordinates.latitude = site_lat;
+                newMarker.coordinates.longitude = site_lon;
+    
+                newMarker.title = currentSite[QueryConstants.ORG_NAME];
+    
+                if(currentSite[QueryConstants.CONTACT_NAME] != null){
+                    newMarker.contact_name = currentSite[QueryConstants.CONTACT_NAME];
+                }
+                else{
+                    newMarker.contact_name = "None Provided";
+                }
+    
+                if(currentSite[QueryConstants.CONTACT_PHONE] != null){
+                    newMarker.contact_phone = currentSite[QueryConstants.CONTACT_PHONE];
+                }
+                else{
+                    newMarker.contact_phone = "None Provided";
+                }
+    
+                if(currentSite[QueryConstants.CONTACT_EMAIL] != null){
+                    newMarker.contact_email = currentSite[QueryConstants.CONTACT_EMAIL];
+                }
+                else{
+                    newMarker.contact_email = "None Provided";
+                }
+    
+                locationMarkers.push(newMarker);
+            }
+        
+            
+        }
+
+        var centerMarker = {};
+
+        centerMarker.key = 0;
+        centerMarker.coordinates = {};
+        centerMarker.coordinates.latitude = this.state.locationFilterLat;
+        centerMarker.coordinates.longitude = this.state.locationFilterLon;
+        centerMarker.pinColor = "blue";
+        centerMarker.title = "Your location";
+
+        //locationMarkers.push(centerMarker);
+
+        var latDelta, lonDelta;
+
+        latDelta = 0.32 * (this.state.locationDistanceFilter / 10);
+        lonDelta = 0.12 * (this.state.locationDistanceFilter / 10);
+
+        return(
+            <View style={{ height: 300, width: 370 }}>
+                <MapView
+                    style={{ flex: 1 }}
+                    initialRegion={{
+                        latitude: this.state.locationFilterLat,
+                        longitude: this.state.locationFilterLon,
+                        //latitudeDelta: 0.0922,
+                        //longitudeDelta: 0.0421,
+                        latitudeDelta: latDelta,
+                        longitudeDelta: lonDelta,
+                    }}
+                    >
+                    <Circle
+                        center={{
+                            latitude: this.state.locationFilterLat,
+                            longitude: this.state.locationFilterLon
+                        }}
+                        radius={this.state.locationDistanceFilter * 1609.344 * 1.05}
+                        fillColor="rgba(255, 0, 0, 0.2)"
+                        strokeColor="rgba(0,0,0,0.5)"
+                        zIndex={2}
+                        strokeWidth={2}
+                    />
+                    <MapView.Marker
+                        title={centerMarker.title}
+                        coordinate={centerMarker.coordinates}
+                        pinColor={centerMarker.pinColor}
+                    >
+                    </MapView.Marker>
+                    {locationMarkers.map(marker => (
+                        <MapView.Marker
+                        //title={marker.title}
+                        //description={marker.description}
+                        coordinate={marker.coordinates}
+                        pinColor={marker.pinColor}
+                        key = {marker.key}
+                        >
+                        <Callout style={styles.plainView}>
+                            <View style={{margin: 5}} >
+                                <Text style={{fontWeight: "bold"}}>{marker.title}</Text>
+                                <Text>Contact Name: {marker.contact_name}</Text>
+                                <Text>Contact Phone: {marker.contact_phone}</Text>
+                                <Text>Contact Email: {marker.contact_email}</Text>
+                            </View>
+                        </Callout>
+                        </MapView.Marker>
+                    ))}
+                </MapView>
+            </View>
         );
     }
 
