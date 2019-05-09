@@ -21,7 +21,7 @@ export default class CancerNews extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = { isLoading: true, modalVisible: false}
+        this.state = { isLoading: true, modalVisible: false, modalURL: '' }
     }
 
     componentDidMount() {
@@ -32,6 +32,7 @@ export default class CancerNews extends React.Component {
                 this.setState({
                     isLoading: false,
                     dataSource: responseJson.records,
+                    
                 }, function () {
 
                 });
@@ -42,9 +43,18 @@ export default class CancerNews extends React.Component {
             });
     }
 
-    _makeModalVisible =() => {
+    _makeModalVisible =(url) => {
         // Make modal visible 
+        console.log(url)
         this.setState({ modalVisible: true })
+        this.setState({ modalURL: url })
+
+
+    }
+
+    _hideModal = () => {
+        // Make modal visible 
+        this.setState({ modalVisible: false })
 
 
     }
@@ -66,6 +76,8 @@ export default class CancerNews extends React.Component {
 
                 <PopUpScreenModal
                     visible={this.state.modalVisible}
+                    setVisible={this._hideModal}
+                    url={this.state.modalURL}
                 />
 
                 <Content >
@@ -131,8 +143,7 @@ export default class CancerNews extends React.Component {
                     <View style={{ width: '100%', marginBottom: 5 }}>
                     <GradientButton
                         colors={[Colors.blueOne, Colors.blueTwo]}
-                        //handleClick={() => Linking.openURL(item.url[0].value)}
-                        handleClick={this._makeModalVisible}
+                        handleClick={() => this.setState({ modalVisible: true, modalURL: item.url[0].value })}
                         loading={false}
                         disabled={false}
                         text='View Article'
