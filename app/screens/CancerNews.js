@@ -43,20 +43,13 @@ export default class CancerNews extends React.Component {
             });
     }
 
-    _makeModalVisible =(url) => {
-        // Make modal visible 
-        console.log(url)
+    _makeModalVisible = () => {
         this.setState({ modalVisible: true })
-        this.setState({ modalURL: url })
-
-
     }
 
     _hideModal = () => {
         // Make modal visible 
         this.setState({ modalVisible: false })
-
-
     }
 
     render() {
@@ -70,23 +63,18 @@ export default class CancerNews extends React.Component {
         }
 
         return (
-          
-
             <Container style={{ paddingHorizontal: 5, backgroundColor: '#ddd' }}>
-
-                <PopUpScreenModal
-                    visible={this.state.modalVisible}
-                    setVisible={this._hideModal}
-                    url={this.state.modalURL}
-                />
-
                 <Content >
-
                     <FlatList
                         style={{ marginVertical: 4 }}
                         data={this.state.dataSource}
                         renderItem={this._renderItem}
                         keyExtractor={(item, index) => item.doi}    
+                    />
+                    <PopUpScreenModal
+                        visible={this.state.modalVisible}
+                        setVisible={this._hideModal}
+                        url={this.state.modalURL}
                     />
                 </Content>
             </Container>

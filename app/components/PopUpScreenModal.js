@@ -5,14 +5,6 @@ import BrowserView from '../components/BrowserView'
 
 
 export default class PopUpScreenModal extends Component {
-    state = {
-        modalVisible: false,
-    };
-
-    setModalVisible(visible) {
-        this.setState({ modalVisible: visible });
-    }
-
     render() {
         return (
             <View style={{ marginTop: 22 }}>
@@ -25,28 +17,22 @@ export default class PopUpScreenModal extends Component {
                     }}>
 
                     <SafeAreaView style={{ height: '100%', width: '100%'}}>
-                    <IconButton
-
-                        icon='ios-arrow-dropleft'
-                        side='left'
-                       // disabled={disablePrev}
-                      //  handleTouch={() => this._doAPISearch(true, -1)}
-                        text='Back'
-                        handleTouch={this.props.setVisible}
-                        textColor='grey'
-                        iconColor= 'black'
+                        <IconButton
+                            icon='ios-arrow-dropleft'
+                            side='left'
+                            text='Back'
+                            handleTouch={this.props.setVisible}
+                            textColor='grey'
+                            iconColor= 'black'
+                            style={{ padding: 5 }}
                         />
 
-
-                        <BrowserView url={this.props.url}   />                       
+                        <BrowserView url={this.props.url} />
      
-    
                     </SafeAreaView>
     
-                    
                 </Modal>
 
-               
             </View>
         );
     }
