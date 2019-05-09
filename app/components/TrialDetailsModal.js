@@ -116,13 +116,25 @@ export default class TrialDetailsModal extends React.Component {
                         <Text style={{marginBottom: 5}}>{this.state.trial[QueryConstants.BRIEF_TITLE]}</Text>
                         <Text style={{fontWeight: "bold", textDecorationLine: "underline"}}>Trial Summary:</Text>
                         <ViewMoreText
-                        numberOfLines={4}
+                        numberOfLines={3}
                         renderViewMore={this.renderViewMore}
                         renderViewLess={this.renderViewLess}
                         //textStyle={{textAlign: 'center'}}
                         >
                             <Text>{this.state.trial[QueryConstants.BRIEF_SUMMARY]}</Text>
                         </ViewMoreText>
+
+                        <Text style={{fontWeight: "bold", textDecorationLine: "underline"}}>Lead Organization:</Text>
+                        <View style={{padding: 10, alignItems: "center"}}>
+                                {!this.isTrialEmpty(this.state.trial) && this.renderLeadOrganization(this.state.trial)}
+                        </View>
+
+                        <Text style={{padding: 5, textAlign: "center"}}>Sites within {this.state.locationDistanceFilter} miles of {this.state.locationFilter}: </Text>
+
+                        <View /*style={styles.content}*/>
+                                {!this.isTrialEmpty(this.state.trial) && this.renderMapview(this.state.trial)}
+                        </View>
+
 
                         <TouchableOpacity onPress={() => {this.setState({eligibilityCollapsed: !this.state.eligibilityCollapsed})}}>
                             <View style={styles.header}>
@@ -134,39 +146,6 @@ export default class TrialDetailsModal extends React.Component {
                                 {!this.isTrialEmpty(this.state.trial) && this.renderEligibilityCriteria(this.state.trial)}
                             </View>
                         </Collapsible>
-
-                        <TouchableOpacity onPress={() => {this.setState({leadOrgCollapsed: !this.state.leadOrgCollapsed})}}>
-                            <View style={styles.header}>
-                            <Text style={styles.headerText}>Lead Organization</Text>
-                            </View>
-                        </TouchableOpacity>
-                        <Collapsible collapsed={this.state.leadOrgCollapsed} align="center">
-                            <View style={styles.content}>
-                                {!this.isTrialEmpty(this.state.trial) && this.renderLeadOrganization(this.state.trial)}
-                            </View>
-                        </Collapsible>
-
-                        <TouchableOpacity onPress={() => {this.setState({mapCollapsed: !this.state.mapCollapsed})}}>
-                            <View style={styles.header}>
-                            <Text style={styles.headerText}>Locations</Text>
-                            </View>
-                        </TouchableOpacity>
-                        <Collapsible collapsed={this.state.mapCollapsed} align="center">
-                            <View /*style={styles.content}*/>
-                                {!this.isTrialEmpty(this.state.trial) && this.renderMapview(this.state.trial)}
-                            </View>
-                        </Collapsible>
-
-                        <View style={{ alignSelf: 'center', width: '95%', marginTop: 10, zIndex: 1 }}>
-
-                            <GradientButton
-                            colors={[Colors.blueOne, Colors.blueTwo]}
-                            handleClick={this.saveTrial}
-                            loading={this.state.modifyTrial}
-                            text='Save Trial'
-                            disabled={this.state.trialSaved ? true : false}
-                            />
-                        </View>
 
                         {this.state.waitForLoading &&
                             <View style={styles.profileLoading}>
@@ -474,14 +453,14 @@ export default class TrialDetailsModal extends React.Component {
             
         }
 
-        var centerMarker = {};
+        /*var centerMarker = {};
 
         centerMarker.key = 0;
         centerMarker.coordinates = {};
         centerMarker.coordinates.latitude = this.state.locationFilterLat;
         centerMarker.coordinates.longitude = this.state.locationFilterLon;
         centerMarker.pinColor = "blue";
-        centerMarker.title = "Your location";
+        centerMarker.title = "Your location";*/
 
         //locationMarkers.push(centerMarker);
 
@@ -514,12 +493,6 @@ export default class TrialDetailsModal extends React.Component {
                         zIndex={2}
                         strokeWidth={2}
                     />
-                    <MapView.Marker
-                        title={centerMarker.title}
-                        coordinate={centerMarker.coordinates}
-                        pinColor={centerMarker.pinColor}
-                    >
-                    </MapView.Marker>
                     {locationMarkers.map(marker => (
                         <MapView.Marker
                         //title={marker.title}
