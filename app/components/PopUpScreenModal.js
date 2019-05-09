@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Modal, Text, TouchableHighlight, View, Alert } from 'react-native';
+import IconButton from '../components/IconButton'
 
 export default class PopUpScreenModal extends Component {
     state = {
@@ -31,6 +32,8 @@ export default class PopUpScreenModal extends Component {
                         textColor='grey'
                         iconColor= 'black'
                     />
+
+
 
 
 
