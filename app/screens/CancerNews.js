@@ -14,13 +14,14 @@ import {
 import { Card, CardItem, Left, Body, Container, Content } from 'native-base';
 import GradientButton from '../components/GradientButton';
 import Colors from '../constants/Colors';
+import PopUpScreenModal from '../components/PopUpScreenModal'
 
 export default class CancerNews extends React.Component {
    //Cite: https://facebook.github.io/react-native/docs/network
 
     constructor(props) {
         super(props);
-        this.state = { isLoading: true }
+        this.state = { isLoading: true, modalVisible: false, modalURL: '' }
     }
 
     componentDidMount() {
@@ -31,6 +32,7 @@ export default class CancerNews extends React.Component {
                 this.setState({
                     isLoading: false,
                     dataSource: responseJson.records,
+                    
                 }, function () {
 
                 });
@@ -41,6 +43,21 @@ export default class CancerNews extends React.Component {
             });
     }
 
+    _makeModalVisible =(url) => {
+        // Make modal visible 
+        console.log(url)
+        this.setState({ modalVisible: true })
+        this.setState({ modalURL: url })
+
+
+    }
+
+    _hideModal = () => {
+        // Make modal visible 
+        this.setState({ modalVisible: false })
+
+
+    }
 
     render() {
         // console.log(this.state.dataSource);
@@ -53,7 +70,16 @@ export default class CancerNews extends React.Component {
         }
 
         return (
+          
+
             <Container style={{ paddingHorizontal: 5, backgroundColor: '#ddd' }}>
+
+                <PopUpScreenModal
+                    visible={this.state.modalVisible}
+                    setVisible={this._hideModal}
+                    url={this.state.modalURL}
+                />
+
                 <Content >
 
                     <FlatList
@@ -89,9 +115,6 @@ export default class CancerNews extends React.Component {
         //<Text style={styles.body}>{item.title}, {item.publicationDate}, {item.abstract}</Text>}
        
         return (
-
-
-
             <Card>
                 <CardItem bordered style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
 
@@ -120,7 +143,7 @@ export default class CancerNews extends React.Component {
                     <View style={{ width: '100%', marginBottom: 5 }}>
                     <GradientButton
                         colors={[Colors.blueOne, Colors.blueTwo]}
-                        handleClick={() => Linking.openURL(item.url[0].value)}
+                        handleClick={() => this.setState({ modalVisible: true, modalURL: item.url[0].value })}
                         loading={false}
                         disabled={false}
                         text='View Article'
@@ -190,76 +213,7 @@ const styles = StyleSheet.create({
         padding: 10,
     },
 });
-    /*
-    //Cite: https://www.tutorialspoint.com/react_native/react_native_http.htm
-
-    componentDidMount = () => {
-
-        fetch('http://api.springernature.com/metadata/json?q=keyword:immunotherapy sort:date year:2019&api_key=1578185c036380f5d680e30d3e8d7349&p=50', { method: 'GET' })
-            .then((response) => response.json())
-            .then((responseJson) => {
-                console.log(responseJson);
-                this.setState({
-                    data: responseJson
-                })
-            })
-            .catch((error) => {
-                console.error(error);
-            });
-
-    }
-    static navigationOptions = {
-        title: 'Latest Cancer News',
-    };
-
-    _signOutAsync = async () => {
-        await AsyncStorage.clear();
-        this.props.navigation.navigate('Auth');
-    };
-
-
-    render() {
-
-        return (
+    
 
 
 
-            <View>
-
-                <Text> Find Latest Research on Cancer  </Text>
-                <Text>
-                    {this.state.data.body}
-                </Text>
-            </View>
-
-        )
-
-
-    }
-    /*
-    render() {
-
-        // const feed = require('./index.html');
-        return (
-            <WebView
-                //  source={{ feed }}
-                source={require('./index.html')}
-                originWhitelist={['*']}
-                style={{ flex: 1 }}
-            
-            />
-        );
-    }
-
-
-
-                            <Text style={{ color: 'blue' }}
-                                onPress={() => Linking.openURL('http://google.com')}>
-                                Google
-                            </Text>
-                             <Text style={styles.articleTitle}>{item.title}</Text>
-
-*/
-
-
-//export default CancerNews;
