@@ -189,12 +189,12 @@ app.patch('/user/profile', async (req, res) => {
 
 app.get('/user/trials', async (req, res) => {
   try {
-    console.log(req.profile.username);
     const result = await db.query(
-      'select t.trial_id, t.created_date, d.title, d.phase, d.age, d.gender, d.organization, d.investigator, d.update from users u ' +
-        'inner join user_trials t on t.user_id = u.id ' +
-        'inner join trial_details d on d.trial_id = t.trial_id ' +
-        'where username = $1',
+      // 'select t.trial_id, t.created_date, d.title, d.phase, d.age, d.gender, d.organization, d.investigator, d.update from users u ' +
+      //   'inner join user_trials t on t.user_id = u.id ' +
+      //   'inner join trial_details d on d.trial_id = t.trial_id ' +
+      //   'where username = $1',
+      'SELECT ut.trial_id, ut.created_date FROM users u INNER JOIN user_trials ut ON u.id = ut.user_id WHERE u.username = $1',
       [req.profile.username]
     );
     const trialIds = result.rowCount ? result.rows : [];
@@ -215,25 +215,25 @@ app.post('/user/trials', async (req, res) => {
     return;
   }
 
-  try {
-    await db.query(
-      'INSERT INTO trial_details(trial_id, title, phase, age, gender, organization, investigator) ' +
-        'VALUES($1, $2, $3, $4, $5, $6, $7) ON CONFLICT (trial_id) DO UPDATE ' +
-        'SET title=$2, phase=$3, age=$4, gender=$5, organization=$6, investigator=$7',
-      [
-        req.body.trialId,
-        req.body.title,
-        req.body.phase,
-        req.body.age,
-        req.body.gender,
-        req.body.organization,
-        req.body.investigator
-      ]
-    );
-  } catch (e) {
-    res.status(500).json(serverError);
-    return;
-  }
+  // try {
+  //   await db.query(
+  //     'INSERT INTO trial_details(trial_id, title, phase, age, gender, organization, investigator) ' +
+  //       'VALUES($1, $2, $3, $4, $5, $6, $7) ON CONFLICT (trial_id) DO UPDATE ' +
+  //       'SET title=$2, phase=$3, age=$4, gender=$5, organization=$6, investigator=$7',
+  //     [
+  //       req.body.trialId,
+  //       req.body.title,
+  //       req.body.phase,
+  //       req.body.age,
+  //       req.body.gender,
+  //       req.body.organization,
+  //       req.body.investigator
+  //     ]
+  //   );
+  // } catch (e) {
+  //   res.status(500).json(serverError);
+  //   return;
+  // }
 
   try {
     await db.query(
@@ -251,10 +251,11 @@ app.post('/user/trials', async (req, res) => {
 
   try {
     const result = await db.query(
-      'select t.trial_id, t.created_date, d.title, d.phase, d.age, d.gender, d.organization, d.investigator, d.update from users u ' +
-        'inner join user_trials t on t.user_id = u.id ' +
-        'inner join trial_details d on d.trial_id = t.trial_id ' +
-        'where username = $1',
+      // 'select t.trial_id, t.created_date, d.title, d.phase, d.age, d.gender, d.organization, d.investigator, d.update from users u ' +
+      //   'inner join user_trials t on t.user_id = u.id ' +
+      //   'inner join trial_details d on d.trial_id = t.trial_id ' +
+      //   'where username = $1',
+      'SELECT ut.trial_id, ut.created_date FROM users u INNER JOIN user_trials ut ON u.id = ut.user_id WHERE u.username = $1',
       [req.profile.username]
     );
     const trialIds = result.rowCount ? result.rows : [];

@@ -164,12 +164,12 @@ export default class TrialDetailsModal extends React.Component {
                 Urls.server + '/user/trials',
                 {
                     trialId: this.state.trial[QueryConstants.NCT_ID],
-                    title: this.state.trial[QueryConstants.BRIEF_TITLE],
-                    phase: ClinicalTrialAPIUtil.getPhase(this.state.trial),
-                    age: ClinicalTrialAPIUtil.getAgeRestrictions(this.state.trial),
-                    gender: ClinicalTrialAPIUtil.getGenderRestrictions(this.state.trial),
-                    organization: this.getLeadOrg(this.state.trial),
-                    investigator: this.getPrincipalInvestigator(this.state.trial)
+                    // title: this.state.trial[QueryConstants.BRIEF_TITLE],
+                    // phase: ClinicalTrialAPIUtil.getPhase(this.state.trial),
+                    // age: ClinicalTrialAPIUtil.getAgeRestrictions(this.state.trial),
+                    // gender: ClinicalTrialAPIUtil.getGenderRestrictions(this.state.trial),
+                    // organization: this.getLeadOrg(this.state.trial),
+                    // investigator: this.getPrincipalInvestigator(this.state.trial)
                 },
                 {
                   headers: {
