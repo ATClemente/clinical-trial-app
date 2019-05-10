@@ -14,29 +14,47 @@ import * as QueryConstants from '../constants/MainSearchQueryParams.js';
 export default class SavedTrialResults extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { isLoading: false };
+    this.state = {
+      isLoading: true,
+      trials: [],
+    };
   }
 
-  async componentWillMount() {
-    this._loadTrials(this.global.trials);
+  async componentDidMount() {
+    const trialIds = this.global.trials.map(t => t.trial_id);
+    const trialResults = await this._loadTrials(trialIds);
+    if (trialResults) {
+      this.setState({ trials: trialResults });
+    }
+    this.setState({ isLoading: false });
   }
 
   async componentWillReceiveProps(nextProps) {
-    this._loadTrials(nextProps.trials);
+    this.setState({ isLoading: true});
+
+    const newTrialsList = nextProps.trials.map(t => t.trial_id);
+    const oldTrialsList = this.state.trials.map(t => t[QueryConstants.NCT_ID]);
+    const add = newTrialsList.filter(t => !oldTrialsList.includes(t));
+    const del = oldTrialsList.filter(t => !newTrialsList.includes(t));
+    let newState = [];
+    if (add.length) {
+      const newTrials = await this._loadTrials(add);
+      newState = this.state.trials.concat(newTrials);
+    }
+    if (del.length) {
+      newState = this.state.trials.filter(t => !del.includes(t[QueryConstants.NCT_ID]));
+    }
+
+    this.setState({ trials: newState, isLoading: false });
   }
 
-  _loadTrials = async (savedTrials) => {
-    this.setState({ isLoading: true});
+  _loadTrials = async (trials) => {
+    // console.log('Call API for trials: ' + trials.join(', '));
     const params = {};
-    const trials = savedTrials.map(trial => trial.trial_id);
     params[QueryConstants.NCT_ID] = trials;
     params[QueryConstants.INCLUDE_STR] = QueryConstants.INCLUDE_ARR;
-
     const response = await ClinicalTrialAPIUtil.sendPostRequest(params);
-    if (response) {
-      this.setState({ trials: response.trials });
-    }
-    this.setState({ isLoading: false });
+    return response ? response.trials : null;
   }
 
   render() {

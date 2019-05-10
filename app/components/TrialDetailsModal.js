@@ -62,14 +62,11 @@ export default class TrialDetailsModal extends React.Component {
             trial: nextProps.trial
         });
         let savedTrials = this.global.trials;
-        console.log(savedTrials);
         let result = savedTrials.filter(e => e.trial_id === nextProps.trial[QueryConstants.NCT_ID]);
         this.setState({ trialSaved: result.length ? true : false });
     }
 
     render() {
-        // console.log(this.state.trial[QueryConstants.NCT_ID]);
-        // console.log(this.global.trials);
         return (
             <Modal
                 animationType='slide'
