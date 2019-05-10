@@ -105,7 +105,6 @@ export default class ClinicalTrialSearchScreen extends React.Component {
             inputStyle={styles.searchBarText}
             placeholderTextColor='#aaa'
             returnKeyType='search'
-            autoFocus={true}
             onSubmitEditing={()=> this._doAPISearch()}
           />
 
