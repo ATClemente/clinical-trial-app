@@ -257,11 +257,7 @@ app.post('/user/trials', async (req, res) => {
         'where username = $1',
       [req.profile.username]
     );
-    const trialIds = result.rowCount
-      ? result.rows.map(item => {
-          return { trialId: item.trial_id, createdDate: item.created_date };
-        })
-      : [];
+    const trialIds = result.rowCount ? result.rows : [];
     res.status(200).json({
       username: req.profile.username,
       success: true,
