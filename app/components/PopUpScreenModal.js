@@ -12,16 +12,14 @@ export default class PopUpScreenModal extends Component {
                     animationType="slide"
                     transparent={false}
                     visible={this.props.visible}
-                    onRequestClose={() => {
-                        Alert.alert('Modal has been closed.');
-                    }}>
+                    onRequestClose={() => this.props.hideModal }>
 
                     <SafeAreaView style={{ height: '100%', width: '100%'}}>
                         <IconButton
                             icon='ios-arrow-dropleft'
                             side='left'
                             text='Back'
-                            handleTouch={this.props.setVisible}
+                            handleTouch={this.props.hideModal}
                             textColor='grey'
                             iconColor= 'black'
                             style={{ padding: 5 }}

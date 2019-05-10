@@ -73,7 +73,7 @@ export default class CancerNews extends React.Component {
                     />
                     <PopUpScreenModal
                         visible={this.state.modalVisible}
-                        setVisible={this._hideModal}
+                        hideModal={this._hideModal}
                         url={this.state.modalURL}
                     />
                 </Content>

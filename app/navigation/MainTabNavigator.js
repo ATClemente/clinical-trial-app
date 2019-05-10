@@ -19,7 +19,7 @@ AboutStack.navigationOptions = {
     tabBarIcon: ({ focused }) => (
         <TabBarIcon
             focused={focused}
-            name={Platform.OS === 'ios' ? 'ios-search' : 'md-search'}
+            name='ios-information-circle-outline'
         />
     ),
 };
@@ -33,7 +33,7 @@ TrialSearchStack.navigationOptions = {
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
-      name={Platform.OS === 'ios' ? 'ios-search' : 'md-search'}
+      name='ios-search'
     />
   ),
 };
@@ -71,7 +71,7 @@ SettingsStack.navigationOptions = {
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
-      name={Platform.OS === 'ios' ? 'ios-settings' : 'md-settings'}
+      name='ios-settings'
     />
   ),
 };
@@ -90,7 +90,7 @@ CancerNewsStack.navigationOptions = {
     tabBarIcon: ({ focused }) => (
         <TabBarIcon
             focused={focused}
-            name={Platform.OS === 'ios' ? 'ios-book' : 'md-book'}
+            name='md-book'
             />
     ),
 };
@@ -109,7 +109,7 @@ CancerRSSStack.navigationOptions = {
     tabBarIcon: ({ focused }) => (
         <TabBarIcon
             focused={focused}
-            name={Platform.OS === 'ios' ? 'ios-paper' : 'md-paper'}
+            name='md-paper'
         />
     ),
 };

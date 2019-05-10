@@ -93,7 +93,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
         <View style={styles.inputView}>
 
           <SearchBar
-            placeholder="Keywords"
+            placeholder="Cancer related keywords"
             onChangeText={text => this.setState({ keyWordText: text})}
             value={this.state.keyWordText}
             searchIcon={{ name: 'md-key', type: 'ionicon' }}
@@ -105,6 +105,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
             inputStyle={styles.searchBarText}
             placeholderTextColor='#aaa'
             returnKeyType='search'
+            autoFocus={true}
             onSubmitEditing={()=> this._doAPISearch()}
           />
 

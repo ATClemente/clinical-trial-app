@@ -22,6 +22,7 @@ import Colors from '../constants/Colors';
 import * as QueryConstants from '../constants/MainSearchQueryParams.js';
 import ClinicalTrialAPIUtil from '../components/ClinicalTrialAPIUtil.js';
 import TrialDetailsModal from '../components/TrialDetailsModal';
+import TrialCard from '../components/TrialCard';
 
 export default class ClinicalTrialSearchResults extends React.Component {
   constructor(props) {
@@ -34,66 +35,57 @@ export default class ClinicalTrialSearchResults extends React.Component {
 
   render() {
     if(this.props.searchData.total == undefined || this.props.searchData.total == 0){
-        return (
-          <View style={styles.noResultsView}>
-            <Text>No results yet.</Text>
-            <Text>Run a search for clinical trials and see what's out there :)</Text> 
-          </View>
-        );
+      return (
+        <View style={styles.noResultsView}>
+          <Text>No results yet.</Text>
+          <Text>Run a search for clinical trials and see what's out there :)</Text> 
+        </View>
+      );
     }
     else{
-        return (
-            <View style={styles.allResultsView}>
-              <TrialDetailsModal
-                modalVisible = { this.state.displayTrialDetails }
-                setModalVisible = { (vis) => { this.setModalVisible(vis) }}
-                searchRadius = {this.props.searchRadius}
-                trial = { this.state.currentTrial }
+      return (
+          <View style={styles.allResultsView}>
+            <TrialDetailsModal
+              modalVisible = { this.state.displayTrialDetails }
+              setModalVisible = { (vis) => { this.setModalVisible(vis) }}
+              searchRadius = {this.props.searchRadius}
+              trial = { this.state.currentTrial }
+              viewTrial = {this.setUpModal}
+          />
+            <FlatList
+              data={this.props.searchData.trials}
+              renderItem={this._renderItem}
+              keyExtractor={(item) => item[QueryConstants.NCT_ID]}
             />
-              <FlatList
-                data={this.props.searchData.trials}
-                renderItem={this._renderItem}
-                keyExtractor={(item) => item[QueryConstants.NCT_ID]}
-              />
-            </View>
-        );
+          </View>
+      );
     }
   }
 
   _renderItem = ({item, index}) => {
     const number = (index+(1 + this.props.searchData.trials.length * ( this.props.currentPage - 1 ))).toString();
     const trialText = item[QueryConstants.BRIEF_TITLE];
-    return(
-      <Card
-        containerStyle={{ padding: 0, borderRadius: 5 }}
-        wrapperStyle={{ padding: 10 }}
-      >
-        <View>
-          <Text style={{ color: '#333', fontWeight: '500' }}>{`${number}. ${trialText}`}</Text>
-          <Divider
-            backgroundColor='#ccc'
-            style={{ marginVertical: 6 }}
-          />
-          <Text>Phase: {ClinicalTrialAPIUtil.getPhase(item)}</Text>
-          <Text>Age: {ClinicalTrialAPIUtil.getAgeRestrictions(item)}</Text>
-          <Text>Gender: {ClinicalTrialAPIUtil.getGenderRestrictions(item)}</Text>
-          <TouchableOpacity 
-            style={{ backgroundColor: '#e8efff', borderColor: '#b9ccea', borderWidth: 1, borderRadius: 4, marginTop: 8 }}
-            onPress={() => {this.setUpModal(item)}}>
-            <Text style={{ color: '#324e7a', alignSelf: 'center', paddingVertical: 6 }}>View Trial</Text>
-          </TouchableOpacity>
-        </View>
-      </Card>
+    const ViewTrialButton = (
+      <TouchableOpacity 
+        style={{ backgroundColor: '#e8efff', borderColor: '#b9ccea', borderWidth: 1, borderRadius: 4, marginTop: 8 }}
+        onPress={() => this.setUpModal(item)}>
+        <Text style={{ color: '#324e7a', alignSelf: 'center', paddingVertical: 6 }}>View Trial</Text>
+      </TouchableOpacity>
     );
-
+    return(
+      <TrialCard 
+        item={item} 
+        title={`${number}. ${trialText}`} 
+        ViewTrialButton={ViewTrialButton}
+      />
+    );
   };
 
-  setUpModal = (item) => {
+  setUpModal = item => {
       this.setState({
         displayTrialDetails: true,
         currentTrial: item
     });
-
   }
 
   setModalVisible(visible) {
