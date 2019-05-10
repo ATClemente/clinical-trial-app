@@ -62,7 +62,8 @@ export default class TrialDetailsModal extends React.Component {
             trial: nextProps.trial
         });
         let savedTrials = this.global.trials;
-        let result = savedTrials.filter(e => e.trialId === nextProps.trial[QueryConstants.NCT_ID]);
+        console.log(savedTrials);
+        let result = savedTrials.filter(e => e.trial_id === nextProps.trial[QueryConstants.NCT_ID]);
         this.setState({ trialSaved: result.length ? true : false });
     }
 
@@ -206,7 +207,7 @@ export default class TrialDetailsModal extends React.Component {
             // Alert.alert('Trial removed from list');
             this.setState({ trialSaved: false });
             const allTrials = this.global.trials;
-            const updatedTrials = allTrials.filter(e => e.trialId !== this.state.trial[QueryConstants.NCT_ID]);
+            const updatedTrials = allTrials.filter(e => e.trial_id !== this.state.trial[QueryConstants.NCT_ID]);
             this.setGlobal({ trials: updatedTrials });
             await AsyncStorage.setItem('trials', JSON.stringify(updatedTrials));
             this.setState({ modifyTrial: false });
