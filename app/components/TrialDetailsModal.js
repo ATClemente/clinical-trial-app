@@ -25,6 +25,7 @@ import Urls from '../constants/Urls';
 import { Ionicons } from '@expo/vector-icons';
 import IconButton from '../components/IconButton';
 import geolib from 'geolib';
+import ClinicalTrialAPIUtil from '../components/ClinicalTrialAPIUtil.js';
 
 export default class TrialDetailsModal extends React.Component {
     constructor(props) {
@@ -62,11 +63,7 @@ export default class TrialDetailsModal extends React.Component {
         });
         let savedTrials = this.global.trials;
         let result = savedTrials.filter(e => e.trialId === nextProps.trial[QueryConstants.NCT_ID]);
-        if (result.length) {
-            this.setState({ trialSaved: true });
-        } else {
-            this.setState({ trialSaved: false })
-        }
+        this.setState({ trialSaved: result.length ? true : false });
     }
 
     render() {
@@ -74,7 +71,7 @@ export default class TrialDetailsModal extends React.Component {
         // console.log(this.global.trials);
         return (
             <Modal
-                animationType="slide"
+                animationType='slide'
                 transparent={ false }
                 visible={ this.state.modalVisible }
                 onRequestClose={() => { this.props.setModalVisible(false) }}>
@@ -165,7 +162,13 @@ export default class TrialDetailsModal extends React.Component {
             const { data } = await axios.post(
                 Urls.server + '/user/trials',
                 {
-                    "trialId": this.state.trial[QueryConstants.NCT_ID]
+                    trialId: this.state.trial[QueryConstants.NCT_ID],
+                    title: this.state.trial[QueryConstants.BRIEF_TITLE],
+                    phase: ClinicalTrialAPIUtil.getPhase(this.state.trial),
+                    age: ClinicalTrialAPIUtil.getAgeRestrictions(this.state.trial),
+                    gender: ClinicalTrialAPIUtil.getGenderRestrictions(this.state.trial),
+                    organization: this.getLeadOrg(this.state.trial),
+                    investigator: this.getPrincipalInvestigator(this.state.trial)
                 },
                 {
                   headers: {
@@ -174,7 +177,6 @@ export default class TrialDetailsModal extends React.Component {
                   }
                 }
               );
-            // Alert.alert('Trial saved');
             this.setState({ trialSaved: true });
             this.setGlobal({ trials: data.savedTrials });
             await AsyncStorage.setItem('trials', JSON.stringify(data.savedTrials));

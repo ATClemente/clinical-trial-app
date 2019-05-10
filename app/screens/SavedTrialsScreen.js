@@ -5,7 +5,7 @@ import {
   Text,
   View,
  } from 'react-native';
- import ClinicalTrialAPIUtil from '../components/ClinicalTrialAPIUtil.js';
+import ClinicalTrialAPIUtil from '../components/ClinicalTrialAPIUtil.js';
 import * as QueryConstants from '../constants/MainSearchQueryParams.js';
 
 export default class SavedTrialScreen extends React.Component {
@@ -36,11 +36,12 @@ export default class SavedTrialScreen extends React.Component {
     <View>
       <Text>{item.trialId}</Text>
       <Text>{item.createdDate}</Text>
+      <Text>{item.title}</Text>
     </View>
   )
 
   _getSingleTrialInfo = (trial) => {
-    var params = {};
+    const params = {};
     params[QueryConstants.NCT_ID] = trial.trialId;
     params[QueryConstants.INCLUDE_STR] = QueryConstants.INCLUDE_ARR;
 
@@ -48,7 +49,7 @@ export default class SavedTrialScreen extends React.Component {
     .then((response) => {
       if(response){
         console.log("Returning trial with only these fields: ");
-        for(var key in response.trials[0]){
+        for(const key in response.trials[0]){
           console.log(key);
         }
         //console.log(response);

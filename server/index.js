@@ -189,17 +189,15 @@ app.patch('/user/profile', async (req, res) => {
 
 app.get('/user/trials', async (req, res) => {
   try {
+    console.log(req.profile.username);
     const result = await db.query(
-      'SELECT * FROM user_trials ut ' +
-        'INNER JOIN users u on ut.user_id = u.id ' +
-        'WHERE u.username = $1',
+      'select t.trial_id, t.created_date, d.title, d.phase, d.age, d.gender, d.organization, d.investigator, d.update from users u ' +
+        'inner join user_trials t on t.user_id = u.id ' +
+        'inner join trial_details d on d.trial_id = t.trial_id ' +
+        'where username = $1',
       [req.profile.username]
     );
-    const trialIds = result.rowCount
-      ? result.rows.map(item => {
-          return { trialId: item.trial_id, createdDate: item.created_date };
-        })
-      : [];
+    const trialIds = result.rowCount ? result.rows : [];
     res.status(200).json({
       username: req.profile.username,
       success: true,
@@ -212,18 +210,51 @@ app.get('/user/trials', async (req, res) => {
 });
 
 app.post('/user/trials', async (req, res) => {
+  if (!req.body || !req.body.trialId) {
+    res.status(400).json(msg(false, 'Body required: { trialId: STRING }'));
+    return;
+  }
+
   try {
-    if (!req.body.trialId) {
-      res.status(400).json(msg(false, 'Body required: { trialId: STRING }'));
-    }
+    await db.query(
+      'INSERT INTO trial_details(trial_id, title, phase, age, gender, organization, investigator) ' +
+        'VALUES($1, $2, $3, $4, $5, $6, $7) ON CONFLICT (trial_id) DO UPDATE ' +
+        'SET title=$2, phase=$3, age=$4, gender=$5, organization=$6, investigator=$7',
+      [
+        req.body.trialId,
+        req.body.title,
+        req.body.phase,
+        req.body.age,
+        req.body.gender,
+        req.body.organization,
+        req.body.investigator
+      ]
+    );
+  } catch (e) {
+    res.status(500).json(serverError);
+    return;
+  }
+
+  try {
     await db.query(
       'INSERT INTO user_trials(user_id, trial_id) VALUES($1, $2)',
       [req.profile.id, req.body.trialId]
     );
+  } catch (e) {
+    if (e.code === '23505') {
+      res.status(403).json(msg(false, 'Trial already exists for user'));
+      return;
+    }
+    res.status(500).json(serverError);
+    return;
+  }
+
+  try {
     const result = await db.query(
-      'SELECT * FROM user_trials ut ' +
-        'INNER JOIN users u on ut.user_id = u.id ' +
-        'WHERE u.username = $1',
+      'select t.trial_id, t.created_date, d.title, d.phase, d.age, d.gender, d.organization, d.investigator, d.update from users u ' +
+        'inner join user_trials t on t.user_id = u.id ' +
+        'inner join trial_details d on d.trial_id = t.trial_id ' +
+        'where username = $1',
       [req.profile.username]
     );
     const trialIds = result.rowCount
@@ -238,11 +269,6 @@ app.post('/user/trials', async (req, res) => {
       savedTrials: trialIds
     });
   } catch (e) {
-    console.log(e);
-    if (e.code === '23505') {
-      res.status(403).json(msg(false, 'Trial already exists for user'));
-      return;
-    }
     res.status(500).json(serverError);
   }
 });
