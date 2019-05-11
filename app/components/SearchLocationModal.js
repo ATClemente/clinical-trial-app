@@ -30,7 +30,7 @@ export default class SearchLocationModal extends React.PureComponent{
   _updateProfileAsync = async () => {
     await this.setState({ isSubmitting: true });
     try {
-      const { data } = await axios.put(
+      const { data } = await axios.patch(
         Urls.server + '/user/profile',
         {
           gender: this.state.gender,

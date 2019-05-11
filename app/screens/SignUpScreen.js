@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'reactn';
 import axios from 'axios';
 import {
   ActivityIndicator,
@@ -115,6 +115,11 @@ export default class SignUpScreen extends React.Component {
       );
       await AsyncStorage.setItem('jwt', data.jwt);
       await AsyncStorage.setItem('profile', JSON.stringify(data.profile));
+      this.setGlobal({ 
+        token: data.jwt,
+        profile: data.profile,
+        trials: [],
+      });
       this.props.navigation.navigate('Main');
     } catch (e) {
       if (e.response) {

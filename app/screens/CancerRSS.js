@@ -121,7 +121,7 @@ export default class CancerRSS extends React.Component {
                         style={{ marginVertical: 4 }}
                         data={this.state.dataSource}
                         renderItem={this._renderItem}
-                        //keyExtractor={(item, index) => item.doi}
+                        keyExtractor={(item, index) => item.guid}
                     />
                 </Content>
             </Container>
@@ -131,7 +131,6 @@ export default class CancerRSS extends React.Component {
 
     _renderItem = ({ item }) => {
         //<Text style={styles.body}>{item.title}, {item.publicationDate}, {item.abstract}</Text>}
-
         return (
             <Card>
                 <CardItem bordered style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
