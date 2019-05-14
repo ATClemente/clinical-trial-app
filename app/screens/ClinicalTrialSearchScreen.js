@@ -10,7 +10,6 @@ import {
   Text,
   TouchableOpacity,
   View,
-  Button,
   ActivityIndicator,
   Alert,
   TextInput,
@@ -18,6 +17,10 @@ import {
   ReturnKeyType,
   Picker
 } from 'react-native';
+import SearchOptionsButton from '../components/SearchOptionsButton';
+import SearchLocationOptions from '../components/SearchLocationOptions';
+import SearchGenderOptions from '../components/SearchGenderOptions';
+import SearchPhaseOptions from '../components/SearchPhaseOptions';
 import { Ionicons } from '@expo/vector-icons';
 import GradientButton from '../components/GradientButton';
 import { SearchBar } from 'react-native-elements';
@@ -44,7 +47,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
         searchLoading: false,
         hasNewSearchData: false,
         keyWordText: '',
-        zipCodeText: this.global.profile.location,
+        zipCodeText: '',
         //distanceSelect: "10",
         searchSize: 20,
         resultsFromIndex: 0, //Just add searchSize for next batch when needed.
@@ -53,15 +56,19 @@ export default class ClinicalTrialSearchScreen extends React.Component {
         prevParams: {},
         desiredStatus: "active",
         desiredPurpose: "treatment",
-        desiredDistance: "10",
+        desiredDistance: '10',
         desiredDistanceType: "mi",
         currentPage: 1,
         text:'',
         showLocationModal: false,
+        showLocationOptions: false,
+        showGenderOptions: false,
+        showPhaseOptions: false,
+        phase: '',
         username: this.global.profile.username,
         email: this.global.profile.email,
         dob: this.global.profile.dob,
-        gender: this.global.profile.gender,
+        gender: '',
         location: this.global.profile.location,
         cancerType: this.global.profile.cancerType,
     };
@@ -77,11 +84,11 @@ export default class ClinicalTrialSearchScreen extends React.Component {
 
   render() {
     const disableSearch = (this.state.keyWordText && this.state.zipCodeText) ? false : true;
-    const disablePrev = this.state.prevParams == {} || this.state.currentPage == 1;
-    const disableNext = this.state.prevParams == {} 
-      || this.state.currentPage == Math.ceil(this.state.searchDataTotal / this.state.searchSize)
-      || !this.state.searchDataTotal;
-    const tabColor = Colors.btnBlue;
+    // const disablePrev = this.state.prevParams == {} || this.state.currentPage == 1;
+    // const disableNext = this.state.prevParams == {} 
+    //   || this.state.currentPage == Math.ceil(this.state.searchDataTotal / this.state.searchSize)
+    //   || !this.state.searchDataTotal;
+    // const tabColor = Colors.btnBlue;
 
     return (
       <SafeAreaView style={styles.container}>
@@ -95,7 +102,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
         <View style={styles.inputView}>
 
           <SearchBar
-            placeholder="Cancer related keywords"
+            placeholder="Keywords"
             onChangeText={text => this.setState({ keyWordText: text})}
             value={this.state.keyWordText}
             searchIcon={{ name: 'md-key', type: 'ionicon' }}
@@ -107,11 +114,33 @@ export default class ClinicalTrialSearchScreen extends React.Component {
             inputStyle={styles.searchBarText}
             placeholderTextColor='#aaa'
             returnKeyType='search'
+            enablesReturnKeyAutomatically={true}
             onSubmitEditing={()=> this._doAPISearch()}
           />
 
-          <View style={{ flexDirection: 'row' }}>
-            <SearchBar
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 6, height: 34 }}>
+            <SearchOptionsButton 
+              icon='md-pin'
+              text={this.state.zipCodeText ? this.state.zipCodeText : 'Location'}
+              handleTouch={this._setLocationVisible}
+              focused={this.state.zipCodeText ? true : false}
+              style={{ width: '26%' }}
+            />
+            <SearchOptionsButton 
+              icon='md-person'
+              text={this.state.gender ? this.state.gender : 'Gender'}
+              handleTouch={this._setGenderVisible}
+              focused={this.state.gender ? true : false}
+              style={{ width: '26%' }}
+            />
+            <SearchOptionsButton 
+              icon='ios-moon'
+              text={this.state.phase ? this.state.phase : 'Phase'}
+              handleTouch={this._setPhaseVisible}
+              focused={this.state.phase ? true : false}
+              style={{ width: '22%' }}
+            />
+            {/* <SearchBar
               placeholder="Zip Code"
               onChangeText={(text) => this.onZipCodeChanged(text)}
               value={this.state.zipCodeText}
@@ -145,38 +174,45 @@ export default class ClinicalTrialSearchScreen extends React.Component {
                 <Picker.Item label="80mi" value="80" />
                 <Picker.Item label="90mi" value="90" />
                 <Picker.Item label="100mi" value="100" />
-            </Picker>
+            </Picker> */}
 
-            <View style={{ alignSelf: 'center', width: '25%', marginTop: Platform.OS === 'ios' ? 0 : 3 }}>
-                <GradientButton
-                    colors={[Colors.blueOne, Colors.blueTwo]}
-                    handleClick={() => this._doAPISearch()}
-                    loading={false}
-                    disabled={disableSearch}
-                    text='Search'
-                    padding={8}
-                />
+            <View style={{ width: '18%' }}>
+              {/* <GradientButton
+                colors={[Colors.blueOne, Colors.blueTwo]}
+                handleClick={() => this._doAPISearch()}
+                loading={false}
+                disabled={disableSearch}
+                text='Search'
+                padding={8}
+              /> */}
+              <TouchableOpacity 
+              onPress={this._clearFilters} 
+              style={{ width: '100%', height: '100%', justifyContent: 'center', alignItems: 'flex-end' }}>
+                <Text style={{ color: '#324e7a' }}>Reset</Text>
+              </TouchableOpacity>
             </View>
 
           </View>
         </View>
 
+        <SearchLocationOptions
+          visible={this.state.showLocationOptions}
+          setVisible={this._setLocationVisible}
+          setLocation={this._setLocation}
+          setRadius={this._setRadius}
+        />
 
-        { (this.state.searchDataTotal != null) && 
-          <View style={{ 
-            height: 24,
-            paddingTop: 5,
-            paddingBottom: 7,
-            marginLeft: 10,
-            marginRight: 10,
-            justifyContent: 'center', 
-            alignItems: 'center',
-            borderBottomWidth: StyleSheet.hairlineWidth
-          }}>
-            <Text>Check out these trials:</Text>
-          </View>
-        }
+        <SearchGenderOptions
+          visible={this.state.showGenderOptions}
+          setVisible={this._setGenderVisible}
+          setGender={this._setGender}
+        />
 
+        <SearchPhaseOptions
+          visible={this.state.showPhaseOptions}
+          setVisible={this._setPhaseVisible}
+          setPhase={this._setPhase}
+        />
 
         {this.state.searchLoading &&
             <View style={styles.searchLoading}>
@@ -197,6 +233,38 @@ export default class ClinicalTrialSearchScreen extends React.Component {
 
       </SafeAreaView>
     );
+  }
+
+  _setLocationVisible = visible => {
+    this.setState({ showLocationOptions: visible });
+  }
+
+  _setLocation = location => {
+    this.setState({ zipCodeText: location });
+  }
+
+  _setRadius = radius => {
+    this.setState({ desiredDistance: radius });
+  }
+
+  _setGenderVisible = visible => {
+    this.setState({ showGenderOptions: visible });
+  }
+
+  _setGender = gender => {
+    this.setState({ gender });
+  }
+
+  _setPhaseVisible = visible => {
+    this.setState({ showPhaseOptions: visible });
+  }
+
+  _setPhase = phase => {
+    this.setState({ phase });
+  }
+
+  _clearFilters = () => {
+    this.setState({ zipCodeText: '', gender: '', phase: '' });
   }
 
   _doAPISearch(pageSearch = false, pageDirection = 1, useInclude = true){
