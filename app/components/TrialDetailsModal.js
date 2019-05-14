@@ -76,17 +76,13 @@ export default class TrialDetailsModal extends React.Component {
                 <SafeAreaView style={styles.mainView}>
 
                     <View style={{ marginBottom: 5, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <View style={{width: '25%'}}>
-                            <TouchableHighlight 
-                                onPress = {() => { this.props.setModalVisible(false) }}>
-                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                <Ionicons 
-                                style={{ marginHorizontal: 5 }}
-                                size={24}
-                                name='ios-arrow-dropleft' />
-                                <Text>Back</Text>
-                            </View>
-                            </TouchableHighlight>
+                        <View style={{width: '25%', }}>
+                            <IconButton
+                                icon='ios-arrow-dropleft'
+                                side='left'
+                                text='Back'
+                                handleTouch={() => this.props.setModalVisible(false)}
+                            />
                         </View>
 
                         <Text style={{fontWeight: "bold", textDecorationLine: "underline", textAlign: "center" }}>Trial Details</Text>
