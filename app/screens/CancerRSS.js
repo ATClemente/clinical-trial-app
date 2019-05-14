@@ -5,13 +5,16 @@ var XMLParser = require('react-xml-parser');
 import { Card, CardItem, Left, Body, Container, Content } from 'native-base';
 import GradientButton from '../components/GradientButton';
 import Colors from '../constants/Colors';
+import PopUpScreenModal from '../components/PopUpScreenModal'
+
 
 export default class CancerRSS extends React.Component {
     //Cite: https://facebook.github.io/react-native/docs/network
     constructor(props) {
         super(props);
        
-        this.state = { isLoading: true}
+        this.state = { isLoading: true }
+        this.state = { isLoading: true, modalVisible: false, modalURL: '' }
 
 
         var xmlText = "<?xml version='1.0' encoding='utf-8'?>\
@@ -37,6 +40,20 @@ export default class CancerRSS extends React.Component {
      //   console.log(xml.getElementsByTagName('Name'));
 
     }
+
+
+    _makeModalVisible = () => {
+        this.setState({ modalVisible: true })
+    }
+
+    _hideModal = () => {
+        // Make modal visible 
+        this.setState({ modalVisible: false })
+
+
+    }
+
+
 
     //Cite: https://gist.github.com/PhilipFlyvholm/d4171a16900cef6146b097a7ed432515
 
@@ -123,7 +140,13 @@ export default class CancerRSS extends React.Component {
                         renderItem={this._renderItem}
                         keyExtractor={(item, index) => item.guid}
                     />
+ 
                 </Content>
+                <PopUpScreenModal
+                    visible={this.state.modalVisible}
+                    hideModal={this._hideModal}
+                    url={this.state.modalURL}
+                />
             </Container>
         );
     }
@@ -162,7 +185,7 @@ export default class CancerRSS extends React.Component {
                     <View style={{ width: '100%', marginBottom: 5 }}>
                         <GradientButton
                             colors={[Colors.blueOne, Colors.blueTwo]}
-                            handleClick={() => Linking.openURL(item.link)}
+                            handleClick={() => this.setState({ modalVisible: true, modalURL: item.link })}
                             loading={false}
                             disabled={false}
                             text='View Article'
