@@ -31,6 +31,7 @@ import ClinicalTrialSearchResults from '../components/ClinicalTrialSearchResults
 import SearchLocationModal from '../components/SearchLocationModal';
 import { toastDelay } from '../constants/Constants';
 import IconButton from '../components/IconButton';
+import Styles from '../constants/Styles';
 
 export default class ClinicalTrialSearchScreen extends React.Component {
   static navigationOptions = {
@@ -45,9 +46,10 @@ export default class ClinicalTrialSearchScreen extends React.Component {
         keyWordText: '',
         zipCodeText: this.global.profile.location,
         //distanceSelect: "10",
-        searchSize: 5,
+        searchSize: 20,
         resultsFromIndex: 0, //Just add searchSize for next batch when needed.
-        searchData: {},
+        searchDataTotal: null,
+        searchDataTrials: [],
         prevParams: {},
         desiredStatus: "active",
         desiredPurpose: "treatment",
@@ -77,8 +79,8 @@ export default class ClinicalTrialSearchScreen extends React.Component {
     const disableSearch = (this.state.keyWordText && this.state.zipCodeText) ? false : true;
     const disablePrev = this.state.prevParams == {} || this.state.currentPage == 1;
     const disableNext = this.state.prevParams == {} 
-      || this.state.currentPage == Math.ceil(this.state.searchData.total / this.state.searchSize)
-      || !this.state.searchData.total;
+      || this.state.currentPage == Math.ceil(this.state.searchDataTotal / this.state.searchSize)
+      || !this.state.searchDataTotal;
     const tabColor = Colors.btnBlue;
 
     return (
@@ -159,38 +161,22 @@ export default class ClinicalTrialSearchScreen extends React.Component {
           </View>
         </View>
 
-        <View style={styles.pagingButtons}>
 
-          <IconButton
-            icon='ios-arrow-dropleft'
-            side='left'
-            disabled={disablePrev}
-            handleTouch={() => this._doAPISearch(true, -1)}
-            text='Prev'
-            textColor={tabColor}
-            iconColor={tabColor}
-          />
+        { (this.state.searchDataTotal != null) && 
+          <View style={{ 
+            height: 24,
+            paddingTop: 5,
+            paddingBottom: 7,
+            marginLeft: 10,
+            marginRight: 10,
+            justifyContent: 'center', 
+            alignItems: 'center',
+            borderBottomWidth: StyleSheet.hairlineWidth
+          }}>
+            <Text>Check out these trials:</Text>
+          </View>
+        }
 
-          { (this.state.searchData.total != undefined) && 
-            <View style={{ 
-              height: 24,
-              paddingTop: 3,
-            }}>
-              <Text>Page {this.state.currentPage.toString()} of {Math.ceil(this.state.searchData.total / this.state.searchSize)}</Text>
-            </View>
-          }
-
-          <IconButton
-            icon='ios-arrow-dropright'
-            side='right'
-            disabled={disableNext}
-            handleTouch={() => this._doAPISearch(true)}
-            text='Next'
-            textColor={tabColor}
-            iconColor={tabColor}
-          />
-
-        </View>
 
         {this.state.searchLoading &&
             <View style={styles.searchLoading}>
@@ -201,7 +187,9 @@ export default class ClinicalTrialSearchScreen extends React.Component {
 
         {!this.state.searchLoading &&
           <ClinicalTrialSearchResults 
-            searchData = {this.state.searchData} 
+            searchDataTotal = {this.state.searchDataTotal} 
+            searchDataTrials = {this.state.searchDataTrials}
+            searchPageFunction = {() => this._doAPISearch(true)}
             currentPage = {this.state.currentPage}
             searchSize = {this.state.searchSize}
             searchRadius = {Number(this.state.desiredDistance)}/>
@@ -213,10 +201,12 @@ export default class ClinicalTrialSearchScreen extends React.Component {
 
   _doAPISearch(pageSearch = false, pageDirection = 1, useInclude = true){
 //ClinicalTrialAPIUtil.sendPostRequest(this.state.searchSize, 0, true, "active", "treatment", keyWordArg, zipCodeArg, this.state.distanceSelect)
-    this.setState({searchLoading: true});
     Keyboard.dismiss();
     var params = {};
     if(!pageSearch){
+      this.setState({searchLoading: true});
+      this.setState({searchDataTotal: null});
+      this.setState({searchDataTrials: []});
 
       this.state.resultsFromIndex = 0;
       this.state.currentPage = 1;
@@ -274,19 +264,23 @@ export default class ClinicalTrialSearchScreen extends React.Component {
     }*/  
     ClinicalTrialAPIUtil.sendPostRequest(params)
     .then((response) => {
-        if(response.total === undefined){
+        if(response != undefined && response != null){
+          if(response.total === undefined){
             console.log(response);
             this.searchErrorAlert();
             this.setState({searchLoading: false});
-        }
-        else if(response.total == 0){
-          this.noResultsAlert();
-            this.setState({searchLoading: false});
-        }
-        else{
+          }
+          else if(response.total == 0){
+            this.noResultsAlert();
+              this.setState({searchLoading: false});
+          }
+          else{
             if(response.trials.length > 0){
               this.setState({searchLoading: false});
-              this.setState({searchData: response});
+              this.setState({searchDataTotal: response.total});
+              this.setState({
+                searchDataTrials: [...this.state.searchDataTrials, ...response.trials]});
+                //searchDataTrials: response.trials});
               this.setState({prevParams: params});
               console.log(response.total);
               //console.log(ClinicalTrialAPIUtil.getAgeRestrictions(this.state.searchData.trials[0]));
@@ -301,6 +295,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
               this.setState({searchLoading: false});
               this.noMorePages();
             }
+          }
         }
     });                                                     
   }
@@ -370,8 +365,8 @@ export default class ClinicalTrialSearchScreen extends React.Component {
   }
 
   _getTotalPageCount = () => {
-    let totalPages = Math.ceil(this.props.searchData.total / this.props.searchSize);
-    return totalPages.toString();
+    let totalPages = Math.ceil(this.props.searchDataTotal / this.props.searchSize);
+    return totalPages;
   }
 
   _testFunc(){
@@ -472,7 +467,7 @@ const styles = StyleSheet.create({
     marginTop: Platform.OS === 'ios' ? 5 : 10,
     flexDirection: 'row',
     marginHorizontal: 20,
-    justifyContent: "space-between"
+    //justifyContent: "space-between"
   },
   pageButton: {
     height: 24,

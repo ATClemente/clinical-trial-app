@@ -34,7 +34,7 @@ export default class ClinicalTrialSearchResults extends React.Component {
   }
 
   render() {
-    if(this.props.searchData.total == undefined || this.props.searchData.total == 0){
+    if(this.props.searchDataTotal == undefined || this.props.searchDataTotal == 0){
       return (
         <View style={styles.noResultsView}>
           <Text>No results yet.</Text>
@@ -53,9 +53,11 @@ export default class ClinicalTrialSearchResults extends React.Component {
               viewTrial = {this.setUpModal}
           />
             <FlatList
-              data={this.props.searchData.trials}
+              data={this.props.searchDataTrials}
               renderItem={this._renderItem}
               keyExtractor={(item) => item[QueryConstants.NCT_ID]}
+              ListFooterComponent={this._renderFooter}
+              onEndReached={this._renderMoreResults}
             />
           </View>
       );
@@ -63,7 +65,8 @@ export default class ClinicalTrialSearchResults extends React.Component {
   }
 
   _renderItem = ({item, index}) => {
-    const number = (index+(1 + this.props.searchData.trials.length * ( this.props.currentPage - 1 ))).toString();
+    //const number = (index+(1 + this.props.searchDataTrials.length * ( this.props.currentPage - 1 ))).toString();
+    const number = (index + 1).toString();
     const trialText = item[QueryConstants.BRIEF_TITLE];
     const ViewTrialButton = (
       <TouchableOpacity 
@@ -106,6 +109,30 @@ export default class ClinicalTrialSearchResults extends React.Component {
       />
     );
   };
+
+  _renderFooter = () => {
+    if (this.props.currentPage >= Math.ceil(this.props.searchDataTotal / this.props.searchSize)) return null;
+
+    return (
+      <View
+        style={{
+          paddingVertical: 20,
+          //borderTopWidth: 1,
+          //borderColor: "#CED0CE"
+        }}
+      >
+        <ActivityIndicator size='large' color="#0000ff" />
+      </View>
+    );
+  }
+
+  _renderMoreResults = () => {
+    if(this.props.currentPage < Math.ceil(this.props.searchDataTotal / this.props.searchSize)){
+      console.log("Called the function");
+      this.props.searchPageFunction();
+    }  
+  
+  }
 
   // _getTotalPageCount = () => {
   //   let totalPages = Math.ceil(this.props.searchData.total / this.props.searchSize);
