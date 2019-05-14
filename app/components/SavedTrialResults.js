@@ -50,7 +50,7 @@ export default class SavedTrialResults extends React.Component {
     this.setState({ trials: newState, isLoading: false });
   }
 
-  _loadTrials = async (trials) => {
+  _loadTrials = async trials => {
     const params = {};
     params[QueryConstants.NCT_ID] = trials;
     params[QueryConstants.INCLUDE_STR] = QueryConstants.INCLUDE_ARR;
@@ -93,6 +93,7 @@ export default class SavedTrialResults extends React.Component {
           setModalVisible={vis => this.setModalVisible(vis)}
           searchRadius={10}
           trial={this.state.currentTrial}
+          savedScreen={true}
         />
       </View>
     )

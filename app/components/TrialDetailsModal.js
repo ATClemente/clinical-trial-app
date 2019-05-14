@@ -198,6 +198,9 @@ export default class TrialDetailsModal extends React.Component {
             this.setGlobal({ trials: updatedTrials });
             await AsyncStorage.setItem('trials', JSON.stringify(updatedTrials));
             this.setState({ modifyTrial: false });
+            if (this.props.savedScreen) {
+                this.props.setModalVisible(false);
+            }
         } catch (e) {
             console.log(e);
             if (e.response) {
