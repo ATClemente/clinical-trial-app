@@ -7,6 +7,7 @@ export const CURRENT_TRIAL_STATUS_STR = 'current_trial_status';
 export const PURPOSE_CODE_STR = 'primary_purpose.primary_purpose_code';
 export const POSTAL_CODE_STR = 'sites.org_postal_code';
 export const DISTANCE_STR = 'sites.org_coordinates_dist';
+export const GENDER_STR = 'eligibility.structured.gender';
 export const KEYWORD_STR = '_fulltext';
 export const INCLUDE_STR = 'include';
 

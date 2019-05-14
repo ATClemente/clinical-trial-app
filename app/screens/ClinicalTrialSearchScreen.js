@@ -215,6 +215,17 @@ export default class ClinicalTrialSearchScreen extends React.Component {
       params[QueryConstants.FROM_STR] = this.state.resultsFromIndex;
       params[QueryConstants.CURRENT_TRIAL_STATUS_STR] = this.state.desiredStatus;
       params[QueryConstants.PURPOSE_CODE_STR] = this.state.desiredPurpose;
+      
+      let genderFilter = ["BOTH"];
+      //let genderFilter = [];
+      if(this.global.profile.gender){
+        genderFilter.push("MALE");
+      }
+      else{
+        genderFilter.push("FEMALE");
+      }
+
+      params[QueryConstants.GENDER_STR] = genderFilter;
 
       let keyWordArg = this.state.keyWordText.trim();
       let zipCodeArg = this.state.zipCodeText.trim();
