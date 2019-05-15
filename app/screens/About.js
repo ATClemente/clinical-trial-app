@@ -23,19 +23,17 @@ export default class About extends React.Component {
                 />
                 </View>
                 <Text style={styles.abstract}>Approximately 40% of men and women will be diagnosed with cancer in their lifetimes. Many
-times, cancer is treated with traditional therapies such as chemotherapy, but the effectiveness
-of such drugs can wane after repeated trials. When traditional treatment options fail to be as
-effective, patients can turn to clinical trials and participate in novel therapies for cancer
-treatment.Other resources that can increase a patient's likelihood of survival is to be informed of
-the most recently approved cancer drugs by the FDA. Since there are many new cancer
-treatments being released on a yearly basis, it is easy for general oncologists to not be aware of
-these findings as our groupmates have found out through their own personal experiences.It is
-thus important for patients to take the initiative to become made aware of these new therapies
-to discuss them as options with a doctor or to at least be aware that they exist. Lastly, we
-believe supplying people with articles on the latest research in cancer will allow them to be even
-more informed on the current landscape of cancer treatment. Thus,this application seeks to allow patients and researchers to find clinical trials in a more user friendly
-way, find information on newly approved cancer drugs, and find relevant research articles on
-their illness</Text>
+            times, cancer is treated with traditional therapies such as chemotherapy, but the effectiveness
+            of such drugs can wane after repeated trials. When traditional treatment options fail to be as
+            effective, patients can turn to clinical trials and participate in novel therapies for cancer
+            treatment.Other ways that help increase a patient's likelihood of survival is to be informed of
+            the most recently FDA approved cancer drugs. Since many new cancer
+            treatments are released on a yearly basis, it is helpful to stay atop of the most recent developments.
+            Lastly, this application  shows articles on the latest research and news on cancer, which will allow people to be even
+            more informed on the current landscape of cancer treatment. 
+           
+                           
+            </Text>
 
                 </View>
             </ScrollView>
