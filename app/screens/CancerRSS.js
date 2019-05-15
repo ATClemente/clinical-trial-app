@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, Linking,AppRegistry, StyleSheet,ActivityIndicator, Text, WebView, View, Button, AsyncStorage} from 'react-native';
+import { FlatList, Linking,AppRegistry, StyleSheet,ActivityIndicator, Text, WebView, View, Button, AsyncStorage, Image} from 'react-native';
 import { ExpoConfigView } from '@expo/samples';
 var XMLParser = require('react-xml-parser');
 import { Card, CardItem, Left, Body, Container, Content } from 'native-base';
@@ -175,11 +175,23 @@ export default class CancerRSS extends React.Component {
 
                 </CardItem>
                 <CardItem>
-                    <Body>
+                    <Body style={{ justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
+
+                        <View style={{ justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
+                            <Image
+                                style={{ width: 150, height: 150, justifyContent: 'center', alignItems: 'center', paddingBottom: 5 }}
+                                source={{ uri: item.enclosure.link }}
+
+                            />
+                        </View>
+
                         <Text>
                             Description:{item.description.replace('<p>', '').replace('</p>', '')} 
                         </Text>
+                   
+                      
                     </Body>
+                
                 </CardItem>
                 <CardItem style={{ flexDirection: 'row', justifyContent: 'center' }}>
                     <View style={{ width: '100%', marginBottom: 5 }}>
