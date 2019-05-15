@@ -9,6 +9,7 @@ import SettingsScreen from '../screens/SettingsScreen';
 import CancerNews from '../screens/CancerNews';
 import CancerRSS from '../screens/CancerRSS';
 import About from '../screens/About'
+import OnboardingClass from '../screens/OnboardingClass'
 
 const AboutStack = createStackNavigator({
     screen: About,
@@ -113,6 +114,27 @@ CancerRSSStack.navigationOptions = {
         />
     ),
 };
+
+
+
+const OnboardingStack = createStackNavigator({
+    Onboarding: {
+        screen: OnboardingClass,
+        navigationOptions: {
+            title: 'Temp onboarding screen'
+        }
+    },
+});
+
+OnboardingStack.navigationOptions = {
+    tabBarLabel: ' Temp_Onboarding_Tab',
+    tabBarIcon: ({ focused }) => (
+        <TabBarIcon
+            focused={focused}
+            name='md-paper'
+        />
+    ),
+};
 // Do this last to add a button 
 export default createBottomTabNavigator({
   AboutStack,
@@ -120,5 +142,6 @@ export default createBottomTabNavigator({
   SavedTrialsStack,
   CancerNewsStack,
   CancerRSSStack,
-  SettingsStack, 
+    SettingsStack, 
+  OnboardingStack
 });
