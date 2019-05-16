@@ -45,13 +45,6 @@ export default class ClinicalTrialSearchResults extends React.Component {
     else{
       return (
           <View style={styles.allResultsView}>
-            <TrialDetailsModal
-              modalVisible = { this.state.displayTrialDetails }
-              setModalVisible = { (vis) => { this.setModalVisible(vis) }}
-              searchRadius = {this.props.searchRadius}
-              trial = { this.state.currentTrial }
-              viewTrial = {this.setUpModal}
-          />
             <FlatList
               data={this.props.searchDataTrials}
               renderItem={this._renderItem}
@@ -59,6 +52,13 @@ export default class ClinicalTrialSearchResults extends React.Component {
               ListFooterComponent={this._renderFooter}
               onEndReached={this._renderMoreResults}
             />
+            <TrialDetailsModal
+              modalVisible = { this.state.displayTrialDetails }
+              setModalVisible = { (vis) => { this.setModalVisible(vis) }}
+              searchRadius = {this.props.searchRadius}
+              trial = { this.state.currentTrial }
+              viewTrial = {this.setUpModal}
+          />
           </View>
       );
     }

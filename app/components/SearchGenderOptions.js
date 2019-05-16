@@ -38,7 +38,7 @@ export default class SearchGenderOptions extends React.PureComponent{
           paddingVertical: 20,
           paddingHorizontal: 20,
         }}>
-          <View style={{ width: '100%%' }}>
+          <View style={{ width: '100%' }}>
             <CheckBox
               title='Male'
               iconType='ionicon'
@@ -55,6 +55,14 @@ export default class SearchGenderOptions extends React.PureComponent{
               checked={this.state.female}
               onPress={this._setFemale}
             />
+            <View style={{ marginTop: 20, marginBottom: 15 }}>
+              <GradientButton
+                colors={[Colors.radar2, Colors.radar3]}
+                handleClick={() => { this.props.setGender(this.state.gender); this.props.setVisible(false)}}
+                disabled={this.state.gender ? false : true}
+                text='Update'
+              />
+            </View>
             <Button onPress={() => {this.props.setGender(''); this.props.setVisible(false)}} title='Clear Filter' />
           </View>
         </SafeAreaView>
@@ -64,17 +72,14 @@ export default class SearchGenderOptions extends React.PureComponent{
 
   _setMale = async () => {
     await this.setState({ male: true, female: false, gender: 'Male' });
-    this._dismiss();
   }
 
   _setFemale = async () => {
     await this.setState({ female: true, male: false, gender: 'Female' }); 
-    this._dismiss();
   }
 
   _reset = async () => {
     await this.setState({ male: false, female: false, gender:'' });
-    this._dismiss();
   }
 
   _dismiss() {

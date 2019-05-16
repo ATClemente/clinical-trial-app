@@ -39,7 +39,7 @@ export default class SearchGenderOptions extends React.PureComponent{
           paddingVertical: 20,
           paddingHorizontal: 20,
         }}>
-          <View style={{ width: '100%%' }}>
+          <View style={{ width: '100%' }}>
             <Text style={{ alignSelf: 'center', fontSize: 20 }}>
               Set Phase
             </Text>

@@ -529,8 +529,8 @@ const styles = StyleSheet.create({
   },
   inputView:{
     marginTop: Platform.OS === 'ios' ? 5 : 40,
-    paddingLeft: 20,
-    paddingRight: 20,
+    paddingLeft: 15,
+    paddingRight: 15,
   },
   distanceInputs:{
     flexDirection: "row"
