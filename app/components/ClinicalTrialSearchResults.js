@@ -128,7 +128,6 @@ export default class ClinicalTrialSearchResults extends React.Component {
 
   _renderMoreResults = () => {
     if(this.props.currentPage < Math.ceil(this.props.searchDataTotal / this.props.searchSize)){
-      console.log("Called the function");
       this.props.searchPageFunction();
     }  
   
