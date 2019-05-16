@@ -98,12 +98,20 @@ export default class SearchGenderOptions extends React.PureComponent{
   }
 
   _setPhase = async () => {
-    const phase1 = this.state.phase1 ? 'I' : '';
-    const phase2 = this.state.phase2 ? 'II' : '';
-    const phase3 = this.state.phase3 ? 'III' : '';
-    const phase4 = this.state.phase4 ? 'IV' : '';
-    const phases = [phase1, phase2, phase3, phase4];
-    await this.setState({ phase: phases.join() })
+    const phases = [];
+    if (this.state.phase1) {
+      phases.push('I');
+    }
+    if (this.state.phase2) {
+      phases.push('II');
+    }
+    if (this.state.phase3) {
+      phases.push('III');
+    }
+    if (this.state.phase4) {
+      phases.push('IV');
+    }
+    await this.setState({ phase: phases.join() });
     this._dismiss();
   }
 
