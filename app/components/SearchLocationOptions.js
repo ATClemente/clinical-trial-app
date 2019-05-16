@@ -84,7 +84,7 @@ export default class SearchLocationOptions extends React.PureComponent{
             <View style={{ marginTop: 20, marginBottom: 15 }}>
               <GradientButton
                 colors={[Colors.radar2, Colors.radar3]}
-                handleClick={() => { this.props.setLocation(this.state.location); this.props.setVisible(false)}}
+                handleClick={() => { this.props.setLocation(this.state.location); this.props.setRadius(this.state.radius); this.props.setVisible(false)}}
                 disabled={this.state.location ? false : true}
                 text='Update'
               />
