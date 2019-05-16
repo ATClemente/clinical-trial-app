@@ -1,12 +1,13 @@
 import React from 'reactn';
 import {
   Button,
+  Keyboard,
   SafeAreaView,
   Text,
   View,
 } from 'react-native';
 import { Form, Icon, Item, Input, Picker } from 'native-base';
-import { CheckBox } from 'react-native-elements';
+import { CheckBox, Slider } from 'react-native-elements';
 import Modal from 'react-native-modal';
 import FormInput from './FormInput';
 import GradientButton from './GradientButton';
@@ -16,8 +17,8 @@ export default class SearchLocationOptions extends React.PureComponent{
   constructor(props) {
     super(props);
     this.state = {
-      location: this.global.location,
-      radius: '',
+      location: this.global.profile.location,
+      radius: 10,
     }
   }
 
@@ -38,12 +39,12 @@ export default class SearchLocationOptions extends React.PureComponent{
           paddingHorizontal: 20,
         }}>
           <View style={{ width: '100%%' }}>
-            <Text style={{ alignSelf: 'center', fontSize: 20 }}>
+            <Text style={{ alignSelf: 'center', fontSize: 20, marginBottom: 10 }}>
               Set Location
             </Text>
-            <Item underline>
+            {/* <Item underline>
               <Input 
-                placeholder='90210'
+                placeholder='Zip code'
                 keyboardType='number-pad'
                 maxLength={5}
                 value={this.state.location}
@@ -51,47 +52,44 @@ export default class SearchLocationOptions extends React.PureComponent{
                 placeholderTextColor='#aaa'
                 style={{ fontSize: 16 }}
               />
-            </Item>
-            <CheckBox
-              title='Within 10 miles'
-              iconType='ionicon'
-              checkedIcon='md-radio-button-on'
-              uncheckedIcon='md-radio-button-off'
-              checked={this.state.box1}
-              onPress={this._set1}
+            </Item> */}
+            <FormInput
+              label='Location'
+              placeholder='90210'
+              keyboardType='number-pad'
+              maxLength={5}
+              value={this.state.location}
+              onChangeText={location => { this.setState({ location }); 
+                if(location.length == 5) {
+                  Keyboard.dismiss();
+                }
+              }}
             />
-            <CheckBox
-              title='Within 25 miles'
-              iconType='ionicon'
-              checkedIcon='md-radio-button-on'
-              uncheckedIcon='md-radio-button-off'
-              checked={this.state.box2}
-              onPress={this._set2}
-            />
-            <CheckBox
-              title='Within 50 miles'
-              iconType='ionicon'
-              checkedIcon='md-radio-button-on'
-              uncheckedIcon='md-radio-button-off'
-              checked={this.state.box3}
-              onPress={this._set3}
-            />
-            <CheckBox
-              title='Within 100 miles'
-              iconType='ionicon'
-              checkedIcon='md-radio-button-on'
-              uncheckedIcon='md-radio-button-off'
-              checked={this.state.box4}
-              onPress={this._set4}
-            />
-            {/* <View style={{ marginTop: 20, marginBottom: 15 }}>
+            <View>
+              <View style={{ width: '100%', alignContent: 'stretch' }}>
+                <Slider
+                  value={this.state.radius}
+                  onValueChange={value => this.setState({ radius: value })}
+                  maximumValue={100}
+                  minimumValue={10}
+                  step={10}
+                />
+              </View>
+              <View style={{ flexDirection: 'row' }}>
+                <Text style={{ fontWeight: '500' }}>Radius: </Text>
+                <Text>{this.state.radius}</Text>
+                <Text> miles</Text>
+              </View>
+            </View>
+            <View style={{ marginTop: 20, marginBottom: 15 }}>
               <GradientButton
                 colors={[Colors.radar2, Colors.radar3]}
                 handleClick={() => { this.props.setLocation(this.state.location); this.props.setVisible(false)}}
+                disabled={this.state.location ? false : true}
                 text='Update'
               />
-            </View> */}
-            <Button onPress={() => {this.setState({ location: '', radius: '' }); this.props.setLocation(''); this.props.setVisible(false)}} title='Clear Filter' />
+            </View>
+            <Button onPress={() => {this.setState({ location: '', radius: 10 }); this.props.setLocation(''); this.props.setVisible(false)}} title='Clear Filter' />
           </View>
         </SafeAreaView>
       </Modal>

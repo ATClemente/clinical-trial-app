@@ -46,35 +46,43 @@ export default class SearchGenderOptions extends React.PureComponent{
             <CheckBox
               title='Phase I'
               iconType='ionicon'
-              checkedIcon='md-radio-button-on'
-              uncheckedIcon='md-radio-button-off'
+              checkedIcon='ios-checkbox-outline'
+              uncheckedIcon='ios-square-outline'
               checked={this.state.phase1}
-              onPress={this._set1}
+              onPress={() => this.setState({ phase1: !this.state.phase1 })}
             />
             <CheckBox
               title='Phase II'
               iconType='ionicon'
-              checkedIcon='md-radio-button-on'
-              uncheckedIcon='md-radio-button-off'
+              checkedIcon='ios-checkbox-outline'
+              uncheckedIcon='ios-square-outline'
               checked={this.state.phase2}
-              onPress={this._set2}
+              onPress={() => this.setState({ phase2: !this.state.phase2 })}
             />
             <CheckBox
               title='Phase III'
               iconType='ionicon'
-              checkedIcon='md-radio-button-on'
-              uncheckedIcon='md-radio-button-off'
+              checkedIcon='ios-checkbox-outline'
+              uncheckedIcon='ios-square-outline'
               checked={this.state.phase3}
-              onPress={this._set3}
+              onPress={() => this.setState({ phase3: !this.state.phase3 })}
             />
             <CheckBox
               title='Phase VI'
               iconType='ionicon'
-              checkedIcon='md-radio-button-on'
-              uncheckedIcon='md-radio-button-off'
+              checkedIcon='ios-checkbox-outline'
+              uncheckedIcon='ios-square-outline'
               checked={this.state.phase4}
-              onPress={this._set4}
+              onPress={() => this.setState({ phase4: !this.state.phase4 })}
             />
+            <View style={{ marginTop: 20, marginBottom: 15 }}>
+              <GradientButton
+                colors={[Colors.radar2, Colors.radar3]}
+                handleClick={this._setPhase}
+                disabled={this.state.phase1 || this.state.phase2 || this.state.phase3 || this.state.phase4 ? false : true}
+                text='Update'
+              />
+            </View>
             <Button onPress={this._reset} title='Clear Filter' />
           </View>
         </SafeAreaView>
@@ -89,23 +97,13 @@ export default class SearchGenderOptions extends React.PureComponent{
     this._dismiss();
   }
 
-  _set1 = async () => {
-    await this.setState({ phase1: true, phase2: false, phase3: false, phase4: false, phase: 'I' });
-    this._dismiss();
-  }
-
-  _set2 = async () => {
-    await this.setState({ phase1: false, phase2: true, phase3: false, phase4: false, phase: 'II' });
-    this._dismiss();
-  }
-
-  _set3 = async () => {
-    await this.setState({ phase1: false, phase2: false, phase3: true, phase4: false, phase: 'III' });
-    this._dismiss();
-  }
-
-  _set4 = async () => {
-    await this.setState({ phase1: false, phase2: false, phase3: false, phase4: true, phase: 'IV' });
+  _setPhase = async () => {
+    const phase1 = this.state.phase1 ? 'I' : '';
+    const phase2 = this.state.phase2 ? 'II' : '';
+    const phase3 = this.state.phase3 ? 'III' : '';
+    const phase4 = this.state.phase4 ? 'IV' : '';
+    const phases = [phase1, phase2, phase3, phase4];
+    await this.setState({ phase: phases.join() })
     this._dismiss();
   }
 

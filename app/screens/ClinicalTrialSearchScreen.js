@@ -124,21 +124,21 @@ export default class ClinicalTrialSearchScreen extends React.Component {
               text={this.state.zipCodeText ? this.state.zipCodeText : 'Location'}
               handleTouch={this._setLocationVisible}
               focused={this.state.zipCodeText ? true : false}
-              style={{ width: '26%' }}
+              style={{ width: '25%' }}
             />
             <SearchOptionsButton 
               icon='md-person'
               text={this.state.gender ? this.state.gender : 'Gender'}
               handleTouch={this._setGenderVisible}
               focused={this.state.gender ? true : false}
-              style={{ width: '26%' }}
+              style={{ width: '25%' }}
             />
             <SearchOptionsButton 
               icon='ios-moon'
               text={this.state.phase ? this.state.phase : 'Phase'}
               handleTouch={this._setPhaseVisible}
               focused={this.state.phase ? true : false}
-              style={{ width: '22%' }}
+              style={{ width: '25%' }}
             />
             {/* <SearchBar
               placeholder="Zip Code"
