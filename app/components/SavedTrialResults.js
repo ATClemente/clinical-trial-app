@@ -118,7 +118,7 @@ export default class SavedTrialResults extends React.Component {
 
   _listEmptyComponent = () => {
     return (
-      <View>
+      <View style={{ flex: 1, alignItems: 'center', marginTop: 30 }}>
         <Text>
           No trials saved.
         </Text>

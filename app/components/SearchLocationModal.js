@@ -21,6 +21,7 @@ export default class SearchLocationModal extends React.PureComponent{
     super(props);
     this.state = {
       gender: this.global.profile.gender,
+      genderSwitch: this.global.profile.gender && this.global.profile.gender === 'male' ? true : false,
       location: this.global.profile.location,
       isLoading: true,
       isSubmitting: false,
@@ -33,7 +34,7 @@ export default class SearchLocationModal extends React.PureComponent{
       const { data } = await axios.patch(
         Urls.server + '/user/profile',
         {
-          gender: this.state.gender,
+          gender: this.state.genderSwitch ? 'male' : 'female',
           location: this.state.location,
         },
         {
@@ -43,11 +44,11 @@ export default class SearchLocationModal extends React.PureComponent{
           }
         }
       );
-      this.setGlobal({ profile: data.profile });
+      await this.setGlobal({ profile: data.profile });
       await AsyncStorage.setItem('profile', JSON.stringify(data.profile));
       Object.keys(data.profile).forEach(item => {
         this.setState({ item });
-      });
+      });  
       this.props.setProfileLocation(data.profile.location);
       this.props.setLocationModal(false);
     } catch (e) {
@@ -95,8 +96,8 @@ export default class SearchLocationModal extends React.PureComponent{
             </View>
             <FormSwitch
                 label='Gender'
-                onValueChange={gender => this.setState({ gender })}
-                value={this.state.gender}
+                onValueChange={genderSwitch => this.setState({ genderSwitch })}
+                value={this.state.genderSwitch}
               />
               <FormInput
                 label='Location (Zip Code)'

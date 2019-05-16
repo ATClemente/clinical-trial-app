@@ -1,3 +1,3 @@
 export default {
-  toastDelay: 1500
+  toastDelay: 2000
 };
