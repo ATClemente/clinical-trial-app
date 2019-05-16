@@ -93,7 +93,6 @@ export default class TrialDetailsModal extends React.Component {
 
                         <View style={{width: '25%', alignItems: 'flex-end' }}>
                             <IconButton
-                                style={{ marginRight: 3 }}
                                 icon={this.state.trialSaved ? 'md-star' : 'md-star-outline'}
                                 iconSize={26}
                                 side='right'
