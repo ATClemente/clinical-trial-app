@@ -68,7 +68,7 @@ export default class SearchGenderOptions extends React.PureComponent{
               onPress={() => this.setState({ phase3: !this.state.phase3 })}
             />
             <CheckBox
-              title='Phase VI'
+              title='Phase IV'
               iconType='ionicon'
               checkedIcon='ios-checkbox-outline'
               uncheckedIcon='ios-square-outline'

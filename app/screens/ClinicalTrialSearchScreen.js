@@ -298,6 +298,41 @@ export default class ClinicalTrialSearchScreen extends React.Component {
 
       params[QueryConstants.GENDER_STR] = genderFilter;
 
+      let phaseFilter = this.state.phase.split(",");
+      let phaseOptions = QueryConstants.PHASE_OPTION_ARR;
+
+      let addPhase0 = false;
+      let addPhase1_2 = false;
+      let addPhase2_3 = false;
+
+      for(var p in phaseFilter){
+        if(phaseFilter[p] === 'I'){
+          addPhase0 = true;
+          addPhase1_2 = true;
+        }
+        if(phaseFilter[p] === 'II'){
+          addPhase1_2 = true;
+          addPhase2_3 = true;
+        }
+        if(phaseFilter[p] === 'III'){
+          addPhase2_3 = true;
+        }
+      }
+
+      if(addPhase0){
+        phaseFilter.push('O');
+      }
+      if(addPhase1_2){
+        phaseFilter.push('I_II');
+      }
+      if(addPhase2_3){
+        phaseFilter.push('II_III');
+      }
+
+      phaseFilter.push(phaseOptions[phaseOptions.length - 1]);
+      
+      params[QueryConstants.PHASE_STR] = phaseFilter;
+
       let keyWordArg = this.state.keyWordText.trim();
       let zipCodeArg = this.state.zipCodeText.trim();
 
