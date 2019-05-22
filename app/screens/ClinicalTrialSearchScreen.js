@@ -228,7 +228,8 @@ export default class ClinicalTrialSearchScreen extends React.Component {
             searchPageFunction = {() => this._doAPISearch(true)}
             currentPage = {this.state.currentPage}
             searchSize = {this.state.searchSize}
-            searchRadius = {Number(this.state.desiredDistance)}/>
+            searchRadius = {Number(this.state.desiredDistance)}
+            searchLocation = {this.state.zipCodeText}/>
         }
 
       </SafeAreaView>

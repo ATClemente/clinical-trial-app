@@ -54,11 +54,12 @@ export default class TrialDetailsModal extends React.Component {
     }
 
     componentWillMount(){
-        this.setProfileData();
-        this.setUserLocationCoordinates();
+        //this.setProfileData();
+        //this.setUserLocationCoordinates();
     }
 
     componentWillReceiveProps(nextProps) {
+        this.setUserLocationCoordinates(nextProps.searchLocation);
         this.setState({
             locationDistanceFilter: nextProps.searchRadius,
             modalVisible: nextProps.modalVisible,
@@ -70,13 +71,23 @@ export default class TrialDetailsModal extends React.Component {
         this.separateEligibilityCriteria(nextProps.trial);
     }
 
+    resetModal(){
+        //this.props.setModalVisible(false);
+        this.setState({
+            showMoreEligibility: false,
+            waitForLoading: true}, 
+            function(){
+            this.props.setModalVisible(false);
+        });
+    }
+
     render() {
         return (
             <Modal
                 animationType='slide'
                 transparent={ false }
                 visible={ this.state.modalVisible }
-                onRequestClose={() => { this.setState({showMoreEligibility: false}); this.props.setModalVisible(false) }}>
+                onRequestClose={() => { this.resetModal() }}>
                 <SafeAreaView style={styles.mainView}>
 
                     <View style={{ marginBottom: 5, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -85,7 +96,7 @@ export default class TrialDetailsModal extends React.Component {
                                 icon='ios-arrow-dropleft'
                                 side='left'
                                 text='Back'
-                                handleTouch={() => {this.setState({showMoreEligibility: false}); this.props.setModalVisible(false)}}
+                                handleTouch={() => { this.resetModal() }}
                             />
                         </View>
 
@@ -123,7 +134,7 @@ export default class TrialDetailsModal extends React.Component {
                                 {!this.isTrialEmpty(this.state.trial) && this.renderLeadOrganization(this.state.trial)}
                         </View>
 
-                        <Text style={{padding: 5, textAlign: "center"}}>Sites within {this.state.locationDistanceFilter} miles of {this.state.locationFilter}: </Text>
+                        <Text style={{padding: 5, textAlign: "center"}}>Sites within {this.state.locationDistanceFilter} miles of {this.props.searchLocation}: </Text>
 
                         <View /*style={styles.content}*/>
                                 {!this.isTrialEmpty(this.state.trial) && this.renderMapview(this.state.trial)}
@@ -134,14 +145,15 @@ export default class TrialDetailsModal extends React.Component {
                                 {!this.isTrialEmpty(this.state.trial) && this.renderEligibilityCriteria(this.state.trial)}
                         </View>
 
-                        {this.state.waitForLoading &&
-                            <View style={styles.profileLoading}>
-                                <ActivityIndicator size='large' color="#0000ff" />
-                            </View>
-                        }
-
                     </ScrollView>
                 </SafeAreaView>
+
+                {this.state.waitForLoading &&
+                    <View style={styles.profileLoading}>
+                        <ActivityIndicator size='large' color="#0000ff" />
+                    </View>
+                }
+
             </Modal>
         )
     }
@@ -439,6 +451,7 @@ export default class TrialDetailsModal extends React.Component {
             <View style={{ height: 300, width: 370 }}>
                 <MapView
                     style={{ flex: 1 }}
+                    onMapReady = {() => {this.setState({ waitForLoading: false })}}
                     initialRegion={{
                         latitude: this.state.locationFilterLat,
                         longitude: this.state.locationFilterLon,
@@ -487,7 +500,7 @@ export default class TrialDetailsModal extends React.Component {
         return site[QueryConstants.RECRUIT_STATUS].toLowerCase() == "active";
     }
 
-    async setUserLocationCoordinates(){
+    async setUserLocationCoordinates(zipInput){
 
         try {
             const response = await fetch('https://gist.githubusercontent.com/erichurst/7882666/raw/5bdc46db47d9515269ab12ed6fb2850377fd869e/US%2520Zip%2520Codes%2520from%25202013%2520Government%2520Data', {
@@ -498,7 +511,8 @@ export default class TrialDetailsModal extends React.Component {
                 zipCoordData = text;
               });
 
-            var searchstring = "\n" + this.state.locationFilter + ","; 
+            //var searchstring = "\n" + this.state.locationFilter + ","; 
+            var searchstring = "\n" + zipInput + ",";
             var searchForZip = zipCoordData.indexOf(searchstring);
 
             if (searchForZip != -1) {
@@ -628,7 +642,7 @@ const styles = StyleSheet.create({
     right: 0,
     top: 0,
     bottom: 0,
-    opacity: 0.80,
+    opacity: 1,
     backgroundColor: 'white',
     alignItems: 'center',
     justifyContent: 'center',
