@@ -4,7 +4,9 @@ const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { Pool } = require('pg');
-
+const request = require('request');
+//import { parse } from 'node-html-parser';
+const {parse} = require('node-html-parser')
 const app = express();
 app.use(bodyParser.json());
 const saltRounds = 5;
@@ -287,8 +289,31 @@ app.delete('/user/trials/:tid', async (req, res) => {
   }
 });
 
+app.get('/drugs/', async(req, res) =>
+{
+  request('https://www.centerwatch.com/drug-information/fda-approved-drugs/therapeutic-area/12/oncology', function (error, response, body) {
+    console.error('error:', error); // Print the error if one occurred
+    console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
+    console.log('body:', body); // Print the HTML for the Google homepage.
+
+
+    const root = parse(body);
+    const contents = root.querySelector('#ctl00_BodyContent_AreaDetails')
+    
+    console.log(contents)
+   // console.log(root.querySelector('#ctl00_BodyContent_AreaDetails'));
+  
+    //res.status(200).json(contents);
+  });
+
+ 
+
+});
+
+
 // Listen to the App Engine-specified port, or 8080 otherwise
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}...`);
 });
+
