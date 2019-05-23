@@ -10,7 +10,7 @@ import CancerNews from '../screens/CancerNews';
 import CancerRSS from '../screens/CancerRSS';
 import About from '../screens/About'
 import OnboardingClass from '../screens/OnboardingClass'
-
+import FDA_Drugs from '../screens/FDA_Drugs'
 const AboutStack = createStackNavigator({
     screen: About,
 });
@@ -135,6 +135,28 @@ OnboardingStack.navigationOptions = {
         />
     ),
 };
+
+
+
+
+const FDA_Drugs_Stack = createStackNavigator({
+    FDADrugs: {
+        screen: FDA_Drugs,
+        navigationOptions: {
+            title: 'FDA Drugs'
+        }
+    },
+});
+
+FDA_Drugs_Stack.navigationOptions = {
+    tabBarLabel: ' FDA Drugs',
+    tabBarIcon: ({ focused }) => (
+        <TabBarIcon
+            focused={focused}
+            name='md-paper'
+        />
+    ),
+};
 // Do this last to add a button 
 export default createBottomTabNavigator({
   AboutStack,
@@ -143,5 +165,6 @@ export default createBottomTabNavigator({
   CancerNewsStack,
   CancerRSSStack,
     SettingsStack, 
-  OnboardingStack
+    OnboardingStack,
+  FDA_Drugs_Stack
 });
