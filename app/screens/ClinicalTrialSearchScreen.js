@@ -48,6 +48,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
         hasNewSearchData: false,
         keyWordText: '',
         zipCodeText: '',
+        searchLocation: '',
         //distanceSelect: "10",
         searchSize: 20,
         resultsFromIndex: 0, //Just add searchSize for next batch when needed.
@@ -229,7 +230,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
             currentPage = {this.state.currentPage}
             searchSize = {this.state.searchSize}
             searchRadius = {Number(this.state.desiredDistance)}
-            searchLocation = {this.state.zipCodeText}/>
+            searchLocation = {this.state.searchLocation}/>
         }
 
       </SafeAreaView>
@@ -336,6 +337,8 @@ export default class ClinicalTrialSearchScreen extends React.Component {
 
       let keyWordArg = this.state.keyWordText.trim();
       let zipCodeArg = this.state.zipCodeText.trim();
+
+      this.setState({searchLocation: this.state.zipCodeText});
 
       if(zipCodeArg.length == 5){
         params[QueryConstants.POSTAL_CODE_STR] = zipCodeArg;
