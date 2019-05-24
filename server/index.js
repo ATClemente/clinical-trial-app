@@ -274,19 +274,20 @@ app.get('/drugs', async (req, res) => {
   request(
     'https://www.centerwatch.com/drug-information/fda-approved-drugs/therapeutic-area/12/oncology',
     (error, response, body) => {
-      console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
+      // console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
       const root = parse(body);
       const contents = root.querySelector('#ctl00_BodyContent_AreaDetails');
       const drugs = contents.childNodes.filter(e => e.tagName === 'p');
       const result = drugs.map((e, index) => {
         const text = e.childNodes[1].rawText.split(';');
+        const baseUrl = 'https://www.centerwatch.com';
         const link = e.childNodes[0].rawAttrs
           .split(' ')[1]
           .split('=')[1]
           .slice(1, -1);
         return {
           index,
-          link,
+          link: baseUrl + link,
           id: link.split('/')[4],
           name: e.childNodes[0].childNodes[0].rawText.trim(),
           manufacturer: text[1].trim(),
