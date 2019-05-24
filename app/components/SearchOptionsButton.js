@@ -32,7 +32,7 @@ export default ({ style, handleTouch, focused, text, icon }) => {
           borderWidth: 1, 
           borderColor: focused ? theme.orange.border : '#ccc', 
           backgroundColor: focused ? theme.orange.background : '#fff',
-          borderRadius: 4, 
+          borderRadius: 7, 
           height: 34 }}
         onPress={() => handleTouch(true)}
       >

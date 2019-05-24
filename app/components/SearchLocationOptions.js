@@ -12,6 +12,7 @@ import Modal from 'react-native-modal';
 import FormInput from './FormInput';
 import GradientButton from './GradientButton';
 import Colors from '../constants/Colors';
+import Styles from '../constants/Styles';
 
 export default class SearchLocationOptions extends React.PureComponent{
   constructor(props) {
@@ -29,15 +30,7 @@ export default class SearchLocationOptions extends React.PureComponent{
         avoidKeyboard={true}
         onRequestClose={() => this.props.setVisible(false)}
       >
-        <SafeAreaView style={{ 
-          flexDirection: 'column', 
-          alignItems: 'center', 
-          justifyContent: 'center',
-          backgroundColor: '#fff',
-          borderRadius: 4,
-          paddingVertical: 20,
-          paddingHorizontal: 20,
-        }}>
+        <SafeAreaView style={Styles.optionsModalContainer}>
           <View style={{ width: '100%' }}>
             <Text style={{ alignSelf: 'center', fontSize: 20, marginBottom: 10 }}>
               Set Location

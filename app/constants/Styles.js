@@ -54,5 +54,14 @@ export default StyleSheet.create({
     color: Colors.WHITE,
     textAlign: 'center',
     height: 20
+  },
+  optionsModalContainer: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    paddingVertical: 20,
+    paddingHorizontal: 20
   }
 });

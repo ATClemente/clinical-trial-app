@@ -2,6 +2,7 @@ import React from 'reactn';
 import {
   Button,
   SafeAreaView,
+  StyleSheet,
   Text,
   View,
 } from 'react-native';
@@ -10,6 +11,7 @@ import Modal from 'react-native-modal';
 import FormInput from './FormInput';
 import GradientButton from './GradientButton';
 import Colors from '../constants/Colors';
+import Styles from '../constants/Styles';
 
 export default class SearchGenderOptions extends React.PureComponent{
   constructor(props) {
@@ -30,48 +32,44 @@ export default class SearchGenderOptions extends React.PureComponent{
         avoidKeyboard={true}
         onRequestClose={() => this.props.setVisible(false)}
       >
-        <SafeAreaView style={{ 
-          flexDirection: 'column', 
-          alignItems: 'center', 
-          justifyContent: 'center',
-          backgroundColor: '#fff',
-          borderRadius: 4,
-          paddingVertical: 20,
-          paddingHorizontal: 20,
-        }}>
+        <SafeAreaView style={Styles.optionsModalContainer}>
           <View style={{ width: '100%' }}>
-            <Text style={{ alignSelf: 'center', fontSize: 20 }}>
-              Set Phase
+            <Text style={{ alignSelf: 'center', fontSize: 20, fontWeight: '500', marginBottom: 10 }}>
+              Select Phase
             </Text>
             <CheckBox
               title='Phase I'
-              iconType='ionicon'
-              checkedIcon='ios-checkbox-outline'
-              uncheckedIcon='ios-square-outline'
+              iconType='material'
+              checkedIcon='check-box'
+              uncheckedIcon='check-box-outline-blank'
+              containerStyle={styles.checkbox}
               checked={this.state.phase1}
               onPress={() => this.setState({ phase1: !this.state.phase1 })}
             />
             <CheckBox
               title='Phase II'
-              iconType='ionicon'
-              checkedIcon='ios-checkbox-outline'
-              uncheckedIcon='ios-square-outline'
+              iconType='material'
+              checkedIcon='check-box'
+              uncheckedIcon='check-box-outline-blank'
+              containerStyle={styles.checkbox}
               checked={this.state.phase2}
               onPress={() => this.setState({ phase2: !this.state.phase2 })}
             />
             <CheckBox
               title='Phase III'
-              iconType='ionicon'
-              checkedIcon='ios-checkbox-outline'
-              uncheckedIcon='ios-square-outline'
+              iconType='material'
+              checkedIcon='check-box'
+              uncheckedIcon='check-box-outline-blank'
+              containerStyle={styles.checkbox}
               checked={this.state.phase3}
               onPress={() => this.setState({ phase3: !this.state.phase3 })}
             />
             <CheckBox
               title='Phase IV'
-              iconType='ionicon'
-              checkedIcon='ios-checkbox-outline'
-              uncheckedIcon='ios-square-outline'
+              iconType='material'
+              checkedIcon='check-box'
+              uncheckedIcon='check-box-outline-blank'
+              containerStyle={styles.checkbox}
               checked={this.state.phase4}
               onPress={() => this.setState({ phase4: !this.state.phase4 })}
             />
@@ -112,7 +110,8 @@ export default class SearchGenderOptions extends React.PureComponent{
       phases.push('IV');
     }
     await this.setState({ phase: phases.join() });
-    this._dismiss();
+    this.props.setPhase(this.state.phase);
+    this.props.setVisible(false);
   }
 
   _dismiss() {
@@ -122,3 +121,11 @@ export default class SearchGenderOptions extends React.PureComponent{
     }, 200);
   }
 }
+
+const styles = StyleSheet.create({
+  checkbox: {
+    marginLeft: 0,
+    marginRight: 0,
+    backgroundColor: '#fff',
+  }
+});
