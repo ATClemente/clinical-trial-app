@@ -4,9 +4,15 @@ const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { Pool } = require('pg');
+<<<<<<< HEAD
 const { parse } = require('node-html-parser');
 const request = require('request');
 
+=======
+const request = require('request');
+//import { parse } from 'node-html-parser';
+const {parse} = require('node-html-parser')
+>>>>>>> 51c7d7be921f6fd3d36a3191f4e74e175c3aa673
 const app = express();
 app.use(bodyParser.json());
 const saltRounds = 10;
@@ -323,3 +329,4 @@ const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}...`);
 });
+
