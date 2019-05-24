@@ -100,25 +100,25 @@ export default class ClinicalTrialSearchScreen extends React.Component {
           setProfileLocation={this.setProfileLocation}
         />
 
+        <SearchBar
+          placeholder="Keywords"
+          onChangeText={text => this.setState({ keyWordText: text})}
+          value={this.state.keyWordText}
+          searchIcon={{ name: 'md-key', type: 'ionicon' }}
+          containerStyle={[
+            styles.searchBarContainer, 
+            {marginBottom: 4},
+          ]}
+          inputContainerStyle={styles.searchBarInput}
+          inputStyle={styles.searchBarText}
+          placeholderTextColor='#aaa'
+          returnKeyType='search'
+          enablesReturnKeyAutomatically={true}
+          onSubmitEditing={()=> this._doAPISearch()}
+          platform='ios'
+        />
+
         <View style={styles.inputView}>
-
-          <SearchBar
-            placeholder="Keywords"
-            onChangeText={text => this.setState({ keyWordText: text})}
-            value={this.state.keyWordText}
-            searchIcon={{ name: 'md-key', type: 'ionicon' }}
-            containerStyle={[
-              styles.searchBarContainer, 
-              {marginBottom: 4},
-            ]}
-            inputContainerStyle={styles.searchBarInput}
-            inputStyle={styles.searchBarText}
-            placeholderTextColor='#aaa'
-            returnKeyType='search'
-            enablesReturnKeyAutomatically={true}
-            onSubmitEditing={()=> this._doAPISearch()}
-          />
-
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 6, height: 34 }}>
             <SearchOptionsButton 
               icon='md-pin'
@@ -189,7 +189,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
               <TouchableOpacity 
               onPress={this._clearFilters} 
               style={{ width: '100%', height: '100%', justifyContent: 'center', alignItems: 'flex-end' }}>
-                <Text style={{ color: '#324e7a' }}>Reset</Text>
+                <Text style={{ color: '#0078ff', fontSize: 16 }}>Reset</Text>
               </TouchableOpacity>
             </View>
 
@@ -266,7 +266,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
   }
 
   _clearFilters = () => {
-    this.setState({ zipCodeText: '', gender: '', phase: '' });
+    this.setState({ zipCodeText: '', gender: '', phase: '', keyWordText: '' });
   }
 
   _doAPISearch(pageSearch = false, pageDirection = 1, useInclude = true){
@@ -570,7 +570,6 @@ const styles = StyleSheet.create({
     borderColor: '#7a42f4'
   },
   inputView:{
-    marginTop: Platform.OS === 'ios' ? 5 : 40,
     paddingLeft: 15,
     paddingRight: 15,
   },
@@ -598,14 +597,18 @@ const styles = StyleSheet.create({
     // color: Colors.fbBlue1
   },
   searchBarContainer: {
-    backgroundColor: '#fff', 
+    backgroundColor: '#fff',
     padding: 0,
-    borderTopWidth: 0,
-    borderBottomWidth: 0,
+    marginHorizontal: 7,
+    height: 35,
+    marginTop: Platform.OS === 'ios' ? 5 : 35,
+    marginBottom: 5
   },
   searchBarInput: {
     backgroundColor: '#eee',
-    height: 35
+    height: 35,
+    margin: 0,
+    padding: 0,
   },
   searchBarText: {
     color: '#222',

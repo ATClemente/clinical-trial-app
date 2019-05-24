@@ -2,6 +2,7 @@ import React from 'reactn';
 import {
   Button,
   SafeAreaView,
+  StyleSheet,
   Text,
   View,
 } from 'react-native';
@@ -10,6 +11,7 @@ import Modal from 'react-native-modal';
 import FormInput from './FormInput';
 import GradientButton from './GradientButton';
 import Colors from '../constants/Colors';
+import Styles from '../constants/Styles';
 
 export default class SearchGenderOptions extends React.PureComponent{
   constructor(props) {
@@ -29,21 +31,17 @@ export default class SearchGenderOptions extends React.PureComponent{
         avoidKeyboard={true}
         onRequestClose={() => this.props.setVisible(false)}
       >
-        <SafeAreaView style={{ 
-          flexDirection: 'column', 
-          alignItems: 'center', 
-          justifyContent: 'center',
-          backgroundColor: '#fff',
-          borderRadius: 4,
-          paddingVertical: 20,
-          paddingHorizontal: 20,
-        }}>
+        <SafeAreaView style={Styles.optionsModalContainer}>
           <View style={{ width: '100%' }}>
+            <Text style={{ alignSelf: 'center', fontSize: 20, fontWeight: '500', marginBottom: 10 }}>
+              Select Gender
+            </Text>
             <CheckBox
               title='Male'
               iconType='ionicon'
               checkedIcon='md-radio-button-on'
               uncheckedIcon='md-radio-button-off'
+              containerStyle={styles.radio}
               checked={this.state.male}
               onPress={this._setMale}
             />
@@ -52,6 +50,7 @@ export default class SearchGenderOptions extends React.PureComponent{
               iconType='ionicon'
               checkedIcon='md-radio-button-on'
               uncheckedIcon='md-radio-button-off'
+              containerStyle={styles.radio}
               checked={this.state.female}
               onPress={this._setFemale}
             />
@@ -89,3 +88,11 @@ export default class SearchGenderOptions extends React.PureComponent{
     }, 200);
   }
 }
+
+const styles = StyleSheet.create({
+  radio: {
+    marginLeft: 0,
+    marginRight: 0,
+    backgroundColor: '#fff',
+  }
+});
