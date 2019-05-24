@@ -35,6 +35,9 @@ export default class TrialDetailsModal extends React.Component {
             trial: {},
             activeSections: [],
             eligibilityCollapsed: true,
+            inclusionCriteria: [],
+            exclusionCriteria: [],
+            showMoreEligibility: false,
             leadOrgCollapsed: true,
             mapCollapsed: true,
             locationFilter: null,
@@ -51,11 +54,12 @@ export default class TrialDetailsModal extends React.Component {
     }
 
     componentWillMount(){
-        this.setProfileData();
-        this.setUserLocationCoordinates();
+        //this.setProfileData();
+        //this.setUserLocationCoordinates();
     }
 
     componentWillReceiveProps(nextProps) {
+        this.setUserLocationCoordinates(nextProps.searchLocation);
         this.setState({
             locationDistanceFilter: nextProps.searchRadius,
             modalVisible: nextProps.modalVisible,
@@ -64,6 +68,17 @@ export default class TrialDetailsModal extends React.Component {
         let savedTrials = this.global.trials;
         let result = savedTrials.filter(e => e.trial_id === nextProps.trial[QueryConstants.NCT_ID]);
         this.setState({ trialSaved: result.length ? true : false });
+        this.separateEligibilityCriteria(nextProps.trial);
+    }
+
+    resetModal(){
+        //this.props.setModalVisible(false);
+        this.setState({
+            showMoreEligibility: false,
+            waitForLoading: true}, 
+            function(){
+            this.props.setModalVisible(false);
+        });
     }
 
     render() {
@@ -72,28 +87,23 @@ export default class TrialDetailsModal extends React.Component {
                 animationType='slide'
                 transparent={ false }
                 visible={ this.state.modalVisible }
-                onRequestClose={() => { this.props.setModalVisible(false) }}>
+                onRequestClose={() => { this.resetModal() }}>
                 <SafeAreaView style={styles.mainView}>
 
                     <View style={{ marginBottom: 5, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <View style={{width: '25%'}}>
-                            <TouchableHighlight 
-                                onPress = {() => { this.props.setModalVisible(false) }}>
-                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                <Ionicons 
-                                style={{ marginHorizontal: 5 }}
-                                size={24}
-                                name='ios-arrow-dropleft' />
-                                <Text>Back</Text>
-                            </View>
-                            </TouchableHighlight>
+                        <View style={{width: '25%', }}>
+                            <IconButton
+                                icon='ios-arrow-dropleft'
+                                side='left'
+                                text='Back'
+                                handleTouch={() => { this.resetModal() }}
+                            />
                         </View>
 
                         <Text style={{fontWeight: "bold", textDecorationLine: "underline", textAlign: "center" }}>Trial Details</Text>
 
                         <View style={{width: '25%', alignItems: 'flex-end' }}>
                             <IconButton
-                                style={{ marginRight: 3 }}
                                 icon={this.state.trialSaved ? 'md-star' : 'md-star-outline'}
                                 iconSize={26}
                                 side='right'
@@ -124,32 +134,26 @@ export default class TrialDetailsModal extends React.Component {
                                 {!this.isTrialEmpty(this.state.trial) && this.renderLeadOrganization(this.state.trial)}
                         </View>
 
-                        <Text style={{padding: 5, textAlign: "center"}}>Sites within {this.state.locationDistanceFilter} miles of {this.state.locationFilter}: </Text>
+                        <Text style={{padding: 5, textAlign: "center"}}>Sites within {this.state.locationDistanceFilter} miles of {this.props.searchLocation}: </Text>
 
                         <View /*style={styles.content}*/>
                                 {!this.isTrialEmpty(this.state.trial) && this.renderMapview(this.state.trial)}
                         </View>
 
-
-                        <TouchableOpacity onPress={() => {this.setState({eligibilityCollapsed: !this.state.eligibilityCollapsed})}}>
-                            <View style={styles.header}>
-                            <Text style={styles.headerText}>Eligibility Criteria</Text>
-                            </View>
-                        </TouchableOpacity>
-                        <Collapsible collapsed={this.state.eligibilityCollapsed} align="center">
-                            <View style={styles.content}>
+                        <Text style={{marginTop: 10, fontWeight: "bold", textDecorationLine: "underline"}}>Eligibility Criteria:</Text>
+                        <View style={{padding: 10, alignItems: "center"}}>
                                 {!this.isTrialEmpty(this.state.trial) && this.renderEligibilityCriteria(this.state.trial)}
-                            </View>
-                        </Collapsible>
-
-                        {this.state.waitForLoading &&
-                            <View style={styles.profileLoading}>
-                                <ActivityIndicator size='large' color="#0000ff" />
-                            </View>
-                        }
+                        </View>
 
                     </ScrollView>
                 </SafeAreaView>
+
+                {this.state.waitForLoading &&
+                    <View style={styles.profileLoading}>
+                        <ActivityIndicator size='large' color="#0000ff" />
+                    </View>
+                }
+
             </Modal>
         )
     }
@@ -202,6 +206,9 @@ export default class TrialDetailsModal extends React.Component {
             this.setGlobal({ trials: updatedTrials });
             await AsyncStorage.setItem('trials', JSON.stringify(updatedTrials));
             this.setState({ modifyTrial: false });
+            if (this.props.savedScreen) {
+                this.props.setModalVisible(false);
+            }
         } catch (e) {
             console.log(e);
             if (e.response) {
@@ -229,50 +236,69 @@ export default class TrialDetailsModal extends React.Component {
     }
 
 
+    separateEligibilityCriteria(trial){
 
+        if(this.isTrialEmpty(trial)){
+            return;
+        }
+        var currInclusionCriteria = [];
 
-    renderEligibilityCriteria(trial){
-
-        var inclusionCriteria = [];
-
-        var exclusionCriteria = [];
+        var currExclusionCriteria = [];
 
         var allCriteria = trial[QueryConstants.ELIGIBILITY][QueryConstants.UNSTRUCTURED];
 
         for(var i = 0; i < allCriteria.length; i++){
             if(allCriteria[i][QueryConstants.INCLUSION_INDICATOR] == true){
-                inclusionCriteria.push(allCriteria[i]);
+                currInclusionCriteria.push(allCriteria[i]);
             }
             else{
-                exclusionCriteria.push(allCriteria[i]);
+                currExclusionCriteria.push(allCriteria[i]);
             }
         }
 
+        this.setState({inclusionCriteria: currInclusionCriteria});
+        this.setState({exclusionCriteria: currExclusionCriteria});
+    }
+
+    setCriteriaToggleText(){
+        if(!this.state.showMoreEligibility){
+            return "Show More Criteria";
+        }
+        else{
+            return "Show Less Criteria";
+        }
+    }
+
+    renderEligibilityCriteria(trial){
+
+        let inclToDisplay = [];
+        let exclToDisplay = [];
+
+        if(!this.state.showMoreEligibility){
+            inclToDisplay = this.state.inclusionCriteria.slice(0, 5);
+            exclToDisplay = this.state.exclusionCriteria.slice(0, 5);
+        }
+        else{
+            inclToDisplay = this.state.inclusionCriteria;
+            exclToDisplay = this.state.exclusionCriteria;
+        }
+
         return(
-            <View>
+            <View style={{flex:1}}>
                 <Text>Inclusion Criteria:</Text>
                 <FlatList
-                    data={inclusionCriteria}
+                    data={inclToDisplay}
                     renderItem={this._renderEligibilityItem}
                     keyExtractor={(item) => item[QueryConstants.DISPLAY_ORDER].toString()}
                     ListEmptyComponent={this.noInclusionCriteria}
-                    initialNumToRender={10}
-                    maxToRenderPerBatch={5}
-                    windowSize={5}
-                    onEndReachedThreshold={0.5}
-                    //ItemSeparatorComponent={this._renderSeparator} 
                 />
                 <Text style={{marginTop: 10}}>Exclusion Criteria:</Text>
                 <FlatList
-                    data={exclusionCriteria}
+                    data={exclToDisplay}
                     renderItem={this._renderEligibilityItem}
                     keyExtractor={(item) => item[QueryConstants.DISPLAY_ORDER].toString()}
                     ListEmptyComponent={this.noExlusionCriteria}
-                    initialNumToRender={10}
-                    maxToRenderPerBatch={5}
-                    windowSize={5}
-                    onEndReachedThreshold={0.5}
-                    //ItemSeparatorComponent={this._renderSeparator} 
+                    ListFooterComponent={this._renderCriteriaToggle} 
                 />
             </View>
         );
@@ -284,15 +310,35 @@ export default class TrialDetailsModal extends React.Component {
         return(
           <Card
             containerStyle={{ padding: 0, borderRadius: 5 }}
-            wrapperStyle={{ padding: 10 }}
+            wrapperStyle={{ 
+                padding: 10, 
+                backgroundColor: item[QueryConstants.INCLUSION_INDICATOR] ? "#e8ffe8" : "#ffe8e8" 
+            }}
           >
             <View>
-              <Text style={{ color: '#333' }}>{`${number}. ${description}`}</Text>
+                <ViewMoreText
+                numberOfLines={2}
+                renderViewMore={this.renderViewMore}
+                renderViewLess={this.renderViewLess}
+                >
+                    <Text style={{ color: '#333' }}>{`${number}. ${description}`}</Text>
+                </ViewMoreText>
             </View>
+
           </Card>
         );
     
     };
+
+    _renderCriteriaToggle = () => {
+        return(
+            <TouchableOpacity 
+                style={{ backgroundColor: '#e8efff', borderColor: '#b9ccea', borderWidth: 1, borderRadius: 4, marginTop: 8 }}
+                onPress={() => this.setState({showMoreEligibility: !this.state.showMoreEligibility})}>
+                <Text style={{ color: '#324e7a', alignSelf: 'center', paddingVertical: 6 }}>{this.setCriteriaToggleText()}</Text>
+            </TouchableOpacity>
+        );
+    }
 
     noInclusionCriteria(){
         return(
@@ -332,68 +378,6 @@ export default class TrialDetailsModal extends React.Component {
             return "No principal investigator specified";
         }
     }
-
-    /*renderLocations(trial){
-
-        var activeSites = trial[QueryConstants.SITES].filter(this.checkForActiveSites);
-        var finalSites = activeSites.filter(this.checkForLocationProximity);
-        return(
-            <View>
-                <Text>Locations within {this.state.locationDistanceFilter} miles of {this.state.locationFilter}: </Text>
-                <FlatList
-                    data={finalSites}
-                    renderItem={this._renderLocationItem}
-                    keyExtractor={(item, index) => index.toString()}
-                    removeClippedSubviews={true}
-                    //initialNumToRender={10}
-                    //maxToRenderPerBatch={5}
-                    //windowSize={5}
-                    //onEndReachedThreshold={0.5}
-                    //ItemSeparatorComponent={this._renderSeparator} 
-                />
-            </View>
-        );
-
-    }*/
-
-    /*_renderLocationItem = ({item, index}) => {
-        const number = (index+1).toString();
-        const site_name = item[QueryConstants.ORG_NAME];
-        const contact_name = item[QueryConstants.CONTACT_NAME];
-        const contact_phone = item[QueryConstants.CONTACT_PHONE];
-        const contact_email = item[QueryConstants.CONTACT_EMAIL];
-        var site_status = item[QueryConstants.RECRUIT_STATUS].toLowerCase();
-        site_status = site_status.charAt(0).toUpperCase() + site_status.slice(1);
-        var site_lat;
-        var site_lon;
-        if(item[QueryConstants.ORG_CORRDINATES] == undefined){
-            site_lat = 0;
-            site_lon = 0;
-        }
-        else{
-            site_lat = item[QueryConstants.ORG_CORRDINATES][QueryConstants.LAT];
-            site_lon = item[QueryConstants.ORG_CORRDINATES][QueryConstants.LON];
-        }
-
-        if(site_lat == undefined || site_lon == undefined){
-            site_lat = 0;
-            site_lon = 0;
-        }
-
-        return(
-          <Card
-            containerStyle={{ padding: 0, borderRadius: 5 }}
-            wrapperStyle={{ padding: 10 }}
-          >
-            <View>
-                <Text style={{ color: '#333', fontWeight: "bold"}}>{`${number}. ${site_name}`}</Text>
-                <Text style={{ color: '#333' }}>{`Contact Name: ${contact_name}`}</Text>
-                <Text style={{ color: '#333' }}>{`Contact Phone: ${contact_phone}`}</Text>
-                <Text style={{ color: '#333' }}>{`Contact Email: ${contact_email}`}</Text>
-            </View>
-          </Card>
-        );
-    }*/
 
     renderMapview = (trial) => {
 
@@ -467,6 +451,7 @@ export default class TrialDetailsModal extends React.Component {
             <View style={{ height: 300, width: 370 }}>
                 <MapView
                     style={{ flex: 1 }}
+                    onMapReady = {() => {this.setState({ waitForLoading: false })}}
                     initialRegion={{
                         latitude: this.state.locationFilterLat,
                         longitude: this.state.locationFilterLon,
@@ -515,7 +500,7 @@ export default class TrialDetailsModal extends React.Component {
         return site[QueryConstants.RECRUIT_STATUS].toLowerCase() == "active";
     }
 
-    async setUserLocationCoordinates(){
+    async setUserLocationCoordinates(zipInput){
 
         try {
             const response = await fetch('https://gist.githubusercontent.com/erichurst/7882666/raw/5bdc46db47d9515269ab12ed6fb2850377fd869e/US%2520Zip%2520Codes%2520from%25202013%2520Government%2520Data', {
@@ -526,7 +511,8 @@ export default class TrialDetailsModal extends React.Component {
                 zipCoordData = text;
               });
 
-            var searchstring = "\n" + this.state.locationFilter + ","; 
+            //var searchstring = "\n" + this.state.locationFilter + ","; 
+            var searchstring = "\n" + zipInput + ",";
             var searchForZip = zipCoordData.indexOf(searchstring);
 
             if (searchForZip != -1) {
@@ -656,7 +642,7 @@ const styles = StyleSheet.create({
     right: 0,
     top: 0,
     bottom: 0,
-    opacity: 0.80,
+    opacity: 1,
     backgroundColor: 'white',
     alignItems: 'center',
     justifyContent: 'center',

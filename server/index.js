@@ -65,12 +65,11 @@ app.get('/', (req, res) => {
 
 app.post('/auth/register', async (req, res) => {
   if (!req.body || !req.body.username || !req.body.password) {
-    res
+    return res
       .status(400)
       .json(
         msg(false, 'Error: Required { username: String, password: String }')
       );
-    return;
   }
   try {
     const user = await findOne(req.body.username);
@@ -96,18 +95,16 @@ app.post('/auth/register', async (req, res) => {
 
 app.post('/auth/login', async (req, res) => {
   if (!req.body || !req.body.username || !req.body.password) {
-    res
+    return res
       .status(400)
       .json(
         msg(false, 'Error: Required { username: String, password: String }')
       );
-    return;
   }
   try {
     const user = await findOne(req.body.username);
     if (!user) {
-      res.status(401).json(msg(false, 'Error: Invalid credentials'));
-      return;
+      return res.status(401).json(msg(false, 'Error: Invalid credentials'));
     }
     const passwordHash = user.password;
     const match = await bcrypt.compare(req.body.password, passwordHash);
@@ -134,13 +131,11 @@ app.post('/auth/login', async (req, res) => {
 app.use('/user', async (req, res, next) => {
   const token = req.header('Authorization');
   if (!token) {
-    res.status(401).json('Error: Authorization required');
-    return;
+    return res.status(401).json('Error: Authorization required');
   }
   jwt.verify(token, SECRET, (err, decoded) => {
     if (err) {
-      res.status(401).json('Error: Authorization required');
-      return;
+      return res.status(401).json('Error: Authorization required');
     }
     findOne(decoded.username)
       .then(user => {
@@ -155,6 +150,24 @@ app.use('/user', async (req, res, next) => {
         res.status(404).json(msg(false, e.toString()));
       });
   });
+});
+
+app.get('/user/profile', async (req, res) => {
+  try {
+    const user = await findOne(req.profile.username);
+    const profile = {
+      username: user.username,
+      email: user.email,
+      dob: user.dob,
+      gender: user.gender,
+      location: user.zip,
+      cancerType: user.cancertype
+    };
+    return res.status(200).json({ success: true, profile });
+  } catch (e) {
+    console.log(e);
+    res.status(500).json(serverError);
+  }
 });
 
 app.patch('/user/profile', async (req, res) => {
@@ -180,9 +193,7 @@ app.patch('/user/profile', async (req, res) => {
       location: user.zip,
       cancerType: user.cancertype
     };
-    res
-      .status(200)
-      .json(auth(true, 'Updated', req.header('Authorization'), profile));
+    return res.status(200).json({ success: true, status: 'Updated', profile });
   } catch (err) {
     console.log(err);
     res.status(500).json(serverError);
@@ -192,15 +203,11 @@ app.patch('/user/profile', async (req, res) => {
 app.get('/user/trials', async (req, res) => {
   try {
     const result = await db.query(
-      // 'select t.trial_id, t.created_date, d.title, d.phase, d.age, d.gender, d.organization, d.investigator, d.update from users u ' +
-      //   'inner join user_trials t on t.user_id = u.id ' +
-      //   'inner join trial_details d on d.trial_id = t.trial_id ' +
-      //   'where username = $1',
       'SELECT ut.trial_id, ut.created_date FROM users u INNER JOIN user_trials ut ON u.id = ut.user_id WHERE u.username = $1',
       [req.profile.username]
     );
     const trialIds = result.rowCount ? result.rows : [];
-    res.status(200).json({
+    return res.status(200).json({
       username: req.profile.username,
       success: true,
       savedTrials: trialIds
@@ -213,29 +220,10 @@ app.get('/user/trials', async (req, res) => {
 
 app.post('/user/trials', async (req, res) => {
   if (!req.body || !req.body.trialId) {
-    res.status(400).json(msg(false, 'Body required: { trialId: STRING }'));
-    return;
+    return res
+      .status(400)
+      .json(msg(false, 'Body required: { trialId: STRING }'));
   }
-
-  // try {
-  //   await db.query(
-  //     'INSERT INTO trial_details(trial_id, title, phase, age, gender, organization, investigator) ' +
-  //       'VALUES($1, $2, $3, $4, $5, $6, $7) ON CONFLICT (trial_id) DO UPDATE ' +
-  //       'SET title=$2, phase=$3, age=$4, gender=$5, organization=$6, investigator=$7',
-  //     [
-  //       req.body.trialId,
-  //       req.body.title,
-  //       req.body.phase,
-  //       req.body.age,
-  //       req.body.gender,
-  //       req.body.organization,
-  //       req.body.investigator
-  //     ]
-  //   );
-  // } catch (e) {
-  //   res.status(500).json(serverError);
-  //   return;
-  // }
 
   try {
     await db.query(
@@ -244,24 +232,18 @@ app.post('/user/trials', async (req, res) => {
     );
   } catch (e) {
     if (e.code === '23505') {
-      res.status(403).json(msg(false, 'Trial already exists for user'));
-      return;
+      return res.status(403).json(msg(false, 'Trial already exists for user'));
     }
-    res.status(500).json(serverError);
-    return;
+    return res.status(500).json(serverError);
   }
 
   try {
     const result = await db.query(
-      // 'select t.trial_id, t.created_date, d.title, d.phase, d.age, d.gender, d.organization, d.investigator, d.update from users u ' +
-      //   'inner join user_trials t on t.user_id = u.id ' +
-      //   'inner join trial_details d on d.trial_id = t.trial_id ' +
-      //   'where username = $1',
       'SELECT ut.trial_id, ut.created_date FROM users u INNER JOIN user_trials ut ON u.id = ut.user_id WHERE u.username = $1',
       [req.profile.username]
     );
     const trialIds = result.rowCount ? result.rows : [];
-    res.status(200).json({
+    return res.status(200).json({
       username: req.profile.username,
       success: true,
       status: 'Trial saved',
@@ -279,8 +261,7 @@ app.delete('/user/trials/:tid', async (req, res) => {
       [req.profile.id, req.params.tid]
     );
     if (result.rowCount) {
-      res.status(200).json(msg(true, 'Trial deleted'));
-      return;
+      return res.status(200).json(msg(true, 'Trial deleted'));
     }
     res.status(404).json(msg(false, 'Trial not found'));
   } catch (e) {
