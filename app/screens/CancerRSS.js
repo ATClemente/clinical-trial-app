@@ -1,12 +1,28 @@
 import React from 'react';
-import { FlatList, Linking,AppRegistry, StyleSheet,ActivityIndicator, Text, WebView, View, Button, AsyncStorage, Image} from 'react-native';
-import { ExpoConfigView } from '@expo/samples';
+import { 
+    FlatList, 
+    Linking,
+    AppRegistry, 
+    StyleSheet,
+    ActivityIndicator, 
+    Text, 
+    WebView, 
+    View, 
+    Button, 
+    AsyncStorage, 
+    Image,
+    Dimensions
+} from 'react-native';
 var XMLParser = require('react-xml-parser');
 import { Card, CardItem, Left, Body, Container, Content } from 'native-base';
 import GradientButton from '../components/GradientButton';
 import Colors from '../constants/Colors';
 import PopUpScreenModal from '../components/PopUpScreenModal'
 
+/* Calculate image size based on screen minus margin on both sides */
+const windowSize = Dimensions.get('screen');
+const imgWidth = windowSize.width - 48;
+const imgHeight = imgWidth / (230/173);
 
 export default class CancerRSS extends React.Component {
     //Cite: https://facebook.github.io/react-native/docs/network
@@ -35,7 +51,7 @@ export default class CancerRSS extends React.Component {
 
         var xml = new XMLParser().parseFromString(xmlText);    // Assume xmlText contains the example XML
 
-       console.log(xml);
+       //console.log(xml);
 
      //   console.log(xml.getElementsByTagName('Name'));
 
@@ -90,8 +106,6 @@ export default class CancerRSS extends React.Component {
                 this.setState({
                     isLoading: false,
                     dataSource: responseJson.items,
-                }, function () {
-
                 });
                 // console.log(this.state.dataSource);
             })
@@ -153,40 +167,32 @@ export default class CancerRSS extends React.Component {
 
 
     _renderItem = ({ item }) => {
-        //<Text style={styles.body}>{item.title}, {item.publicationDate}, {item.abstract}</Text>}
+        // Image.getSize(item.enclosure.link, (width, height) => {
+        //     console.log(`width ${width}, height ${height}`);
+        // });
         return (
             <Card>
                 <CardItem bordered style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
 
-
-
-
-
                     <Text 
                         onPress={() => Linking.openURL(item.link)}
                         style={styles.articleTitle}
-
                     >
                         {item.title}
-             
                     </Text>
                     <Text style={{ color: '#999' }}>Publication Date: {item.pubDate}</Text>
 
 
                 </CardItem>
                 <CardItem>
-                    <Body style={{ justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
+                    <Body style={{ justifyContent: 'center', alignItems: 'center' }}>
 
-                        <View style={{ justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
-                            <Image
-                                style={{ width: 150, height: 150, justifyContent: 'center', alignItems: 'center', paddingBottom: 5 }}
-                                source={{ uri: item.enclosure.link }}
-
-                            />
-                        </View>
-
-                        <Text>
-                            Description:{item.description.replace('<p>', '').replace('</p>', '')} 
+                        <Image
+                            style={{ width: imgWidth, height: imgHeight, marginTop: 5, marginBottom: 10 }}
+                            source={{ uri: item.enclosure.link }}
+                        />
+                        <Text style={{ width: '100%' }}>
+                            Description: {item.description.replace('<p>', '').replace('</p>', '')} 
                         </Text>
                    
                       

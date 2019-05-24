@@ -23,6 +23,7 @@ export default class SettingsScreen extends React.Component {
       email: this.global.profile.email,
       dob: this.global.profile.dob,
       gender: this.global.profile.gender,
+      genderSwitch: this.global.profile.gender && this.global.profile.gender === 'male' ? true : false,
       location: this.global.profile.location,
       cancerType: this.global.profile.cancerType,
       isLoading: false,
@@ -42,7 +43,7 @@ export default class SettingsScreen extends React.Component {
         {
           email: this.state.email,
           dob: this.state.dob,
-          gender: this.state.gender,
+          gender: this.state.genderSwitch ? 'male' : 'female',
           location: this.state.location,
           cancerType: this.state.cancerType
         },
@@ -53,7 +54,7 @@ export default class SettingsScreen extends React.Component {
           }
         }
       );
-      this.setGlobal({ profile: data.profile });
+      await this.setGlobal({ profile: data.profile });
       await AsyncStorage.setItem('profile', JSON.stringify(data.profile));
       Object.keys(data.profile).forEach(item => {
         this.setState({ item });
@@ -116,8 +117,8 @@ export default class SettingsScreen extends React.Component {
             />
             <FormSwitch
               label='Gender'
-              onValueChange={gender => this.setState({ gender })}
-              value={this.state.gender}
+              onValueChange={genderSwitch => this.setState({ genderSwitch })}
+              value={this.state.genderSwitch}
             />
             <FormInput
               label='Location (Zip Code)'

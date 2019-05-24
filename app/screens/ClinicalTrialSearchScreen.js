@@ -10,7 +10,6 @@ import {
   Text,
   TouchableOpacity,
   View,
-  Button,
   ActivityIndicator,
   Alert,
   TextInput,
@@ -18,6 +17,10 @@ import {
   ReturnKeyType,
   Picker
 } from 'react-native';
+import SearchOptionsButton from '../components/SearchOptionsButton';
+import SearchLocationOptions from '../components/SearchLocationOptions';
+import SearchGenderOptions from '../components/SearchGenderOptions';
+import SearchPhaseOptions from '../components/SearchPhaseOptions';
 import { Ionicons } from '@expo/vector-icons';
 import GradientButton from '../components/GradientButton';
 import { SearchBar } from 'react-native-elements';
@@ -31,6 +34,7 @@ import ClinicalTrialSearchResults from '../components/ClinicalTrialSearchResults
 import SearchLocationModal from '../components/SearchLocationModal';
 import { toastDelay } from '../constants/Constants';
 import IconButton from '../components/IconButton';
+import Styles from '../constants/Styles';
 
 export default class ClinicalTrialSearchScreen extends React.Component {
   static navigationOptions = {
@@ -43,23 +47,28 @@ export default class ClinicalTrialSearchScreen extends React.Component {
         searchLoading: false,
         hasNewSearchData: false,
         keyWordText: '',
-        zipCodeText: this.global.profile.location,
+        zipCodeText: '',
         //distanceSelect: "10",
-        searchSize: 5,
+        searchSize: 20,
         resultsFromIndex: 0, //Just add searchSize for next batch when needed.
-        searchData: {},
+        searchDataTotal: null,
+        searchDataTrials: [],
         prevParams: {},
         desiredStatus: "active",
         desiredPurpose: "treatment",
-        desiredDistance: "10",
+        desiredDistance: '10',
         desiredDistanceType: "mi",
         currentPage: 1,
         text:'',
         showLocationModal: false,
+        showLocationOptions: false,
+        showGenderOptions: false,
+        showPhaseOptions: false,
+        phase: '',
         username: this.global.profile.username,
         email: this.global.profile.email,
         dob: this.global.profile.dob,
-        gender: this.global.profile.gender,
+        gender: '',
         location: this.global.profile.location,
         cancerType: this.global.profile.cancerType,
     };
@@ -75,11 +84,11 @@ export default class ClinicalTrialSearchScreen extends React.Component {
 
   render() {
     const disableSearch = (this.state.keyWordText && this.state.zipCodeText) ? false : true;
-    const disablePrev = this.state.prevParams == {} || this.state.currentPage == 1;
-    const disableNext = this.state.prevParams == {} 
-      || this.state.currentPage == Math.ceil(this.state.searchData.total / this.state.searchSize)
-      || !this.state.searchData.total;
-    const tabColor = Colors.btnBlue;
+    // const disablePrev = this.state.prevParams == {} || this.state.currentPage == 1;
+    // const disableNext = this.state.prevParams == {} 
+    //   || this.state.currentPage == Math.ceil(this.state.searchDataTotal / this.state.searchSize)
+    //   || !this.state.searchDataTotal;
+    // const tabColor = Colors.btnBlue;
 
     return (
       <SafeAreaView style={styles.container}>
@@ -93,7 +102,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
         <View style={styles.inputView}>
 
           <SearchBar
-            placeholder="Cancer related keywords"
+            placeholder="Keywords"
             onChangeText={text => this.setState({ keyWordText: text})}
             value={this.state.keyWordText}
             searchIcon={{ name: 'md-key', type: 'ionicon' }}
@@ -105,11 +114,33 @@ export default class ClinicalTrialSearchScreen extends React.Component {
             inputStyle={styles.searchBarText}
             placeholderTextColor='#aaa'
             returnKeyType='search'
+            enablesReturnKeyAutomatically={true}
             onSubmitEditing={()=> this._doAPISearch()}
           />
 
-          <View style={{ flexDirection: 'row' }}>
-            <SearchBar
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 6, height: 34 }}>
+            <SearchOptionsButton 
+              icon='md-pin'
+              text={this.state.zipCodeText ? this.state.zipCodeText : 'Location'}
+              handleTouch={this._setLocationVisible}
+              focused={this.state.zipCodeText ? true : false}
+              style={{ width: '25%' }}
+            />
+            <SearchOptionsButton 
+              icon='md-person'
+              text={this.state.gender ? this.state.gender : 'Gender'}
+              handleTouch={this._setGenderVisible}
+              focused={this.state.gender ? true : false}
+              style={{ width: '25%' }}
+            />
+            <SearchOptionsButton 
+              icon='ios-moon'
+              text={this.state.phase ? this.state.phase : 'Phase'}
+              handleTouch={this._setPhaseVisible}
+              focused={this.state.phase ? true : false}
+              style={{ width: '25%' }}
+            />
+            {/* <SearchBar
               placeholder="Zip Code"
               onChangeText={(text) => this.onZipCodeChanged(text)}
               value={this.state.zipCodeText}
@@ -143,54 +174,45 @@ export default class ClinicalTrialSearchScreen extends React.Component {
                 <Picker.Item label="80mi" value="80" />
                 <Picker.Item label="90mi" value="90" />
                 <Picker.Item label="100mi" value="100" />
-            </Picker>
+            </Picker> */}
 
-            <View style={{ alignSelf: 'center', width: '25%', marginTop: Platform.OS === 'ios' ? 0 : 3 }}>
-                <GradientButton
-                    colors={[Colors.blueOne, Colors.blueTwo]}
-                    handleClick={() => this._doAPISearch()}
-                    loading={false}
-                    disabled={disableSearch}
-                    text='Search'
-                    padding={8}
-                />
+            <View style={{ width: '18%' }}>
+              {/* <GradientButton
+                colors={[Colors.blueOne, Colors.blueTwo]}
+                handleClick={() => this._doAPISearch()}
+                loading={false}
+                disabled={disableSearch}
+                text='Search'
+                padding={8}
+              /> */}
+              <TouchableOpacity 
+              onPress={this._clearFilters} 
+              style={{ width: '100%', height: '100%', justifyContent: 'center', alignItems: 'flex-end' }}>
+                <Text style={{ color: '#324e7a' }}>Reset</Text>
+              </TouchableOpacity>
             </View>
 
           </View>
         </View>
 
-        <View style={styles.pagingButtons}>
+        <SearchLocationOptions
+          visible={this.state.showLocationOptions}
+          setVisible={this._setLocationVisible}
+          setLocation={this._setLocation}
+          setRadius={this._setRadius}
+        />
 
-          <IconButton
-            icon='ios-arrow-dropleft'
-            side='left'
-            disabled={disablePrev}
-            handleTouch={() => this._doAPISearch(true, -1)}
-            text='Prev'
-            textColor={tabColor}
-            iconColor={tabColor}
-          />
+        <SearchGenderOptions
+          visible={this.state.showGenderOptions}
+          setVisible={this._setGenderVisible}
+          setGender={this._setGender}
+        />
 
-          { (this.state.searchData.total != undefined) && 
-            <View style={{ 
-              height: 24,
-              paddingTop: 3,
-            }}>
-              <Text>Page {this.state.currentPage.toString()} of {Math.ceil(this.state.searchData.total / this.state.searchSize)}</Text>
-            </View>
-          }
-
-          <IconButton
-            icon='ios-arrow-dropright'
-            side='right'
-            disabled={disableNext}
-            handleTouch={() => this._doAPISearch(true)}
-            text='Next'
-            textColor={tabColor}
-            iconColor={tabColor}
-          />
-
-        </View>
+        <SearchPhaseOptions
+          visible={this.state.showPhaseOptions}
+          setVisible={this._setPhaseVisible}
+          setPhase={this._setPhase}
+        />
 
         {this.state.searchLoading &&
             <View style={styles.searchLoading}>
@@ -201,22 +223,59 @@ export default class ClinicalTrialSearchScreen extends React.Component {
 
         {!this.state.searchLoading &&
           <ClinicalTrialSearchResults 
-            searchData = {this.state.searchData} 
+            searchDataTotal = {this.state.searchDataTotal} 
+            searchDataTrials = {this.state.searchDataTrials}
+            searchPageFunction = {() => this._doAPISearch(true)}
             currentPage = {this.state.currentPage}
             searchSize = {this.state.searchSize}
-            searchRadius = {Number(this.state.desiredDistance)}/>
+            searchRadius = {Number(this.state.desiredDistance)}
+            searchLocation = {this.state.zipCodeText}/>
         }
 
       </SafeAreaView>
     );
   }
 
+  _setLocationVisible = visible => {
+    this.setState({ showLocationOptions: visible });
+  }
+
+  _setLocation = location => {
+    this.setState({ zipCodeText: location });
+  }
+
+  _setRadius = radius => {
+    this.setState({ desiredDistance: radius });
+  }
+
+  _setGenderVisible = visible => {
+    this.setState({ showGenderOptions: visible });
+  }
+
+  _setGender = gender => {
+    this.setState({ gender });
+  }
+
+  _setPhaseVisible = visible => {
+    this.setState({ showPhaseOptions: visible });
+  }
+
+  _setPhase = phase => {
+    this.setState({ phase });
+  }
+
+  _clearFilters = () => {
+    this.setState({ zipCodeText: '', gender: '', phase: '' });
+  }
+
   _doAPISearch(pageSearch = false, pageDirection = 1, useInclude = true){
 //ClinicalTrialAPIUtil.sendPostRequest(this.state.searchSize, 0, true, "active", "treatment", keyWordArg, zipCodeArg, this.state.distanceSelect)
-    this.setState({searchLoading: true});
     Keyboard.dismiss();
     var params = {};
     if(!pageSearch){
+      this.setState({searchLoading: true});
+      this.setState({searchDataTotal: null});
+      this.setState({searchDataTrials: []});
 
       this.state.resultsFromIndex = 0;
       this.state.currentPage = 1;
@@ -225,6 +284,55 @@ export default class ClinicalTrialSearchScreen extends React.Component {
       params[QueryConstants.FROM_STR] = this.state.resultsFromIndex;
       params[QueryConstants.CURRENT_TRIAL_STATUS_STR] = this.state.desiredStatus;
       params[QueryConstants.PURPOSE_CODE_STR] = this.state.desiredPurpose;
+      
+      let genderFilter = ["BOTH"];
+      if(this.state.gender === "Male"){
+        genderFilter.push("MALE");
+      }
+      else if(this.state.gender === "Female"){
+        genderFilter.push("FEMALE");
+      }
+      else{
+        genderFilter.push("MALE");
+        genderFilter.push("FEMALE");
+      }
+
+      params[QueryConstants.GENDER_STR] = genderFilter;
+
+      let phaseFilter = this.state.phase.split(",");
+      let phaseOptions = QueryConstants.PHASE_OPTION_ARR;
+
+      let addPhase0 = false;
+      let addPhase1_2 = false;
+      let addPhase2_3 = false;
+
+      for(var p in phaseFilter){
+        if(phaseFilter[p] === 'I'){
+          addPhase0 = true;
+          addPhase1_2 = true;
+        }
+        if(phaseFilter[p] === 'II'){
+          addPhase1_2 = true;
+          addPhase2_3 = true;
+        }
+        if(phaseFilter[p] === 'III'){
+          addPhase2_3 = true;
+        }
+      }
+
+      if(addPhase0){
+        phaseFilter.push('O');
+      }
+      if(addPhase1_2){
+        phaseFilter.push('I_II');
+      }
+      if(addPhase2_3){
+        phaseFilter.push('II_III');
+      }
+
+      phaseFilter.push(phaseOptions[phaseOptions.length - 1]);
+      
+      params[QueryConstants.PHASE_STR] = phaseFilter;
 
       let keyWordArg = this.state.keyWordText.trim();
       let zipCodeArg = this.state.zipCodeText.trim();
@@ -274,19 +382,23 @@ export default class ClinicalTrialSearchScreen extends React.Component {
     }*/  
     ClinicalTrialAPIUtil.sendPostRequest(params)
     .then((response) => {
-        if(response.total === undefined){
+        if(response != undefined && response != null){
+          if(response.total === undefined){
             console.log(response);
             this.searchErrorAlert();
             this.setState({searchLoading: false});
-        }
-        else if(response.total == 0){
-          this.noResultsAlert();
-            this.setState({searchLoading: false});
-        }
-        else{
+          }
+          else if(response.total == 0){
+            this.noResultsAlert();
+              this.setState({searchLoading: false});
+          }
+          else{
             if(response.trials.length > 0){
               this.setState({searchLoading: false});
-              this.setState({searchData: response});
+              this.setState({searchDataTotal: response.total});
+              this.setState({
+                searchDataTrials: [...this.state.searchDataTrials, ...response.trials]});
+                //searchDataTrials: response.trials});
               this.setState({prevParams: params});
               console.log(response.total);
               //console.log(ClinicalTrialAPIUtil.getAgeRestrictions(this.state.searchData.trials[0]));
@@ -301,6 +413,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
               this.setState({searchLoading: false});
               this.noMorePages();
             }
+          }
         }
     });                                                     
   }
@@ -370,8 +483,8 @@ export default class ClinicalTrialSearchScreen extends React.Component {
   }
 
   _getTotalPageCount = () => {
-    let totalPages = Math.ceil(this.props.searchData.total / this.props.searchSize);
-    return totalPages.toString();
+    let totalPages = Math.ceil(this.props.searchDataTotal / this.props.searchSize);
+    return totalPages;
   }
 
   _testFunc(){
@@ -455,8 +568,8 @@ const styles = StyleSheet.create({
   },
   inputView:{
     marginTop: Platform.OS === 'ios' ? 5 : 40,
-    paddingLeft: 20,
-    paddingRight: 20,
+    paddingLeft: 15,
+    paddingRight: 15,
   },
   distanceInputs:{
     flexDirection: "row"
@@ -472,7 +585,7 @@ const styles = StyleSheet.create({
     marginTop: Platform.OS === 'ios' ? 5 : 10,
     flexDirection: 'row',
     marginHorizontal: 20,
-    justifyContent: "space-between"
+    //justifyContent: "space-between"
   },
   pageButton: {
     height: 24,
