@@ -230,7 +230,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
             currentPage = {this.state.currentPage}
             searchSize = {this.state.searchSize}
             searchRadius = {Number(this.state.desiredDistance)}
-            searchLocation = {this.state.searchLocation}/>
+            searchLocation = {this.state.searchLocation ? this.state.searchLocation : this.state.location }/>
         }
 
       </SafeAreaView>
