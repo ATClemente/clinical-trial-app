@@ -26,6 +26,7 @@ import { Ionicons } from '@expo/vector-icons';
 import IconButton from '../components/IconButton';
 import geolib from 'geolib';
 import ClinicalTrialAPIUtil from '../components/ClinicalTrialAPIUtil.js';
+import { Row } from 'native-base';
 
 export default class TrialDetailsModal extends React.Component {
     constructor(props) {
@@ -49,7 +50,10 @@ export default class TrialDetailsModal extends React.Component {
             waitForLoading: true,
             savedTrials: this.global.trials,
             trialSaved: false,
-            modifyTrial: false
+            modifyTrial: false,
+            activeMarkerOpacity: 1,
+            temporaryMarkerOpacity: 1,
+            closedMarkerOpacity: 1,
         };
     }
 
@@ -135,6 +139,15 @@ export default class TrialDetailsModal extends React.Component {
                         </View>
 
                         <Text style={{padding: 5, textAlign: "center"}}>Sites within {this.state.locationDistanceFilter} miles of {this.props.searchLocation}: </Text>
+                        
+                        <View style={{justifyContent: 'center', flexDirection: 'row'}}>
+                            <Ionicons onPress={() => this.setState({activeMarkerOpacity: +!this.state.activeMarkerOpacity})} name="md-pin" size={32} color="#00FF00"/>
+                            <Text style={{paddingTop: 5}}> = Active  </Text>
+                            <Ionicons onPress={() => this.setState({temporaryMarkerOpacity: +!this.state.temporaryMarkerOpacity})} name="md-pin" size={32} color="#FFFF00"/>
+                            <Text style={{paddingTop: 5}}> = Temporarily Closed  </Text>
+                            <Ionicons onPress={() => this.setState({closedMarkerOpacity: +!this.state.closedMarkerOpacity})} name="md-pin" size={32} color="#FF0000"/>
+                            <Text style={{paddingTop: 5}}> = Closed  </Text>
+                        </View>
 
                         <View /*style={styles.content}*/>
                                 {!this.isTrialEmpty(this.state.trial) && this.renderMapview(this.state.trial)}
@@ -381,8 +394,16 @@ export default class TrialDetailsModal extends React.Component {
 
     renderMapview = (trial) => {
 
-        var activeSites = trial[QueryConstants.SITES].filter(this.checkForActiveSites);
-        var finalSites = activeSites.filter(this.checkForLocationProximity);
+        //var activeSites = trial[QueryConstants.SITES].filter(this.checkForActiveSites);
+        //var finalSites = activeSites.filter(this.checkForLocationProximity);
+
+        let finalSites = trial[QueryConstants.SITES].filter(this.checkForLocationProximity);
+
+        if (finalSites.length < 1){
+            //this.setState({ waitForLoading: false });
+            return(<Text>There are no active trial sites near you :(</Text>);
+
+        }
 
         var locationMarkers = [];
 
@@ -424,6 +445,22 @@ export default class TrialDetailsModal extends React.Component {
                 else{
                     newMarker.contact_email = "None Provided";
                 }
+
+                //Set pin color (.pinColor)
+                //Colors use HSV and from what I have seen and found can be any "HUE" but need 100% value and saturation.
+                //Using named colors for now and converted to hex so we can know what that is
+                if(currentSite[QueryConstants.RECRUIT_STATUS].toLowerCase() == "active"){
+                    newMarker.pinColor = 'green'; //#00FF00
+                    newMarker.opacity = this.state.activeMarkerOpacity;
+                }
+                else if(currentSite[QueryConstants.RECRUIT_STATUS].toLowerCase() == "temporarily_closed_to_accrual"){
+                    newMarker.pinColor = 'yellow'; //#FFFF00
+                    newMarker.opacity = this.state.temporaryMarkerOpacity;
+                }
+                else if(currentSite[QueryConstants.RECRUIT_STATUS].toLowerCase() == "closed_to_accrual"){
+                    newMarker.pinColor = 'red'; //#FF0000
+                    newMarker.opacity = this.state.closedMarkerOpacity;
+                }
     
                 locationMarkers.push(newMarker);
             }
@@ -448,7 +485,7 @@ export default class TrialDetailsModal extends React.Component {
         lonDelta = 0.12 * (this.state.locationDistanceFilter / 10);
 
         return(
-            <View style={{ height: 300, width: 370 }}>
+            <View style={{ height: 320, width: 370 }}>
                 <MapView
                     style={{ flex: 1 }}
                     onMapReady = {() => {this.setState({ waitForLoading: false })}}
@@ -479,20 +516,33 @@ export default class TrialDetailsModal extends React.Component {
                         coordinate={marker.coordinates}
                         pinColor={marker.pinColor}
                         key = {marker.key}
+                        opacity={marker.opacity}
                         >
-                        <Callout style={styles.plainView}>
-                            <View style={{margin: 5}} >
-                                <Text style={{fontWeight: "bold"}}>{marker.title}</Text>
-                                <Text>Contact Name: {marker.contact_name}</Text>
-                                <Text>Contact Phone: {marker.contact_phone}</Text>
-                                <Text>Contact Email: {marker.contact_email}</Text>
-                            </View>
+                        <Callout style={styles.plainView} tooltip={!!!marker.opacity}>
+                            {!!marker.opacity && this.renderCallout(marker, !!marker.opacity)}
                         </Callout>
                         </MapView.Marker>
-                    ))}
+                    ))} 
                 </MapView>
             </View>
         );
+    }
+
+    renderCallout(marker, show){
+        if(show){
+            return(
+                <View style={{margin: 5}} >
+                    <Text style={{fontWeight: "bold"}}>{marker.title}</Text>
+                    <Text>Contact Name: {marker.contact_name}</Text>
+                    <Text>Contact Phone: {marker.contact_phone}</Text>
+                    <Text>Contact Email: {marker.contact_email}</Text>
+                </View>
+            );
+        }
+        else{
+            markerRef.hideCallout();
+            return null;
+        }
     }
 
     checkForActiveSites(site){
