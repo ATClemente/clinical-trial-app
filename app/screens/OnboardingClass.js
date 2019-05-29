@@ -4,6 +4,18 @@ import {  Image } from 'react-native';
 
 
 export default class OnboardingClass extends React.Component {
+
+
+    endOnboarding = () => {
+
+        //Take the user back to main 
+        this.props.navigation.navigate('Main')
+
+    }
+
+    
+
+
     render() {
         const Pages = [
             {
@@ -54,12 +66,34 @@ export default class OnboardingClass extends React.Component {
                 image: <Image source={require('../assets/images/cancer.png')} />,
                 title: 'Onboarding',
                 subtitle: 'Done with React Native Onboarding Swiper',
+                
               },
+
+              {
+                backgroundColor: '#fff',
+                image: <Image source={require('../assets/images/cancer.png')} />,
+                title: 'Onboarding',
+                subtitle: 'Done with React Native Onboarding Swiper',
+                
+              },
+              {
+                backgroundColor: '#fff',
+                image: <Image source={require('../assets/images/cancer.png')} />,
+                title: 'Onboarding',
+                subtitle: 'Done with React Native Onboarding Swiper',
+                
+              }
+            
             
             ]}
+
+            onDone = {this.endOnboarding } 
+            onSkip = {this.endOnboarding } 
           />
 
-            
+
+
+
 
         );
     }
