@@ -9,7 +9,7 @@ export default class OnboardingClass extends React.Component {
     endOnboarding = () => {
 
         //Take the user back to main 
-        this.props.navigation.navigate('Main')
+        this.props.navigation.navigate('AboutStack')
 
     }
 
@@ -89,6 +89,7 @@ export default class OnboardingClass extends React.Component {
 
             onDone = {this.endOnboarding } 
             onSkip = {this.endOnboarding } 
+
           />
 
 

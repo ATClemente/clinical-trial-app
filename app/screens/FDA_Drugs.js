@@ -48,6 +48,8 @@ export default class FDA_Drugs extends React.Component {
             <FlatList
 data={this.state.dataSource}
 renderItem={this._renderItem}
+keyExtractor={(item, index) => item.id}
+
 />
       
 
