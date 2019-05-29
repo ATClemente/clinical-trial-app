@@ -1,5 +1,5 @@
 import React from 'react';
-import Onboarding from 'react-native-onboarding-screen';
+import Onboarding from 'react-native-onboarding-swiper';
 import {  Image } from 'react-native';
 
 
@@ -48,12 +48,19 @@ export default class OnboardingClass extends React.Component {
         ];
         return (
             <Onboarding
-              //  backgroundImage={require('https://media.glassdoor.com/sqll/1177597/zero-the-end-of-prostate-cancer-squarelogo-1455293657416.png')}
+            pages={[
+              {
+                backgroundColor: '#fff',
+                image: <Image source={require('../assets/images/cancer.png')} />,
+                title: 'Onboarding',
+                subtitle: 'Done with React Native Onboarding Swiper',
+              },
+            
+            ]}
+          />
 
-          //   <Image source={require('./images/circle.png')} />
+            
 
-                pages={Pages}
-            />
         );
     }
 }

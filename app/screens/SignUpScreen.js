@@ -120,7 +120,7 @@ export default class SignUpScreen extends React.Component {
         profile: data.profile,
         trials: [],
       });
-      this.props.navigation.navigate('Main');
+      this.props.navigation.navigate('Onboarding');
     } catch (e) {
       if (e.response) {
         Toast.show({
