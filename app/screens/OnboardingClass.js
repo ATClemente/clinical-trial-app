@@ -64,7 +64,7 @@ export default class OnboardingClass extends React.Component {
               {
                 backgroundColor: '#fff',
                 image: <Image source={require('../assets/images/cancer.png')} />,
-                title: 'Onboarding',
+                title: 'Welcome',
                 subtitle: 'Done with React Native Onboarding Swiper',
                 
               },
