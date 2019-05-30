@@ -6,11 +6,23 @@ const jwt = require('jsonwebtoken');
 const { Pool } = require('pg');
 const { parse } = require('node-html-parser');
 const request = require('request');
+const sgMail = require('@sendgrid/mail');
+const crypto = require('crypto');
+const url = require('url');
+const exphbs = require('express-handlebars');
 
 const app = express();
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.engine('handlebars', exphbs());
+app.set('view engine', 'handlebars');
+
 const saltRounds = 10;
 const SECRET = 'fdSj3sdAd59daSqLDasieQ9osM';
+
+const SENDGRID_API_KEY =
+  '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';
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const db = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -59,12 +71,12 @@ const findOne = async username => {
   return null;
 };
 
-const findOneByEmail = async email => {
-  const user = await db.query('SELECT * FROM users WHERE email = $1', email);
-  if (user.rowCount) {
-    return user.rows[0];
-  }
-  return null;
+const findOneByColumn = async (column, value) => {
+  /* Table and column names need to be string literals, can't use $1 */
+  const user = await db.query(`SELECT * FROM users WHERE ${column}=$1`, [
+    value
+  ]);
+  return user.rowCount ? user.rows[0] : null;
 };
 
 app.get('/', (req, res) => {
@@ -126,7 +138,8 @@ app.post('/auth/login', async (req, res) => {
         dob: user.dob,
         gender: user.gender,
         location: user.zip,
-        cancerType: user.cancertype
+        cancerType: user.cancertype,
+        showOnboarding: user.show_onboarding
       };
       res.status(200).json(auth(true, 'Valid', token, profile));
     }
@@ -136,21 +149,83 @@ app.post('/auth/login', async (req, res) => {
   }
 });
 
-app.get('/auth/resetPassword', async (req, res) => {
+app.get('/auth/forgot', async (req, res) => {
   if (!req.query || !req.query.email) {
     return res
       .status(400)
       .json(msg(false, 'Error: Required query string param { email: String }'));
   }
   try {
-    const user = findOneByEmail(req.query.email);
+    const user = await findOneByColumn('email', req.query.email);
     if (!user) {
       return res.status(404).json(msg(false, 'Error: email not found'));
     }
+
+    const buffer = crypto.randomBytes(20);
+    const resetToken = buffer.toString('hex');
+
+    await db.query('UPDATE users SET resetpwdtoken=$1 WHERE username=$2', [
+      resetToken,
+      user.username
+    ]);
+
+    const baseUrl = url.format({
+      protocol: req.protocol,
+      host: req.get('host')
+    });
+    const resetPwdLink = `${baseUrl}/auth/reset/${resetToken}`;
+
+    const emailMsg = {
+      to: user.email,
+      from: 'no-reply@clinical-trial-app.herokuapp.com',
+      subject: 'Clinical Trial App - Reset Your Password',
+      html: `<p><strong>You've requested to reset your password</strong></p><p><a href='${resetPwdLink}'>Click here to reset your password</a></p>`
+    };
+    sgMail.send(emailMsg);
+
     return res.status(200).json(msg(true, 'Reset password email sent'));
   } catch (e) {
     res.status(500).json(msg(false, 'Server Error'));
   }
+});
+
+app.get('/auth/reset/:token', async (req, res) => {
+  const user = await findOneByColumn('resetpwdtoken', req.params.token);
+  if (!user) {
+    return res.status(404).send('Not authorized');
+  }
+  res.render('reset');
+});
+
+app.post('/auth/reset/:token', async (req, res) => {
+  const user = await findOneByColumn('resetpwdtoken', req.params.token);
+  if (!user) {
+    return res.status(404).send('Not authorized');
+  }
+  if (
+    !req.body ||
+    !req.body.password ||
+    !req.body.confirmPassword ||
+    req.body.password !== req.body.confirmPassword
+  ) {
+    return res.status(400).send('Invalid parameters');
+  }
+  const hash = await bcrypt.hash(req.body.password, saltRounds);
+  await db.query(
+    'UPDATE users SET password=$1, resetpwdtoken=NULL WHERE username=$2',
+    [hash, user.username]
+  );
+
+  const emailMsg = {
+    to: user.email,
+    from: 'no-reply@clinical-trial-app.herokuapp.com',
+    subject: 'Clinical Trial App - Password was Reset',
+    html:
+      '<p><strong>Your password to Clinical Trial App has been reset.</strong></p>'
+  };
+  sgMail.send(emailMsg);
+
+  return res.send('Password reset');
 });
 
 app.use('/user', async (req, res, next) => {
@@ -186,7 +261,8 @@ app.get('/user/profile', async (req, res) => {
       dob: user.dob,
       gender: user.gender,
       location: user.zip,
-      cancerType: user.cancertype
+      cancerType: user.cancertype,
+      showOnboarding: user.show_onboarding
     };
     return res.status(200).json({ success: true, profile });
   } catch (e) {
@@ -198,14 +274,18 @@ app.get('/user/profile', async (req, res) => {
 app.patch('/user/profile', async (req, res) => {
   try {
     let user = await findOne(req.profile.username);
+    // console.log(user);
     await db.query(
-      'UPDATE users SET email=$1, dob=$2, gender=$3, zip=$4, cancertype=$5 WHERE username=$6',
+      'UPDATE users SET email=$1, dob=$2, gender=$3, zip=$4, cancertype=$5, show_onboarding=$6 WHERE username=$7',
       [
         req.body.email || req.profile.email,
         req.body.dob || req.profile.dob,
         req.body.gender || req.profile.gender,
-        req.body.location || req.profile.location,
-        req.body.cancerType || req.profile.cancerType,
+        req.body.location || req.profile.zip,
+        req.body.cancerType || req.profile.cancertype,
+        req.body.showOnboarding !== undefined
+          ? req.body.showOnboarding
+          : req.profile.show_onboarding,
         req.profile.username
       ]
     );
@@ -216,7 +296,8 @@ app.patch('/user/profile', async (req, res) => {
       dob: user.dob,
       gender: user.gender,
       location: user.zip,
-      cancerType: user.cancertype
+      cancerType: user.cancertype,
+      showOnboarding: user.show_onboarding
     };
     return res.status(200).json({ success: true, status: 'Updated', profile });
   } catch (err) {

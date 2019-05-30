@@ -16,7 +16,8 @@ export default class ForgotPasswordScreen extends React.Component {
     super(props);
     this.state = {
       email: '',
-      loading: false
+      loading: false,
+      emailSent: false
     }
   }
 
@@ -25,47 +26,67 @@ export default class ForgotPasswordScreen extends React.Component {
   };
 
   render() {
-    return (      
-      <View style={{ 
-        flex: 1,
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center'
-      }}>
-        <View style={{
-          width: '100%',
-          justifyContent: 'center',
-          paddingHorizontal: 20,
+    if (!emailSent) {
+      return (      
+        <View style={{ 
+          flex: 1,
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center'
         }}>
-          <View style={{ paddingBottom: 15 }}>
-            <Text style={{ fontWeight: 'bold', marginBottom: 10 }}>
-              Enter your email address to reset your password.
-            </Text>
-            <Text>
-              If you have no email address saved in Settings, please create a new account.
-            </Text>
-          </View>
-          <FormInput
-            label='Email'
-            placeholder='johndoe@example.com'
-            keyboardType='email-address'
-            autoCapitalize='none'
-            value={this.state.email}
-            onChangeText={email => this.setState({ email })}
-          />
-          <View style={{ marginTop: 8, marginBottom: 14 }}>
-            <GradientButton
-              colors={[Colors.radar2, Colors.radar3]}
-              handleClick={this._resetPassword}
-              loading={this.state.isLoading}
-              disabled={!this._isEmailValid()}
-              text='Send Reset Password Link'
+          <View style={{
+            width: '100%',
+            justifyContent: 'center',
+            paddingHorizontal: 20,
+          }}>
+            <View style={{ paddingBottom: 15 }}>
+              <Text style={{ fontWeight: 'bold', marginBottom: 10 }}>
+                Enter your email address to reset your password.
+              </Text>
+              <Text>
+                If you have no email address saved in Settings, please create a new account.
+              </Text>
+            </View>
+            <FormInput
+              label='Email'
+              placeholder='johndoe@example.com'
+              keyboardType='email-address'
+              autoCapitalize='none'
+              value={this.state.email}
+              onChangeText={email => this.setState({ email })}
             />
+            <View style={{ marginTop: 8, marginBottom: 14 }}>
+              <GradientButton
+                colors={[Colors.radar2, Colors.radar3]}
+                handleClick={this._resetPassword}
+                loading={this.state.isLoading}
+                disabled={!this._isEmailValid()}
+                text='Send Reset Password Link'
+              />
+            </View>
+            <View style={{ height: '40%' }} />
           </View>
-          <View style={{ height: '40%' }} />
         </View>
-      </View>
-    );
+      );
+    }
+    else {
+      return (
+        <View style={{ 
+          flex: 1,
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
+          <View style={{
+            width: '100%',
+            justifyContent: 'center',
+            paddingHorizontal: 20,
+          }}>
+            <Text>Please check your email to reset your password.</Text>
+          </View>
+        </View>
+      );
+    }
   }
 
   _resetPassword = async () => {
@@ -73,8 +94,10 @@ export default class ForgotPasswordScreen extends React.Component {
     await this.setState({ loading: true });
     try {
       const { data } = await axios.get(
-        Urls.server + '/auth/resetPassword?email=' + this.state.email
-      );    } catch (e) {
+        Urls.server + '/auth/forgot?email=' + this.state.email
+      );
+      await this.setState({ emailSent: true });
+    } catch (e) {
       if (e.response) {
         Toast.show({
           text: e.response.data.status,
