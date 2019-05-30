@@ -175,7 +175,7 @@ export default class CancerRSS extends React.Component {
                 <CardItem bordered style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
 
                     <Text 
-                        onPress={() => Linking.openURL(item.link)}
+                        onPress={() => this.setState({ modalVisible: true, modalURL: item.link })}
                         style={styles.articleTitle}
                     >
                         {item.title}
@@ -217,68 +217,6 @@ export default class CancerRSS extends React.Component {
 }
 
 
-
-    /*
-    render() {
-
-
-        if (this.state.isLoading) {
-            return (
-                <View style={{ flex: 1, padding: 20 }}>
-                    <ActivityIndicator />
-                </View>
-            )
-        }
-        return (
-
-            <View style={{ flex: 1, paddingTop: 1, justifyContent: 'space-between' }}>
-
-                <FlatList
-                    data={this.state.dataSource}
-
-                    renderItem={({ item }) =>
-                        //<Text style={styles.body}>{item.title}, {item.publicationDate}, {item.abstract}</Text>}
-
-                        <View style={{ padding: 1 }}>
-
-                            <Text style>Publication Date:{item.pubDate} </Text>
-
-                            <Text
-                                onPress={() => Linking.openURL(item.link)}>
-                                {item.title}
-                            </Text>
-
-
-                            <Text style>Description:{item.description.replace('<p>', '').replace('</p>', '')  } </Text>
-                            <Text style>Link:{item.link} </Text> 
-
-      
-
-                            
-
-/*
-                            <View
-                                style={{
-                                    borderBottomColor: 'grey',
-                                    borderBottomWidth: 1,
-
-                                    borderRadius: 5,
-                                    padding: 5
-                                }}
-                            />
-
-                        </View>
-                    }
-                    keyExtractor={(item, index) => item.guid}
-                />
-            </View>
-
-          
-            );
-
-    }
-}
-*/
 
 const styles = StyleSheet.create({
     title: {
