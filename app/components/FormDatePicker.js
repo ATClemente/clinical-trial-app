@@ -18,7 +18,7 @@ const FormDatePicker = ({label, errors, ...rest}) => {
 
   return (
     <View style={{ marginVertical: 5}}>
-      <Text style={{ marginBottom: 2, fontWeight: 'bold' }}>{label}</Text>
+      <Text style={{ marginBottom: 2, fontWeight: '500' }}>{label}</Text>
       <DatePicker
         style={inputStyles}
         format='MM/DD/YYYY'
