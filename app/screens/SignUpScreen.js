@@ -95,15 +95,6 @@ export default class SignUpScreen extends React.Component {
 
   _signUpAsync = async () => {
     Keyboard.dismiss();
-    if (this.state.password !== this.state.verifyPwd) {
-      Toast.show({
-        text: "Passwords don't match",
-        buttonText: 'Okay',
-        type: 'warning',
-        duration: toastDelay
-      });
-      return;
-    }
     await this.setState({ loading: true });
     try {
       const { data } = await axios.post(

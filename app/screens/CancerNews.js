@@ -63,7 +63,7 @@ export default class CancerNews extends React.Component {
         }
 
         return (
-            <Container style={{ paddingHorizontal: 5, backgroundColor: '#ddd' }}>
+            <Container style={{ paddingHorizontal: 5, backgroundColor: '#eee' }}>
                 <Content >
                     <FlatList
                         style={{ marginVertical: 4 }}

@@ -84,20 +84,14 @@ export default class ClinicalTrialSearchScreen extends React.Component {
   }
 
   render() {
-    const disableSearch = (this.state.keyWordText && this.state.zipCodeText) ? false : true;
-    // const disablePrev = this.state.prevParams == {} || this.state.currentPage == 1;
-    // const disableNext = this.state.prevParams == {} 
-    //   || this.state.currentPage == Math.ceil(this.state.searchDataTotal / this.state.searchSize)
-    //   || !this.state.searchDataTotal;
-    // const tabColor = Colors.btnBlue;
-
+    console.log(this.state.location);
     return (
       <SafeAreaView style={styles.container}>
 
         <SearchLocationModal
           visible={this.state.showLocationModal}
           setLocationModal={this.setLocationModal}
-          setProfileLocation={this.setProfileLocation}
+          setSearchLocation={this.setSearchLocation}
         />
 
         <SearchBar
@@ -201,18 +195,22 @@ export default class ClinicalTrialSearchScreen extends React.Component {
           setVisible={this._setLocationVisible}
           setLocation={this._setLocation}
           setRadius={this._setRadius}
+          searchLocation={this.state.zipCodeText}
+          searchRadius={this.state.desiredDistance}
         />
 
         <SearchGenderOptions
           visible={this.state.showGenderOptions}
           setVisible={this._setGenderVisible}
           setGender={this._setGender}
+          gender={this.state.gender}
         />
 
         <SearchPhaseOptions
           visible={this.state.showPhaseOptions}
           setVisible={this._setPhaseVisible}
           setPhase={this._setPhase}
+          phase={this.state.phase}
         />
 
         {this.state.searchLoading &&
@@ -474,7 +472,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
     this.setState({ showLocationModal: visible });
   }
 
-  setProfileLocation = location => {
+  setSearchLocation = location => {
     this.setState({ location });
     this.setState({ zipCodeText: location });
     Toast.show({

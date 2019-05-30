@@ -8,7 +8,6 @@ import {
 } from 'react-native';
 import { CheckBox } from 'react-native-elements';
 import Modal from 'react-native-modal';
-import FormInput from './FormInput';
 import GradientButton from './GradientButton';
 import Colors from '../constants/Colors';
 import Styles from '../constants/Styles';
@@ -21,6 +20,17 @@ export default class SearchGenderOptions extends React.PureComponent{
       age: null,
       male: false,
       female: false,
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.gender === '') {
+      this.setState({ 
+        gender: null,
+        age: null,
+        male: false,
+        female: false
+      });
     }
   }
 

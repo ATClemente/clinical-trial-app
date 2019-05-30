@@ -10,7 +10,7 @@ const FormInput = ({label, errors, ...rest}) => {
   const inputStyle = errors ? [Styles.formInput, { borderBottomColor: 'red' }] : Styles.formInput;
   return (
     <View style={{ marginVertical: 5}}>
-      <Text style={{ marginBottom: 2, fontWeight: 'bold' }}>{label}</Text>
+      <Text style={{ marginBottom: 2, fontWeight: '500' }}>{label}</Text>
       <TextInput
         style={inputStyle}
         {...rest}

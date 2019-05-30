@@ -145,7 +145,7 @@ export default class CancerRSS extends React.Component {
         }
 
         return (
-            <Container style={{ paddingHorizontal: 5, backgroundColor: '#ddd' }}>
+            <Container style={{ paddingHorizontal: 5, backgroundColor: '#eee' }}>
                 <Content >
 
                     <FlatList

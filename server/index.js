@@ -59,6 +59,14 @@ const findOne = async username => {
   return null;
 };
 
+const findOneByEmail = async email => {
+  const user = await db.query('SELECT * FROM users WHERE email = $1', email);
+  if (user.rowCount) {
+    return user.rows[0];
+  }
+  return null;
+};
+
 app.get('/', (req, res) => {
   res.send('Welcome');
 });
@@ -125,6 +133,23 @@ app.post('/auth/login', async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(500).json(serverError);
+  }
+});
+
+app.get('/auth/resetPassword', async (req, res) => {
+  if (!req.params || !req.params.email) {
+    return res
+      .status(400)
+      .json(msg(false, 'Error: Required query string param { email: String }'));
+  }
+  try {
+    const user = findOneByEmail(req.params.email);
+    if (!user) {
+      return res.status(404).json(msg(false, 'Error: email not found'));
+    }
+    return res.status(200).json(msg(true, 'Reset password email sent'));
+  } catch (e) {
+    res.status(500).json(msg(false, 'Server Error'));
   }
 });
 
