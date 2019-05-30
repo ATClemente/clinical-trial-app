@@ -84,7 +84,6 @@ export default class ClinicalTrialSearchScreen extends React.Component {
   }
 
   render() {
-    console.log(this.state.location);
     return (
       <SafeAreaView style={styles.container}>
 

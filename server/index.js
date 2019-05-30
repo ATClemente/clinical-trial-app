@@ -137,13 +137,13 @@ app.post('/auth/login', async (req, res) => {
 });
 
 app.get('/auth/resetPassword', async (req, res) => {
-  if (!req.params || !req.params.email) {
+  if (!req.query || !req.query.email) {
     return res
       .status(400)
       .json(msg(false, 'Error: Required query string param { email: String }'));
   }
   try {
-    const user = findOneByEmail(req.params.email);
+    const user = findOneByEmail(req.query.email);
     if (!user) {
       return res.status(404).json(msg(false, 'Error: email not found'));
     }
