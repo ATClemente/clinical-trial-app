@@ -10,6 +10,7 @@ import AuthLoadingScreen from '../screens/AuthLoadingScreen';
 import SignInScreen from '../screens/SignInScreen';
 import SignUpScreen from '../screens/SignUpScreen';
 import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
+import OnboardingClass from '../screens/OnboardingClass';
 
 const AuthStack = createStackNavigator({
   SignIn: {
@@ -39,7 +40,8 @@ export default createAppContainer(
       // Read more at https://reactnavigation.org/docs/en/auth-flow.html
       Main: MainTabNavigator,
       Auth: AuthStack,
-      AuthLoading: AuthLoadingScreen
+      AuthLoading: AuthLoadingScreen,
+      Onboarding: OnboardingClass
     },
     {
       initialRouteName: 'AuthLoading'

@@ -14,6 +14,8 @@ import {
 import { Card, CardItem, Left, Body, Container, Content } from 'native-base';
 import GradientButton from '../components/GradientButton';
 import Colors from '../constants/Colors';
+import PopUpScreenModal from '../components/PopUpScreenModal'
+
 
 export default class FDA_Drugs extends React.Component {
     constructor(props) {
@@ -21,7 +23,14 @@ export default class FDA_Drugs extends React.Component {
         this.state = { isLoading: true }
 
     }
+    _makeModalVisible = () => {
+        this.setState({ modalVisible: true })
+    }
 
+    _hideModal = () => {
+        // Make modal visible 
+        this.setState({ modalVisible: false })
+    }
     componentDidMount() {
         return fetch('http://clinical-trial-app.herokuapp.com/drugs', { method: 'GET' })
             .then((response) => response.json())
@@ -44,14 +53,22 @@ export default class FDA_Drugs extends React.Component {
     render() {
 
         return (
-
+            <Container style={{ paddingHorizontal: 5, backgroundColor: '#ddd' }}>
+<Content>
             <FlatList
 data={this.state.dataSource}
 renderItem={this._renderItem}
+keyExtractor={(item, index) => item.guid}
+
 />
       
-
-
+      <PopUpScreenModal
+      visible={this.state.modalVisible}
+      hideModal={this._hideModal}
+      url={this.state.modalURL}
+  />
+</Content>
+</Container>
         );
     }
 
@@ -66,7 +83,7 @@ renderItem={this._renderItem}
                 <CardItem bordered style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
 
                     <Text 
-                        onPress={() => Linking.openURL(item.link)}
+                        onPress={() => this.setState({ modalVisible: true, modalURL: item.link })}
                         style={styles.articleTitle}
                     >
                         {item.name}
@@ -87,6 +104,7 @@ renderItem={this._renderItem}
                     </Body>
                 
                 </CardItem>
+                {/*}
                 <CardItem style={{ flexDirection: 'row', justifyContent: 'center' }}>
                     <View style={{ width: '100%', marginBottom: 5 }}>
                         <GradientButton
@@ -98,7 +116,7 @@ renderItem={this._renderItem}
                             padding={10}
                         />
                     </View>
-                </CardItem>
+        </CardItem> */}
             </Card>
         )
     }

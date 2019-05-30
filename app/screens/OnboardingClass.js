@@ -1,9 +1,21 @@
 import React from 'react';
-import Onboarding from 'react-native-onboarding-screen';
+import Onboarding from 'react-native-onboarding-swiper';
 import {  Image } from 'react-native';
 
 
 export default class OnboardingClass extends React.Component {
+
+
+    endOnboarding = () => {
+
+        //Take the user back to main 
+        this.props.navigation.navigate('AboutStack')
+
+    }
+
+    
+
+
     render() {
         const Pages = [
             {
@@ -48,12 +60,42 @@ export default class OnboardingClass extends React.Component {
         ];
         return (
             <Onboarding
-              //  backgroundImage={require('https://media.glassdoor.com/sqll/1177597/zero-the-end-of-prostate-cancer-squarelogo-1455293657416.png')}
+            pages={[
+              {
+                backgroundColor: '#fff',
+                image: <Image source={require('../assets/images/cancer.png')} />,
+                title: 'Welcome',
+                subtitle: 'Done with React Native Onboarding Swiper',
+                
+              },
 
-          //   <Image source={require('./images/circle.png')} />
+              {
+                backgroundColor: '#fff',
+                image: <Image source={require('../assets/images/cancer.png')} />,
+                title: 'Onboarding',
+                subtitle: 'Done with React Native Onboarding Swiper',
+                
+              },
+              {
+                backgroundColor: '#fff',
+                image: <Image source={require('../assets/images/cancer.png')} />,
+                title: 'Onboarding',
+                subtitle: 'Done with React Native Onboarding Swiper',
+                
+              }
+            
+            
+            ]}
 
-                pages={Pages}
-            />
+            onDone = {this.endOnboarding } 
+            onSkip = {this.endOnboarding } 
+
+          />
+
+
+
+
+
         );
     }
 }

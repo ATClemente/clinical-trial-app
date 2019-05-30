@@ -109,7 +109,7 @@ export default class CancerNews extends React.Component {
 
                     <Text 
                         style={styles.articleTitle}
-                         onPress={() => Linking.openURL(item.url[0].value)} 
+                         onPress={() => this.setState({ modalVisible: true, modalURL: item.url[0].value })}
                        // onPress={() => { this._articleInApp(item) }}
 
 
