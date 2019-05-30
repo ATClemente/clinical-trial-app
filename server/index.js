@@ -220,8 +220,7 @@ app.post('/auth/reset/:token', async (req, res) => {
     to: user.email,
     from: 'no-reply@clinical-trial-app.herokuapp.com',
     subject: 'Clinical Trial App - Password was Reset',
-    html:
-      '<p><strong>Your password to Clinical Trial App has been reset.</strong></p>'
+    html: '<p>Your password to Clinical Trial App has been reset.</p>'
   };
   sgMail.send(emailMsg);
 

@@ -4,6 +4,7 @@ import {
   Text,
   View
 } from 'react-native';
+import axios from 'axios';
 import { Toast } from 'native-base';
 import FormInput from '../components/FormInput';
 import GradientButton from '../components/GradientButton';
@@ -26,20 +27,18 @@ export default class ForgotPasswordScreen extends React.Component {
   };
 
   render() {
-    if (!emailSent) {
+    if (!this.state.emailSent) {
       return (      
         <View style={{ 
           flex: 1,
           flexDirection: 'column',
-          alignItems: 'center',
           justifyContent: 'center'
         }}>
           <View style={{
             width: '100%',
-            justifyContent: 'center',
             paddingHorizontal: 20,
           }}>
-            <View style={{ paddingBottom: 15 }}>
+            <View style={{ paddingBottom: 15, textAlign: 'center' }}>
               <Text style={{ fontWeight: 'bold', marginBottom: 10 }}>
                 Enter your email address to reset your password.
               </Text>
@@ -59,12 +58,12 @@ export default class ForgotPasswordScreen extends React.Component {
               <GradientButton
                 colors={[Colors.radar2, Colors.radar3]}
                 handleClick={this._resetPassword}
-                loading={this.state.isLoading}
+                loading={this.state.loading}
                 disabled={!this._isEmailValid()}
                 text='Send Reset Password Link'
               />
             </View>
-            <View style={{ height: '40%' }} />
+            <View style={{ height: '30%' }} />
           </View>
         </View>
       );
@@ -74,15 +73,14 @@ export default class ForgotPasswordScreen extends React.Component {
         <View style={{ 
           flex: 1,
           flexDirection: 'column',
-          alignItems: 'center',
           justifyContent: 'center'
         }}>
           <View style={{
             width: '100%',
-            justifyContent: 'center',
             paddingHorizontal: 20,
           }}>
-            <Text>Please check your email to reset your password.</Text>
+            <Text style={{ textAlign: 'center' }}>Please check your email to reset your password.</Text>
+            <View style={{ height: '10%' }} />
           </View>
         </View>
       );
