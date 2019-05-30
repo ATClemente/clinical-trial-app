@@ -10,14 +10,10 @@ import {
   FlatList,
   SafeAreaView,
   Modal,
-  TouchableHighlight,
   AsyncStorage
 } from 'react-native';
-import Colors from '../constants/Colors';
-import GradientButton from '../components/GradientButton';
 import * as QueryConstants from '../constants/MainSearchQueryParams.js';
 import ViewMoreText from 'react-native-view-more-text';
-import Collapsible from 'react-native-collapsible';
 import MapView, {Circle, Callout} from 'react-native-maps';
 import { Card } from 'react-native-elements';
 import axios from 'axios';
@@ -25,8 +21,6 @@ import Urls from '../constants/Urls';
 import { Ionicons } from '@expo/vector-icons';
 import IconButton from '../components/IconButton';
 import geolib from 'geolib';
-import ClinicalTrialAPIUtil from '../components/ClinicalTrialAPIUtil.js';
-import { Row } from 'native-base';
 
 export default class TrialDetailsModal extends React.Component {
     constructor(props) {
@@ -55,11 +49,6 @@ export default class TrialDetailsModal extends React.Component {
             temporaryMarkerOpacity: 1,
             closedMarkerOpacity: 1,
         };
-    }
-
-    componentWillMount(){
-        //this.setProfileData();
-        //this.setUserLocationCoordinates();
     }
 
     componentWillReceiveProps(nextProps) {
@@ -391,6 +380,12 @@ export default class TrialDetailsModal extends React.Component {
             return "No principal investigator specified";
         }
     }
+    
+    clearLoadingIndicator = () => {
+        console.log("clear loading called");
+        this.setState({waitForLoading: false});
+    }
+
 
     renderMapview = (trial) => {
 
@@ -400,8 +395,16 @@ export default class TrialDetailsModal extends React.Component {
         let finalSites = trial[QueryConstants.SITES].filter(this.checkForLocationProximity);
 
         if (finalSites.length < 1){
-            //this.setState({ waitForLoading: false });
-            return(<Text>There are no active trial sites near you :(</Text>);
+            return(
+                <View
+                    style={{justifyContent: 'center'}} 
+                    onLayout={() => {this.setState({waitForLoading: false })}} >
+                    <Text style={{ textAlign: "center" }}>Whoops!</Text>
+                    <Text style={{ textAlign: "center" }}>There are no trial sites near you :(</Text>
+                    <Text style={{ textAlign: "center" }}>Try searching again with a specific location</Text>
+                    <Text style={{ textAlign: "center" }}>to find trials with sites close to you!</Text>
+                </View>
+            );
 
         }
 
@@ -488,7 +491,7 @@ export default class TrialDetailsModal extends React.Component {
             <View style={{ height: 320, width: 370 }}>
                 <MapView
                     style={{ flex: 1 }}
-                    onMapReady = {() => {this.setState({ waitForLoading: false })}}
+                    onMapReady = {() => {this.setState({waitForLoading: false })}}
                     initialRegion={{
                         latitude: this.state.locationFilterLat,
                         longitude: this.state.locationFilterLon,
