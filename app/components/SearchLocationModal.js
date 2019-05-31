@@ -65,7 +65,6 @@ export default class SearchLocationModal extends React.PureComponent{
   };
 
   render() {
-    console.log(this.context);
     return(
       <Modal
         isVisible={this.props.visible}

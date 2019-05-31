@@ -1,10 +1,6 @@
 import React from 'reactn';
-import DropdownMenu from 'react-native-dropdown-menu';
 import {
-  AsyncStorage,
-  Image,
   Platform,
-  ScrollView,
   StyleSheet,
   Keyboard,
   Text,
@@ -12,29 +8,19 @@ import {
   View,
   ActivityIndicator,
   Alert,
-  TextInput,
   SafeAreaView,
-  ReturnKeyType,
-  Picker
 } from 'react-native';
 import SearchOptionsButton from '../components/SearchOptionsButton';
 import SearchLocationOptions from '../components/SearchLocationOptions';
 import SearchGenderOptions from '../components/SearchGenderOptions';
 import SearchPhaseOptions from '../components/SearchPhaseOptions';
-import { Ionicons } from '@expo/vector-icons';
-import GradientButton from '../components/GradientButton';
 import { SearchBar } from 'react-native-elements';
 import { Toast } from 'native-base';
-import { WebBrowser } from 'expo';
-import { MonoText } from '../components/StyledText';
-import Colors from '../constants/Colors';
 import ClinicalTrialAPIUtil from '../components/ClinicalTrialAPIUtil.js';
 import * as QueryConstants from '../constants/MainSearchQueryParams.js';
 import ClinicalTrialSearchResults from '../components/ClinicalTrialSearchResults';
 import SearchLocationModal from '../components/SearchLocationModal';
 import { toastDelay } from '../constants/Constants';
-import IconButton from '../components/IconButton';
-import Styles from '../constants/Styles';
 
 export default class ClinicalTrialSearchScreen extends React.Component {
   static navigationOptions = {
@@ -49,9 +35,8 @@ export default class ClinicalTrialSearchScreen extends React.Component {
         keyWordText: '',
         zipCodeText: '',
         searchLocation: '',
-        //distanceSelect: "10",
         searchSize: 20,
-        resultsFromIndex: 0, //Just add searchSize for next batch when needed.
+        resultsFromIndex: 0,
         searchDataTotal: null,
         searchDataTrials: [],
         prevParams: {},
@@ -134,58 +119,14 @@ export default class ClinicalTrialSearchScreen extends React.Component {
               focused={this.state.phase ? true : false}
               style={{ width: '25%' }}
             />
-            {/* <SearchBar
-              placeholder="Zip Code"
-              onChangeText={(text) => this.onZipCodeChanged(text)}
-              value={this.state.zipCodeText}
-              searchIcon={{ name: 'md-pin', type: 'ionicon' }}
-              containerStyle={[styles.searchBarContainer, {width: '40%', marginTop: 8 }]}
-              inputContainerStyle={styles.searchBarInput}
-              inputStyle={styles.searchBarText}
-              placeholderTextColor='#aaa'
-              returnKeyType='search'
-              keyboardType='numeric'
-              maxLength={5}
-              defaultValue={this.global.profile.location}
-              onSubmitEditing={() => this._doAPISearch()}
-            />
-
-            <Picker
-                selectedValue={this.state.desiredDistance}
-                style={Platform.OS === 'ios' ? { height: 45, width: '35%', marginTop: 6 } : { height: 45, width: '35%', marginTop: 2 }}
-                itemStyle={Platform.OS === 'ios' ? { height: 38, borderWidth: 0, fontSize: 18 } : { height: 45 }}
-                mode='dropdown'
-                onValueChange={(itemValue, itemIndex) =>
-                    this.setState({desiredDistance: itemValue})
-                }>
-                <Picker.Item label="10mi" value="10" />
-                <Picker.Item label="20mi" value="20" />
-                <Picker.Item label="30mi" value="30" />
-                <Picker.Item label="40mi" value="40" />
-                <Picker.Item label="50mi" value="50" />
-                <Picker.Item label="60mi" value="60" />
-                <Picker.Item label="70mi" value="70" />
-                <Picker.Item label="80mi" value="80" />
-                <Picker.Item label="90mi" value="90" />
-                <Picker.Item label="100mi" value="100" />
-            </Picker> */}
 
             <View style={{ width: '18%' }}>
-              {/* <GradientButton
-                colors={[Colors.blueOne, Colors.blueTwo]}
-                handleClick={() => this._doAPISearch()}
-                loading={false}
-                disabled={disableSearch}
-                text='Search'
-                padding={8}
-              /> */}
               <TouchableOpacity 
               onPress={this._clearFilters} 
               style={{ width: '100%', height: '100%', justifyContent: 'center', alignItems: 'flex-end' }}>
                 <Text style={{ color: '#0078ff', fontSize: 16 }}>Reset</Text>
               </TouchableOpacity>
             </View>
-
           </View>
         </View>
 
@@ -267,7 +208,6 @@ export default class ClinicalTrialSearchScreen extends React.Component {
   }
 
   _doAPISearch(pageSearch = false, pageDirection = 1, useInclude = true){
-//ClinicalTrialAPIUtil.sendPostRequest(this.state.searchSize, 0, true, "active", "treatment", keyWordArg, zipCodeArg, this.state.distanceSelect)
     Keyboard.dismiss();
     var params = {};
     if(!pageSearch){
@@ -354,8 +294,6 @@ export default class ClinicalTrialSearchScreen extends React.Component {
       }
     }
     else{
-      //this.state.prevParams[QueryConstants.FROM_STR] += this.state.searchSize;
-      //this.state.currentPage++;
       let localParams = this.state.prevParams;
       localParams[QueryConstants.FROM_STR] += (this.state.searchSize * pageDirection);
       if(localParams[QueryConstants.FROM_STR] < 0){
@@ -370,16 +308,6 @@ export default class ClinicalTrialSearchScreen extends React.Component {
       params = this.state.prevParams;
     }
 
-    /*let keyWordArg = this.state.keyWordText.trim();
-    let zipCodeArg = this.state.zipCodeText.trim();
-    if(zipCodeArg == ""){
-      zipCodeArg = null
-    }
-    else if (zipCodeArg.length != 5){
-      this.zipCodeInvalidAlert();
-      this.setState({searchLoading: false});
-      return;
-    }*/  
     ClinicalTrialAPIUtil.sendPostRequest(params)
     .then((response) => {
         if(response != undefined && response != null){
@@ -398,14 +326,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
               this.setState({searchDataTotal: response.total});
               this.setState({
                 searchDataTrials: [...this.state.searchDataTrials, ...response.trials]});
-                //searchDataTrials: response.trials});
               this.setState({prevParams: params});
-              console.log(response.total);
-              //console.log(ClinicalTrialAPIUtil.getAgeRestrictions(this.state.searchData.trials[0]));
-              //console.log(ClinicalTrialAPIUtil.getGenderRestrictions(this.state.searchData.trials[0]));
-              //this.logTrialByIndex(0);
-              //console.log(response.trials[0].brief_title);  
-              //this.setState({hasNewSearchData: true}); 
             }
             else{
               //Likely a "from" index was sent higher than was valid 
@@ -485,59 +406,6 @@ export default class ClinicalTrialSearchScreen extends React.Component {
   _getTotalPageCount = () => {
     let totalPages = Math.ceil(this.props.searchDataTotal / this.props.searchSize);
     return totalPages;
-  }
-
-  _testFunc(){
-    Alert.alert("TEST!");
-  }
-
-  logTrialByIndex(index){
-    if(!this.state.searchData){
-        console.log("No search data!");
-    }
-    else{
-        /*var currTrial = this.state.searchData.trials[index];
-        for(var prop in currTrial){
-            console.log(prop + ": " + currTrial[prop]);
-        }*/
-        //Not exhaustive but good example about how properties can be retrieved from response
-        var currTrial = this.state.searchData.trials[index];
-        console.log("NCT_ID: " + currTrial[QueryConstants.NCT_ID]);
-        console.log("Brief title: " + currTrial[QueryConstants.BRIEF_TITLE]);
-        console.log("Brief Summary: " + currTrial[QueryConstants.BRIEF_SUMMARY]);
-        console.log("Phase: " + currTrial[QueryConstants.PHASE][QueryConstants.PHASE]);
-        console.log("Phase additional qualifier code: " + currTrial[QueryConstants.PHASE][QueryConstants.PHASE_ADDITIONAL_QUALIFIER_CODE]);
-        console.log("Phase other text: " + currTrial[QueryConstants.PHASE][QueryConstants.PHASE_OTHER_TEXT]);
-        console.log("Start date: " + currTrial[QueryConstants.START_DATE]);
-        console.log("Completion date: " + currTrial[QueryConstants.COMPLETION_DATE]);
-        console.log("Central Contact:");
-        console.log("Central Contact Email: " + currTrial[QueryConstants.CENTRAL_CONTACT][QueryConstants.CENTRAL_CONTACT_EMAIL]);
-        console.log("Central Contact Name: " + currTrial[QueryConstants.CENTRAL_CONTACT][QueryConstants.CENTRAL_CONTACT_NAME]);
-        console.log("Central Contact Phone: " + currTrial[QueryConstants.CENTRAL_CONTACT][QueryConstants.CENTRAL_CONTACT_PHONE]);
-        console.log("Central Contact Type: " + currTrial[QueryConstants.CENTRAL_CONTACT][QueryConstants.CENTRAL_CONTACT_TYPE]);
-        //Just print first disease
-        console.log("Disease:");
-        console.log("Disease code: " + currTrial[QueryConstants.DISEASES][0][QueryConstants.DISEASE_CODE]);
-        console.log("Disease thesearus id: " + currTrial[QueryConstants.DISEASES][0][QueryConstants.NCI_THESAURUS_CONCEPT_ID]);
-        console.log("Disease preferred name: " + currTrial[QueryConstants.DISEASES][0][QueryConstants.PREFERRED_NAME]);
-
-        console.log("Eligibility:");
-        console.log("Eligibile gender: " + currTrial[QueryConstants.ELIGIBILITY][QueryConstants.STRUCTURED][QueryConstants.GENDER]); 
-        console.log("Eligibile minimum age: " + currTrial[QueryConstants.ELIGIBILITY][QueryConstants.STRUCTURED][QueryConstants.MIN_AGE]);
-        console.log("Unstructured: " +currTrial[QueryConstants.ELIGIBILITY][QueryConstants.UNSTRUCTURED][0][QueryConstants.DESCRIPTION]);
-        
-        console.log("Lead org: " + currTrial[QueryConstants.LEAD_ORG]);
-        console.log("Principal Investigator: " + currTrial[QueryConstants.PRINCIPAL_INVESTIGATOR]);
-
-        //Just first site:
-        console.log("Site: ");
-        console.log("Contact name: " + currTrial[QueryConstants.SITES][0][QueryConstants.CONTACT_NAME]);
-        console.log("Contact phone: " + currTrial[QueryConstants.SITES][0][QueryConstants.CONTACT_PHONE]);
-        console.log("Status: " + currTrial[QueryConstants.SITES][0][QueryConstants.ORG_STATUS]);
-        console.log("Coordinates: ");
-        console.log("LATITUDE: " + currTrial[QueryConstants.SITES][0][QueryConstants.ORG_CORRDINATES][QueryConstants.LAT]);
-        console.log("LATITUDE: " + currTrial[QueryConstants.SITES][0][QueryConstants.ORG_CORRDINATES][QueryConstants.LON]);
-    }
   }
 }
 
