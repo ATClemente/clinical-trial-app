@@ -20,7 +20,7 @@ import PopUpScreenModal from '../components/PopUpScreenModal'
 export default class FDA_Drugs extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { isLoading: true }
+        this.state = { isLoading: true, modalVisible: false, modalURL: '' }
 
     }
     _makeModalVisible = () => {
@@ -58,7 +58,7 @@ export default class FDA_Drugs extends React.Component {
             <FlatList
 data={this.state.dataSource}
 renderItem={this._renderItem}
-keyExtractor={(item, index) => item.guid}
+keyExtractor={(item, index) => item.id}
 
 />
       
