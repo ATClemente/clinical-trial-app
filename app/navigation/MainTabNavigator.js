@@ -121,7 +121,6 @@ const OnboardingStack = createStackNavigator({
     Onboarding: {
         screen: OnboardingClass,
         navigationOptions: {
-            title: 'Temp onboarding screen'
         }
     },
 });
@@ -159,12 +158,13 @@ FDA_Drugs_Stack.navigationOptions = {
 };
 // Do this last to add a button 
 export default createBottomTabNavigator({
-  AboutStack,
+
   TrialSearchStack,
   SavedTrialsStack,
   CancerNewsStack,
   CancerRSSStack,
-    SettingsStack, 
-    OnboardingStack,
-  FDA_Drugs_Stack
+
+  FDA_Drugs_Stack,
+  OnboardingStack,
+  SettingsStack
 });

@@ -9,7 +9,7 @@ export default class OnboardingClass extends React.Component {
     endOnboarding = () => {
 
         //Take the user back to main 
-        this.props.navigation.navigate('AboutStack')
+        this.props.navigation.navigate('TrialSearchStack')
 
     }
 
@@ -63,26 +63,55 @@ export default class OnboardingClass extends React.Component {
             pages={[
               {
                 backgroundColor: '#fff',
-                image: <Image source={require('../assets/images/cancer.png')} />,
-                title: 'Welcome',
-                subtitle: 'Done with React Native Onboarding Swiper',
+                title: 'Welcome to the Cancer Application',
+                subtitle: ' ',
+                image: <Image source={require('../assets/images/orange.png')} />,
+                bottomBarHeight: 10
+
+              },
+
+              {
+                backgroundColor: '#fff',
+                image: <Image source={require('../assets/images/orange.png')} />,
+                title: 'Clinical Trials',
+                subtitle: 'Search for clinical trials and save any trials to your Saved Trials list',
+                bottomBarHeight: 10
+
+                
+              },
+              {
+                backgroundColor: '#fff',
+                image: <Image source={require('../assets/images/orange.png')} />,
+                title: 'Research Articles',
+                subtitle: 'View the latest scholarly research papers on cancer development'
+                
+              },
+              {
+                backgroundColor: '#fff',
+                image: <Image source={require('../assets/images/orange.png')} />,
+                title: 'Cancer News',
+                subtitle: 'View the latest news on cancer development'
                 
               },
 
               {
                 backgroundColor: '#fff',
-                image: <Image source={require('../assets/images/cancer.png')} />,
-                title: 'Onboarding',
-                subtitle: 'Done with React Native Onboarding Swiper',
+                image: <Image source={require('../assets/images/orange.png')} />,
+                title: 'FDA Approved Drugs',
+                subtitle: 'View the latest cancer drugs approved by the FDA'
                 
               },
+        
+            
               {
                 backgroundColor: '#fff',
-                image: <Image source={require('../assets/images/cancer.png')} />,
-                title: 'Onboarding',
-                subtitle: 'Done with React Native Onboarding Swiper',
+                image: <Image source={require('../assets/images/orange.png')} />,
+                title: 'Great!',
+                subtitle: "That's all for now. Let's get started."
                 
               }
+            
+
             
             
             ]}
