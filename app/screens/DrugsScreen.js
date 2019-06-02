@@ -53,22 +53,21 @@ export default class FDA_Drugs extends React.Component {
     render() {
 
         return (
-            <Container style={{ paddingHorizontal: 5, backgroundColor: '#ddd' }}>
-<Content>
-            <FlatList
-data={this.state.dataSource}
-renderItem={this._renderItem}
-keyExtractor={(item, index) => item.id}
-
-/>
-      
-      <PopUpScreenModal
-      visible={this.state.modalVisible}
-      hideModal={this._hideModal}
-      url={this.state.modalURL}
-  />
-</Content>
-</Container>
+            <Container style={{ paddingHorizontal: 5, backgroundColor: '#eee' }}>
+                <Content>
+                    <FlatList
+                        style={{ marginVertical: 4 }}
+                        data={this.state.dataSource}
+                        renderItem={this._renderItem}
+                        keyExtractor={(item, index) => item.id}
+                    />
+                    <PopUpScreenModal
+                        visible={this.state.modalVisible}
+                        hideModal={this._hideModal}
+                        url={this.state.modalURL}
+                    />
+                </Content>
+            </Container>
         );
     }
 
@@ -83,7 +82,7 @@ keyExtractor={(item, index) => item.id}
                 <CardItem bordered style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
 
                     <Text 
-                        onPress={() => this.setState({ modalVisible: true, modalURL: item.link })}
+                        onPress={() => this.props.navigation.navigate('DrugsArticle', { uri: item.link })}
                         style={styles.articleTitle}
                     >
                         {item.name}

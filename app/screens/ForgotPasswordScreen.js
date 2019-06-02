@@ -79,7 +79,7 @@ export default class ForgotPasswordScreen extends React.Component {
             width: '100%',
             paddingHorizontal: 20,
           }}>
-            <Text style={{ textAlign: 'center' }}>Please check your email to reset your password.</Text>
+            <Text style={{ textAlign: 'center' }}>Please check your email to reset your password. Email may take a few minutes to arrive.</Text>
             <View style={{ height: '10%' }} />
           </View>
         </View>

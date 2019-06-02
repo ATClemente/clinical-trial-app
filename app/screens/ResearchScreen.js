@@ -131,7 +131,7 @@ export default class CancerNews extends React.Component {
                     <View style={{ width: '100%', marginBottom: 5 }}>
                     <GradientButton
                         colors={[Colors.blueOne, Colors.blueTwo]}
-                        handleClick={() => this.setState({ modalVisible: true, modalURL: item.url[0].value })}
+                        handleClick={() => this.props.navigation.navigate('ResearchArticle', { uri: item.url[0].value })}
                         loading={false}
                         disabled={false}
                         text='View Article'
