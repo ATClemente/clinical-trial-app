@@ -147,20 +147,18 @@ export default class CancerRSS extends React.Component {
         return (
             <Container style={{ paddingHorizontal: 5, backgroundColor: '#eee' }}>
                 <Content >
-
                     <FlatList
                         style={{ marginVertical: 4 }}
                         data={this.state.dataSource}
                         renderItem={this._renderItem}
                         keyExtractor={(item, index) => item.guid}
                     />
- 
+                    <PopUpScreenModal
+                        visible={this.state.modalVisible}
+                        hideModal={this._hideModal}
+                        url={this.state.modalURL}
+                    />
                 </Content>
-                <PopUpScreenModal
-                    visible={this.state.modalVisible}
-                    hideModal={this._hideModal}
-                    url={this.state.modalURL}
-                />
             </Container>
         );
     }
@@ -203,7 +201,7 @@ export default class CancerRSS extends React.Component {
                     <View style={{ width: '100%', marginBottom: 5 }}>
                         <GradientButton
                             colors={[Colors.blueOne, Colors.blueTwo]}
-                            handleClick={() => this.setState({ modalVisible: true, modalURL: item.link })}
+                            handleClick={() => this.props.navigation.navigate('NewsArticle', { uri: item.link }) } 
                             loading={false}
                             disabled={false}
                             text='View Article'
@@ -215,8 +213,6 @@ export default class CancerRSS extends React.Component {
         )
     }
 }
-
-
 
 const styles = StyleSheet.create({
     title: {

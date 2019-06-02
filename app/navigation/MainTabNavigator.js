@@ -6,11 +6,12 @@ import TabBarIcon from '../components/TabBarIcon';
 import ClinicalTrialSearchScreen from '../screens/ClinicalTrialSearchScreen'
 import SavedTrialsScreen from '../screens/SavedTrialsScreen'
 import SettingsScreen from '../screens/SettingsScreen';
-import CancerNews from '../screens/CancerNews';
-import CancerRSS from '../screens/CancerRSS';
+import ResearchScreen from '../screens/ResearchScreen';
+import NewsScreen from '../screens/NewsScreen';
 import About from '../screens/About'
 import OnboardingClass from '../screens/OnboardingClass'
-import FDA_Drugs from '../screens/FDA_Drugs'
+import DrugsScreen from '../screens/DrugsScreen'
+import ArticleScreen from '../screens/ArticleScreen';
 const AboutStack = createStackNavigator({
     screen: About,
 });
@@ -77,16 +78,19 @@ SettingsStack.navigationOptions = {
   ),
 };
 
-const CancerNewsStack = createStackNavigator({
-    News: {
-      screen: CancerNews,
+const ResearchStack = createStackNavigator({
+    Research: {
+      screen: ResearchScreen,
       navigationOptions: {
         title: 'Cancer Research'
       }
     },
+    ResearchArticle: {
+      screen: ArticleScreen
+    }
 });
 
-CancerNewsStack.navigationOptions = {
+ResearchStack.navigationOptions = {
     tabBarLabel: ' Research',
     tabBarIcon: ({ focused }) => (
         <TabBarIcon
@@ -96,16 +100,19 @@ CancerNewsStack.navigationOptions = {
     ),
 };
 
-const CancerRSSStack = createStackNavigator({
-    RSS: {
-        screen: CancerRSS,
+const NewsStack = createStackNavigator({
+    News: {
+        screen: NewsScreen,
         navigationOptions: {
             title: 'Cancer News'
         }
     },
+    NewsArticle: {
+      screen: ArticleScreen
+    }
 });
 
-CancerRSSStack.navigationOptions = {
+NewsStack.navigationOptions = {
     tabBarLabel: ' News',
     tabBarIcon: ({ focused }) => (
         <TabBarIcon
@@ -135,19 +142,19 @@ OnboardingStack.navigationOptions = {
     ),
 };
 
-
-
-
-const FDA_Drugs_Stack = createStackNavigator({
-    FDADrugs: {
-        screen: FDA_Drugs,
+const DrugsStack = createStackNavigator({
+    Drugs: {
+        screen: DrugsScreen,
         navigationOptions: {
             title: 'FDA Drugs'
         }
     },
+    DrugsArticle: {
+      screen: ArticleScreen
+    }
 });
 
-FDA_Drugs_Stack.navigationOptions = {
+DrugsStack.navigationOptions = {
     tabBarLabel: ' FDA Drugs',
     tabBarIcon: ({ focused }) => (
         <TabBarIcon
@@ -161,10 +168,9 @@ export default createBottomTabNavigator({
 
   TrialSearchStack,
   SavedTrialsStack,
-  CancerNewsStack,
-  CancerRSSStack,
-
-  FDA_Drugs_Stack,
+  ResearchStack,
+  NewsStack,
+  DrugsStack,
   OnboardingStack,
   SettingsStack
 });
