@@ -28,33 +28,7 @@ export default class CancerRSS extends React.Component {
     //Cite: https://facebook.github.io/react-native/docs/network
     constructor(props) {
         super(props);
-       
-        this.state = { isLoading: true }
-        this.state = { isLoading: true, modalVisible: false, modalURL: '' }
-
-
-        var xmlText = "<?xml version='1.0' encoding='utf-8'?>\
-<Library>\
-   <Books count='1'>\
-       <Book id='1'>\
-           <Name>Me Before You</Name>\
-           <Author>Jojo Moyes</Author>\
-       </Book>\
-   </Books>\
-   <Music count=1>\
-       <CD id='2'>\
-           <Name>Houses of the Holy</Name>\
-           <Artist>Led Zeppelin</Artist>\
-       </CD>\
-   </Music>\
-</Library>"
-
-        var xml = new XMLParser().parseFromString(xmlText);    // Assume xmlText contains the example XML
-
-       //console.log(xml);
-
-     //   console.log(xml.getElementsByTagName('Name'));
-
+               this.state = { isLoading: true, modalVisible: false, modalURL: '' }
     }
 
 
@@ -66,10 +40,7 @@ export default class CancerRSS extends React.Component {
         // Make modal visible 
         this.setState({ modalVisible: false })
 
-
     }
-
-
 
     //Cite: https://gist.github.com/PhilipFlyvholm/d4171a16900cef6146b097a7ed432515
 
@@ -153,11 +124,11 @@ export default class CancerRSS extends React.Component {
                         renderItem={this._renderItem}
                         keyExtractor={(item, index) => item.guid}
                     />
-                    <PopUpScreenModal
+                    {/* <PopUpScreenModal
                         visible={this.state.modalVisible}
                         hideModal={this._hideModal}
                         url={this.state.modalURL}
-                    />
+                    /> */}
                 </Content>
             </Container>
         );

@@ -1,21 +1,10 @@
 import React from 'react';
 import { 
     FlatList, 
-    Linking,
-    AppRegistry, 
     StyleSheet,
-    ActivityIndicator, 
     Text, 
-    WebView, 
-    View, 
-    Button, 
-    AsyncStorage
 } from 'react-native';
-import { Card, CardItem, Left, Body, Container, Content } from 'native-base';
-import GradientButton from '../components/GradientButton';
-import Colors from '../constants/Colors';
-import PopUpScreenModal from '../components/PopUpScreenModal'
-
+import { Card, CardItem, Body, Container, Content } from 'native-base';
 
 export default class FDA_Drugs extends React.Component {
     constructor(props) {
@@ -23,14 +12,7 @@ export default class FDA_Drugs extends React.Component {
         this.state = { isLoading: true, modalVisible: false, modalURL: '' }
 
     }
-    _makeModalVisible = () => {
-        this.setState({ modalVisible: true })
-    }
 
-    _hideModal = () => {
-        // Make modal visible 
-        this.setState({ modalVisible: false })
-    }
     componentDidMount() {
         return fetch('http://clinical-trial-app.herokuapp.com/drugs', { method: 'GET' })
             .then((response) => response.json())
@@ -39,9 +21,6 @@ export default class FDA_Drugs extends React.Component {
                 this.setState({
                     isLoading: false,
                     dataSource: responseJson,
-                    
-                }, function () {
-
                 });
 
             })
@@ -61,11 +40,11 @@ export default class FDA_Drugs extends React.Component {
                         renderItem={this._renderItem}
                         keyExtractor={(item, index) => item.id}
                     />
-                    <PopUpScreenModal
+                    {/* <PopUpScreenModal
                         visible={this.state.modalVisible}
                         hideModal={this._hideModal}
                         url={this.state.modalURL}
-                    />
+                    /> */}
                 </Content>
             </Container>
         );
@@ -74,9 +53,6 @@ export default class FDA_Drugs extends React.Component {
 
 
     _renderItem = ({ item }) => {
-        // Image.getSize(item.enclosure.link, (width, height) => {
-        //     console.log(`width ${width}, height ${height}`);
-        // });
         return (
             <Card>
                 <CardItem bordered style={{ flexDirection: 'column', alignItems: 'flex-start' }}>

@@ -71,11 +71,11 @@ export default class CancerNews extends React.Component {
                         renderItem={this._renderItem}
                         keyExtractor={(item, index) => item.doi}    
                     />
-                    <PopUpScreenModal
+                    {/* <PopUpScreenModal
                         visible={this.state.modalVisible}
                         hideModal={this._hideModal}
                         url={this.state.modalURL}
-                    />
+                    /> */}
                 </Content>
             </Container>
         );
