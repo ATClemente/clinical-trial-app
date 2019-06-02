@@ -15,11 +15,12 @@ export default class App extends React.Component {
     const profile = JSON.parse(data);
     data = await AsyncStorage.getItem('trials');
     const trials = JSON.parse(data);
-    this.setGlobal({
+    await this.setGlobal({
       token,
       profile,
       trials,
     });
+    await this.setState({ isLoadingComplete: true });
   }
 
   render() {
@@ -67,7 +68,7 @@ export default class App extends React.Component {
   };
 
   _handleFinishLoading = () => {
-    this.setState({ isLoadingComplete: true });
+    //this.setState({ isLoadingComplete: true });
   };
 }
 
