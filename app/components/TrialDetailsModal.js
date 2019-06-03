@@ -49,6 +49,9 @@ export default class TrialDetailsModal extends React.Component {
             temporaryMarkerOpacity: 1,
             closedMarkerOpacity: 1,
         };
+        this.selectedMarker = null;
+        this.selectedMarkerType = '';
+        this.markers={};
     }
 
     componentWillReceiveProps(nextProps) {
@@ -66,8 +69,14 @@ export default class TrialDetailsModal extends React.Component {
 
     resetModal(){
         //this.props.setModalVisible(false);
+        this.markers = {};
+        this.selectedMarker = null;
+        this.selectedMarkerType = '';
         this.setState({
             showMoreEligibility: false,
+            activeMarkerOpacity: 1,
+            temporaryMarkerOpacity: 1,
+            closedMarkerOpacity: 1,
             waitForLoading: true}, 
             function(){
             this.props.setModalVisible(false);
@@ -130,11 +139,26 @@ export default class TrialDetailsModal extends React.Component {
                         <Text style={{padding: 5, textAlign: "center"}}>Sites within {this.state.locationDistanceFilter} miles of {this.props.searchLocation}: </Text>
                         
                         <View style={{justifyContent: 'center', flexDirection: 'row'}}>
-                            <Ionicons onPress={() => this.setState({activeMarkerOpacity: +!this.state.activeMarkerOpacity})} name="md-pin" size={32} color="#00FF00"/>
+                            <Ionicons onPress={() => {
+                                    this.setState({activeMarkerOpacity: +!this.state.activeMarkerOpacity}); 
+                                    if(this.selectedMarker != null && this.selectedMarkerType === 'active'){
+                                        this.markers[this.selectedMarker].hideCallout()
+                                    }
+                                }} name="md-pin" size={32} color="#00FF00"/>
                             <Text style={{paddingTop: 5}}> = Active  </Text>
-                            <Ionicons onPress={() => this.setState({temporaryMarkerOpacity: +!this.state.temporaryMarkerOpacity})} name="md-pin" size={32} color="#FFFF00"/>
+                            <Ionicons onPress={() => {
+                                    this.setState({temporaryMarkerOpacity: +!this.state.temporaryMarkerOpacity});
+                                    if(this.selectedMarker != null && this.selectedMarkerType === 'temp'){
+                                        this.markers[this.selectedMarker].hideCallout()
+                                    }
+                                }} name="md-pin" size={32} color="#FFFF00"/>
                             <Text style={{paddingTop: 5}}> = Temporarily Closed  </Text>
-                            <Ionicons onPress={() => this.setState({closedMarkerOpacity: +!this.state.closedMarkerOpacity})} name="md-pin" size={32} color="#FF0000"/>
+                            <Ionicons onPress={() => {
+                                    this.setState({closedMarkerOpacity: +!this.state.closedMarkerOpacity})
+                                    if(this.selectedMarker != null && this.selectedMarkerType === 'closed'){
+                                        this.markers[this.selectedMarker].hideCallout()
+                                    }
+                                }} name="md-pin" size={32} color="#FF0000"/>
                             <Text style={{paddingTop: 5}}> = Closed  </Text>
                         </View>
 
@@ -454,14 +478,17 @@ export default class TrialDetailsModal extends React.Component {
                 //Using named colors for now and converted to hex so we can know what that is
                 if(currentSite[QueryConstants.RECRUIT_STATUS].toLowerCase() == "active"){
                     newMarker.pinColor = 'green'; //#00FF00
+                    newMarker.type = 'active';
                     newMarker.opacity = this.state.activeMarkerOpacity;
                 }
                 else if(currentSite[QueryConstants.RECRUIT_STATUS].toLowerCase() == "temporarily_closed_to_accrual"){
                     newMarker.pinColor = 'yellow'; //#FFFF00
+                    newMarker.type = 'temp';
                     newMarker.opacity = this.state.temporaryMarkerOpacity;
                 }
                 else if(currentSite[QueryConstants.RECRUIT_STATUS].toLowerCase() == "closed_to_accrual"){
                     newMarker.pinColor = 'red'; //#FF0000
+                    newMarker.type = 'closed';
                     newMarker.opacity = this.state.closedMarkerOpacity;
                 }
     
@@ -520,6 +547,8 @@ export default class TrialDetailsModal extends React.Component {
                         pinColor={marker.pinColor}
                         key = {marker.key}
                         opacity={marker.opacity}
+                        ref={(ref) => this.markers[marker.key] = ref}
+                        onPress={() => {this.selectedMarker = marker.key; this.selectedMarkerType = marker.type}}
                         >
                         <Callout style={styles.plainView} tooltip={!!!marker.opacity}>
                             {!!marker.opacity && this.renderCallout(marker, !!marker.opacity)}
