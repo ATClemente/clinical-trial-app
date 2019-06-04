@@ -764,7 +764,7 @@ const styles = StyleSheet.create({
     zIndex: 10 //Part of said hack
   },
   divider: {
-    borderColor: '#ccc', 
+    borderColor: '#ddd', 
     borderBottomWidth: StyleSheet.hairlineWidth, 
     marginVertical: 10
   }
