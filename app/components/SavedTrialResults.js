@@ -94,7 +94,6 @@ export default class SavedTrialResults extends React.Component {
           searchRadius={10}
           trial={this.state.currentTrial}
           savedScreen={true}
-          searchLocation = {this.global.profile.location}  
         />
       </View>
     )

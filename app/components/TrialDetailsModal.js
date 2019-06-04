@@ -59,7 +59,9 @@ export default class TrialDetailsModal extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        this.setUserLocationCoordinates(nextProps.searchLocation);
+        const profileLocation = this.global.profile.location ? this.global.profile.location : '90210';
+        const newLocation = nextProps.searchLocation ? nextProps.searchLocation : profileLocation;
+        this.setUserLocationCoordinates(newLocation);
         this.setState({
             locationDistanceFilter: nextProps.searchRadius,
             modalVisible: nextProps.modalVisible,
