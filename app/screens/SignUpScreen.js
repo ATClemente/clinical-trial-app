@@ -106,6 +106,7 @@ export default class SignUpScreen extends React.Component {
       );
       await AsyncStorage.setItem('jwt', data.jwt);
       await AsyncStorage.setItem('profile', JSON.stringify(data.profile));
+      await AsyncStorage.setItem('trials', JSON.stringify([]));
       await this.setGlobal({ 
         token: data.jwt,
         profile: data.profile,

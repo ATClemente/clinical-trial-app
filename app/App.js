@@ -14,7 +14,7 @@ export default class App extends React.Component {
     let data = await AsyncStorage.getItem('profile');
     const profile = JSON.parse(data);
     data = await AsyncStorage.getItem('trials');
-    const trials = JSON.parse(data);
+    const trials = data ? JSON.parse(data) : [];
     await this.setGlobal({
       token,
       profile,

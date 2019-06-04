@@ -400,7 +400,7 @@ app.post('/user/trials/share', async (req, res) => {
       html:
         `<p>${req.body.username} shared a clinical trial with you.</p>` +
         `<p><strong>Title: </strong>${req.body.trial.title}</p>` +
-        `<p><strong>Phase: </strong>${req.body.trial.phase}</p>` +
+        `<p><strong>Phase: </strong>${req.body.trial.phase.phase}</p>` +
         `<p><strong>Summary: </strong>${req.body.trial.summary}</p>` +
         `<p><strong>Link: </strong>${baseUrl}${req.body.trial.id}</p>`
     };
