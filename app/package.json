@@ -29,6 +29,8 @@
     "react-native-modal": "^10.0.0",
     "react-native-onboarding-screen": "^1.0.3",
     "react-native-onboarding-swiper": "^1.1.0",
+    "react-native-simple-onboarding": "^0.1.1",
+    "react-native-swiper": "^1.5.14",
     "react-native-view-more-text": "^2.1.0",
     "react-navigation": "^3.0.9",
     "react-xml-parser": "^1.1.2",

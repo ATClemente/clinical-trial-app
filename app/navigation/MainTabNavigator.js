@@ -12,6 +12,7 @@ import About from '../screens/About'
 import OnboardingClass from '../screens/OnboardingClass'
 import DrugsScreen from '../screens/DrugsScreen'
 import ArticleScreen from '../screens/ArticleScreen';
+import OnboardingScreen from '../screens/OnboardingScreen';
 const AboutStack = createStackNavigator({
     screen: About,
 });
@@ -54,7 +55,7 @@ SavedTrialsStack.navigationOptions = {
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
-      name={'md-heart'}
+      name={'md-heart-empty'}
     />
   ),
 };
@@ -126,7 +127,7 @@ NewsStack.navigationOptions = {
 
 const OnboardingStack = createStackNavigator({
     Onboarding: {
-        screen: OnboardingClass,
+        screen: OnboardingScreen,
         navigationOptions: {
         }
     },
@@ -170,5 +171,5 @@ export default createBottomTabNavigator({
   ResearchStack,
   NewsStack,
   DrugsStack,
-  SettingsStack
+  SettingsStack,
 });

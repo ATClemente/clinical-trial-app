@@ -197,7 +197,8 @@ export default class TrialDetailsModal extends React.Component {
                             trial={{ 
                                 id: this.state.trial.nct_id, 
                                 title: this.state.trial.brief_title, 
-                                summary: this.state.trial.brief_summary
+                                summary: this.state.trial.brief_summary,
+                                phase: this.state.trial.phase
                             }}
                         />
 

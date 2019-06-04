@@ -80,7 +80,7 @@ export default class SavedTrialResults extends React.Component {
       );
     }
     return (
-      <View>
+      <View style={{ flex: 1 }}>
         <FlatList
           style={{ marginVertical: 4, marginTop: 0, marginBottom: 15 }}
           data={this.state.trials}
@@ -118,7 +118,7 @@ export default class SavedTrialResults extends React.Component {
 
   _listEmptyComponent = () => {
     return (
-      <View style={{ flex: 1, alignItems: 'center', marginTop: 30 }}>
+      <View style={{ marginTop: 200, alignItems: 'center' }}>
         <Text>
           No trials saved.
         </Text>

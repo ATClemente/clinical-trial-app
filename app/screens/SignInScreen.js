@@ -97,7 +97,7 @@ export default class SignInScreen extends React.Component {
         }
       );
       const trialsData = trialsResult.data;
-      this.setGlobal({ 
+      await this.setGlobal({ 
         token: data.jwt,
         profile: data.profile,
         trials: trialsData.savedTrials,

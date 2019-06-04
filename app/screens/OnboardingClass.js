@@ -4,127 +4,54 @@ import {  Image } from 'react-native';
 
 
 export default class OnboardingClass extends React.Component {
+  endOnboarding = () => {
+    this.props.navigation.navigate('TrialSearchStack');
+  }
 
-
-    endOnboarding = () => {
-
-        //Take the user back to main 
-        this.props.navigation.navigate('TrialSearchStack')
-
-    }
-
-    
-
-
-    render() {
-        const Pages = [
-            {
-                title: 'Welcome',
-                subtitle: 'to the FightCancer application. Here you can search for cancer clinical trials, view news and scholarly articles on latest cancer developments, and have a user profile to bookmark items and view them later.'
-            },
-            {
-                title: 'Clinical Trials',
-                subtitle: 'Search for clinical trials and save any trials to your Saved Trials list',
-                action: {
-                  //  title: "Clinical Trials",
-                   // onPress: this.showFacebookLogin
-                }
-            },
-
-            {
-                title: 'Research Articles',
-                subtitle: 'View the latest scholarly research papers on cancer development',
-                action: {
-                   // title: "Research Articles",
-                    // onPress: this.showFacebookLogin
-                }
-            },
-            {
-                title: 'Cancer News',
-                subtitle: 'View the latest news on cancer development',
-                action: {
-                   // title: "Cancer News",
-                    // onPress: this.showFacebookLogin
-                }
-            },
-         
-
-            {
-                title: "Great",
-                subtitle: "That's all for now. As you use the app, we'll learn about the events you like and use this to personalize your experience.",
-                action: {
-                    title: "Let's Get Started",
-                  //  onPress: this.finishOnboarding
-                }
-            }
-        ];
-        return (
-            <Onboarding
-            pages={[
-              {
-                backgroundColor: '#fff',
-                title: 'Welcome to the Cancer Application',
-                subtitle: ' ',
-                image: <Image source={require('../assets/images/orange.png')} />,
-                bottomBarHeight: 10
-
-              },
-
-              {
-                backgroundColor: '#fff',
-                image: <Image source={require('../assets/images/orange.png')} />,
-                title: 'Clinical Trials',
-                subtitle: 'Search for clinical trials and save any trials to your Saved Trials list',
-                bottomBarHeight: 10
-
-                
-              },
-              {
-                backgroundColor: '#fff',
-                image: <Image source={require('../assets/images/orange.png')} />,
-                title: 'Research Articles',
-                subtitle: 'View the latest scholarly research papers on cancer development'
-                
-              },
-              {
-                backgroundColor: '#fff',
-                image: <Image source={require('../assets/images/orange.png')} />,
-                title: 'Cancer News',
-                subtitle: 'View the latest news on cancer development'
-                
-              },
-
-              {
-                backgroundColor: '#fff',
-                image: <Image source={require('../assets/images/orange.png')} />,
-                title: 'FDA Approved Drugs',
-                subtitle: 'View the latest cancer drugs approved by the FDA'
-                
-              },
-        
+  render() {
+    const backgroundColor = '#254882';
+    return (
+      <Onboarding
+        pages={[
+          {
+            backgroundColor,
+            title: 'Welcome to the Cancer Application',
+            subtitle: ' ',
+            image: <Image source={require('../assets/images/orange.png')} />,
+          },
+          {
+            backgroundColor,
+            title: 'Clinical Trials',
+            subtitle: 'Search for clinical trials by location, gender, and phase.',
+            image: <Image source={require('../assets/images/01_search.png')} style={{ width: 300, height: 300 }} />,
+          },
+          {
+            backgroundColor,
+            image: <Image source={require('../assets/images/orange.png')} />,
+            title: 'Research Articles',
+            subtitle: 'View the latest scholarly research papers on cancer development'
+          },
+          {
+            backgroundColor,
+            image: <Image source={require('../assets/images/orange.png')} />,
+            title: 'Cancer News',
+            subtitle: 'View the latest news on cancer development'
             
-              {
-                backgroundColor: '#fff',
-                image: <Image source={require('../assets/images/orange.png')} />,
-                title: 'Great!',
-                subtitle: "That's all for now. Let's get started."
-                
-              }
-            
-
-            
-            
-            ]}
-
-            onDone = {this.endOnboarding } 
-            onSkip = {this.endOnboarding } 
-
-          />
-
-
-
-
-
-        );
-    }
+          },
+          {
+            backgroundColor,
+            image: <Image source={require('../assets/images/orange.png')} />,
+            title: 'FDA Approved Drugs',
+            subtitle: 'View the latest cancer drugs approved by the FDA' 
+          }
+        ]}
+      onDone = {this.endOnboarding } 
+      onSkip = {this.endOnboarding }
+      containerStyles={{ alignItems: 'flex-start', justifyContent: 'center' }}
+      imageContainerStyles={{ alignSelf: 'flex-start', paddingBottom: 20, paddingTop: 0, marginTop: 0 }}
+      // titleStyles={{ backgroundColor: 'green' }}
+      // subTitleStyles={{ backgroundColor: 'violet' }}
+    />
+    );
+  }
 }
