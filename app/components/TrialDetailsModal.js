@@ -21,6 +21,9 @@ import Urls from '../constants/Urls';
 import { Ionicons } from '@expo/vector-icons';
 import IconButton from '../components/IconButton';
 import geolib from 'geolib';
+import TrialDetailButton from './TrialDetailButton.js';
+import Colors from '../constants/Colors';
+import ShareModal from '../components/ShareModal';
 
 export default class TrialDetailsModal extends React.Component {
     constructor(props) {
@@ -48,6 +51,7 @@ export default class TrialDetailsModal extends React.Component {
             activeMarkerOpacity: 1,
             temporaryMarkerOpacity: 1,
             closedMarkerOpacity: 1,
+            showShare: false,
         };
         this.selectedMarker = null;
         this.selectedMarkerType = '';
@@ -92,35 +96,39 @@ export default class TrialDetailsModal extends React.Component {
                 onRequestClose={() => { this.resetModal() }}>
                 <SafeAreaView style={styles.mainView}>
 
-                    <View style={{ marginBottom: 5, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <View style={{width: '25%', }}>
-                            <IconButton
-                                icon='ios-arrow-dropleft'
-                                side='left'
-                                text='Back'
-                                handleTouch={() => { this.resetModal() }}
+                    <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between' }}>
+                        <View>
+                            <TrialDetailButton
+                                icon='chevron-left'
+                                iconSize={24}
+                                handleTouch={ () => this.resetModal() }
                             />
                         </View>
 
-                        <Text style={{fontWeight: "bold", textDecorationLine: "underline", textAlign: "center" }}>Trial Details</Text>
-
-                        <View style={{width: '25%', alignItems: 'flex-end' }}>
-                            <IconButton
-                                icon={this.state.trialSaved ? 'md-star' : 'md-star-outline'}
-                                iconSize={26}
-                                side='right'
-                                text={this.state.trialSaved ? 'Unsave' : 'Save' }
-                                textColor='#333'
-                                iconColor='#f2c100'
-                                handleTouch={this.state.trialSaved ? this.unsaveTrial : this.saveTrial }
+                        <View style={{ flexDirection: 'row', alignItems: 'flex-end', alignItems: 'center' }}>
+                            <TrialDetailButton
+                                icon='share-alternative'
+                                iconSize={20}
+                                style={{ marginRight: 12 }}
+                                handleTouch={ () => this.setShareVisible(true) }
+                            />
+                            <TrialDetailButton
+                                iconSize={22}
+                                icon={ this.state.trialSaved ? 'heart' : 'heart-outlined' }
+                                iconColor={ this.state.trialSaved ? '#db2e2e' : 'black' }
+                                handleTouch={ this.state.trialSaved ? this.unsaveTrial : this.saveTrial }
                             />
                         </View>
                     </View>
                     
-                    <View style={{borderBottomWidth: StyleSheet.hairlineWidth, marginBottom: 5}}></View>
-                    <ScrollView>
+                    <View style={{borderColor: '#ddd', borderBottomWidth: 1 }}></View>
+
+                    <ScrollView style={{ padding: 15 }}>
                         <Text style={{fontWeight: "bold", textDecorationLine: "underline"}}>Title:</Text>
                         <Text style={{marginBottom: 5}}>{this.state.trial[QueryConstants.BRIEF_TITLE]}</Text>
+                        
+                        <View style={styles.divider}></View>
+
                         <Text style={{fontWeight: "bold", textDecorationLine: "underline"}}>Trial Summary:</Text>
                         <ViewMoreText
                         numberOfLines={3}
@@ -131,10 +139,16 @@ export default class TrialDetailsModal extends React.Component {
                             <Text>{this.state.trial[QueryConstants.BRIEF_SUMMARY]}</Text>
                         </ViewMoreText>
 
+                        <View style={styles.divider}></View>
+
                         <Text style={{fontWeight: "bold", textDecorationLine: "underline"}}>Lead Organization:</Text>
                         <View style={{padding: 10, alignItems: "center"}}>
                                 {!this.isTrialEmpty(this.state.trial) && this.renderLeadOrganization(this.state.trial)}
                         </View>
+
+                        <View style={styles.divider}></View>
+
+                        <Text style={{fontWeight: "bold", textDecorationLine: "underline"}}>Location:</Text>
 
                         <Text style={{padding: 5, textAlign: "center"}}>Sites within {this.state.locationDistanceFilter} miles of {this.props.searchLocation}: </Text>
                         
@@ -166,10 +180,24 @@ export default class TrialDetailsModal extends React.Component {
                                 {!this.isTrialEmpty(this.state.trial) && this.renderMapview(this.state.trial)}
                         </View>
 
+                        <View style={styles.divider}></View>
+
                         <Text style={{marginTop: 10, fontWeight: "bold", textDecorationLine: "underline"}}>Eligibility Criteria:</Text>
                         <View style={{padding: 10, alignItems: "center"}}>
                                 {!this.isTrialEmpty(this.state.trial) && this.renderEligibilityCriteria(this.state.trial)}
                         </View>
+
+                        <View style={{ height: 30 }}></View>
+
+                        <ShareModal
+                            visible={this.state.showShare}
+                            setVisible={this.setShareVisible}
+                            trial={{ 
+                                id: this.state.trial.NCT_ID, 
+                                title: this.state.trial.BRIEF_TITLE, 
+                                summary: this.state.trial.BRIEF_SUMMARY
+                            }}
+                        />
 
                     </ScrollView>
                 </SafeAreaView>
@@ -182,6 +210,10 @@ export default class TrialDetailsModal extends React.Component {
 
             </Modal>
         )
+    }
+
+    setShareVisible = visible => {
+        this.setState({ showShare: visible });
     }
 
     saveTrial = async () => {
@@ -662,7 +694,6 @@ export default class TrialDetailsModal extends React.Component {
 
 const styles = StyleSheet.create({
   mainView:{
-      padding: 20,
       flex: 1
   },
   allResultsView:{
@@ -729,5 +760,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 10 //Part of said hack
+  },
+  divider: {
+    borderColor: '#ccc', 
+    borderBottomWidth: StyleSheet.hairlineWidth, 
+    marginVertical: 10
   }
 });

@@ -63,6 +63,7 @@ export default class ClinicalTrialSearchResults extends React.Component {
         <Text style={{ color: '#324e7a', alignSelf: 'center', paddingVertical: 6 }}>View Trial</Text>
       </TouchableOpacity>
     );
+    console.log(Object.keys(item));
     return(
       <TrialCard 
         item={item} 
