@@ -193,9 +193,9 @@ export default class TrialDetailsModal extends React.Component {
                             visible={this.state.showShare}
                             setVisible={this.setShareVisible}
                             trial={{ 
-                                id: this.state.trial.NCT_ID, 
-                                title: this.state.trial.BRIEF_TITLE, 
-                                summary: this.state.trial.BRIEF_SUMMARY
+                                id: this.state.trial.nct_id, 
+                                title: this.state.trial.brief_title, 
+                                summary: this.state.trial.brief_summary
                             }}
                         />
 

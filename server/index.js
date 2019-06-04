@@ -394,9 +394,11 @@ app.post('/user/trials/share', async (req, res) => {
     const emailMsg = {
       to: req.body.email,
       from: 'no-reply@clinical-trial-app.herokuapp.com',
-      subject: 'Clinical Trial App - Share Trial',
+      subject: `Clinical Trial App - ${
+        req.body.username
+      } shared a trial with you`,
       html:
-        `<p>${req.body.username} has shared a trial with you.</p>` +
+        `<p>${req.body.username} shared a clinical trial with you.</p>` +
         `<p><strong>Title: </strong>${req.body.trial.title}</p>` +
         `<p><strong>Summary: </strong>${req.body.trial.summary}</p>` +
         `<p><strong>Link: </strong>${baseUrl}${req.body.trial.id}</p>`
