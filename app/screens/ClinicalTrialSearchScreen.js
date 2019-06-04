@@ -237,7 +237,9 @@ export default class ClinicalTrialSearchScreen extends React.Component {
 
       params[QueryConstants.GENDER_STR] = genderFilter;
 
-      let phaseFilter = this.state.phase.split(",");
+      let phaseString = this.state.phase || 'I,II,III,IV';
+
+      let phaseFilter = phaseString.split(",");
       let phaseOptions = QueryConstants.PHASE_OPTION_ARR;
 
       let addPhase0 = false;
@@ -269,7 +271,7 @@ export default class ClinicalTrialSearchScreen extends React.Component {
       }
 
       phaseFilter.push(phaseOptions[phaseOptions.length - 1]);
-      
+
       params[QueryConstants.PHASE_STR] = phaseFilter;
 
       let keyWordArg = this.state.keyWordText.trim();

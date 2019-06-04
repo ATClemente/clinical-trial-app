@@ -31,11 +31,11 @@ const TrialSearchStack = createStackNavigator({
 });
 
 TrialSearchStack.navigationOptions = {
-  tabBarLabel: 'Trial Search',
+  tabBarLabel: 'Search',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
-      name='ios-search'
+      name='md-search'
     />
   ),
 };
@@ -50,11 +50,11 @@ const SavedTrialsStack = createStackNavigator({
 });
 
 SavedTrialsStack.navigationOptions = {
-  tabBarLabel: 'Saved Trials',
+  tabBarLabel: 'Saved',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
-      name={Platform.OS === 'ios' ? 'ios-bookmark' : 'md-bookmark'}
+      name={'md-heart'}
     />
   ),
 };
@@ -73,7 +73,7 @@ SettingsStack.navigationOptions = {
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
-      name='ios-settings'
+      name='md-settings'
     />
   ),
 };
@@ -91,7 +91,7 @@ const ResearchStack = createStackNavigator({
 });
 
 ResearchStack.navigationOptions = {
-    tabBarLabel: ' Research',
+    tabBarLabel: 'Research',
     tabBarIcon: ({ focused }) => (
         <TabBarIcon
             focused={focused}
@@ -113,7 +113,7 @@ const NewsStack = createStackNavigator({
 });
 
 NewsStack.navigationOptions = {
-    tabBarLabel: ' News',
+    tabBarLabel: 'News',
     tabBarIcon: ({ focused }) => (
         <TabBarIcon
             focused={focused}
@@ -133,7 +133,7 @@ const OnboardingStack = createStackNavigator({
 });
 
 OnboardingStack.navigationOptions = {
-    tabBarLabel: ' Temp_Onboarding_Tab',
+    tabBarLabel: 'Onboarding',
     tabBarIcon: ({ focused }) => (
         <TabBarIcon
             focused={focused}
@@ -155,22 +155,20 @@ const DrugsStack = createStackNavigator({
 });
 
 DrugsStack.navigationOptions = {
-    tabBarLabel: ' FDA Drugs',
+    tabBarLabel: 'Drugs',
     tabBarIcon: ({ focused }) => (
         <TabBarIcon
             focused={focused}
-            name='md-paper'
+            name='md-medical'
         />
     ),
 };
 // Do this last to add a button 
 export default createBottomTabNavigator({
-
   TrialSearchStack,
   SavedTrialsStack,
   ResearchStack,
   NewsStack,
   DrugsStack,
-  OnboardingStack,
   SettingsStack
 });

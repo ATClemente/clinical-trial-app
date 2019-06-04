@@ -185,46 +185,54 @@ app.get('/auth/forgot', async (req, res) => {
 
     return res.status(200).json(msg(true, 'Reset password email sent'));
   } catch (e) {
-    res.status(500).json(msg(false, 'Server Error'));
+    res.status(500).json(serverError);
   }
 });
 
 app.get('/auth/reset/:token', async (req, res) => {
-  const user = await findOneByColumn('resetpwdtoken', req.params.token);
-  if (!user) {
-    return res.status(404).send('Not authorized');
+  try {
+    const user = await findOneByColumn('resetpwdtoken', req.params.token);
+    if (!user) {
+      return res.status(404).send('Not authorized');
+    }
+    res.render('reset');
+  } catch (e) {
+    res.status(500).json(serverError);
   }
-  res.render('reset');
 });
 
 app.post('/auth/reset/:token', async (req, res) => {
-  const user = await findOneByColumn('resetpwdtoken', req.params.token);
-  if (!user) {
-    return res.status(404).send('Not authorized');
-  }
-  if (
-    !req.body ||
-    !req.body.password ||
-    !req.body.confirmPassword ||
-    req.body.password !== req.body.confirmPassword
-  ) {
-    return res.status(400).send('Invalid parameters');
-  }
-  const hash = await bcrypt.hash(req.body.password, saltRounds);
-  await db.query(
-    'UPDATE users SET password=$1, resetpwdtoken=NULL WHERE username=$2',
-    [hash, user.username]
-  );
+  try {
+    const user = await findOneByColumn('resetpwdtoken', req.params.token);
+    if (!user) {
+      return res.status(404).send('Not authorized');
+    }
+    if (
+      !req.body ||
+      !req.body.password ||
+      !req.body.confirmPassword ||
+      req.body.password !== req.body.confirmPassword
+    ) {
+      return res.status(400).send('Invalid parameters');
+    }
+    const hash = await bcrypt.hash(req.body.password, saltRounds);
+    await db.query(
+      'UPDATE users SET password=$1, resetpwdtoken=NULL WHERE username=$2',
+      [hash, user.username]
+    );
 
-  const emailMsg = {
-    to: user.email,
-    from: 'no-reply@clinical-trial-app.herokuapp.com',
-    subject: 'Clinical Trial App - Password was Reset',
-    html: '<p>Your password to Clinical Trial App has been reset.</p>'
-  };
-  sgMail.send(emailMsg);
+    const emailMsg = {
+      to: user.email,
+      from: 'no-reply@clinical-trial-app.herokuapp.com',
+      subject: 'Clinical Trial App - Password was Reset',
+      html: '<p>Your password to Clinical Trial App has been reset.</p>'
+    };
+    sgMail.send(emailMsg);
 
-  return res.send('Password reset');
+    return res.send('Password reset');
+  } catch (e) {
+    res.status(500).json(serverError);
+  }
 });
 
 app.use('/user', async (req, res, next) => {
@@ -369,6 +377,34 @@ app.delete('/user/trials/:tid', async (req, res) => {
       return res.status(200).json(msg(true, 'Trial deleted'));
     }
     res.status(404).json(msg(false, 'Trial not found'));
+  } catch (e) {
+    console.log(e);
+    res.status(500).json(serverError);
+  }
+});
+
+app.post('/user/trials/share', async (req, res) => {
+  if (!req.body || !req.body.email || !req.body.username || !req.body.trial) {
+    return res
+      .status(400)
+      .json('Required { email: STRING, username: STRING, trial: OBJECT }');
+  }
+  try {
+    const baseUrl = 'https://clinicaltrials.gov/ct2/show/';
+    const emailMsg = {
+      to: req.body.email,
+      from: 'no-reply@clinical-trial-app.herokuapp.com',
+      subject: `Clinical Trial App - ${
+        req.body.username
+      } shared a trial with you`,
+      html:
+        `<p>${req.body.username} shared a clinical trial with you.</p>` +
+        `<p><strong>Title: </strong>${req.body.trial.title}</p>` +
+        `<p><strong>Summary: </strong>${req.body.trial.summary}</p>` +
+        `<p><strong>Link: </strong>${baseUrl}${req.body.trial.id}</p>`
+    };
+    await sgMail.send(emailMsg);
+    res.status(201).json(msg(true, 'Email sent'));
   } catch (e) {
     console.log(e);
     res.status(500).json(serverError);
