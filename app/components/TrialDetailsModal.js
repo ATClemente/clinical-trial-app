@@ -10,7 +10,8 @@ import {
   FlatList,
   SafeAreaView,
   Modal,
-  AsyncStorage
+  AsyncStorage,
+  Dimensions
 } from 'react-native';
 import * as QueryConstants from '../constants/MainSearchQueryParams.js';
 import ViewMoreText from 'react-native-view-more-text';
@@ -24,6 +25,11 @@ import geolib from 'geolib';
 import TrialDetailButton from './TrialDetailButton.js';
 import Colors from '../constants/Colors';
 import ShareModal from '../components/ShareModal';
+
+const windowSize = Dimensions.get('screen');
+const ratio = 32/37;
+const mapWidth = windowSize.width - 30;
+const mapHeight = Math.round(mapWidth * ratio);
 
 export default class TrialDetailsModal extends React.Component {
     constructor(props) {
@@ -550,7 +556,7 @@ export default class TrialDetailsModal extends React.Component {
         lonDelta = 0.12 * (this.state.locationDistanceFilter / 10);
 
         return(
-            <View style={{ height: 320, width: 370 }}>
+            <View style={{ height: mapHeight, width: mapWidth }}>
                 <MapView
                     style={{ flex: 1 }}
                     onMapReady = {() => {this.setState({waitForLoading: false })}}
