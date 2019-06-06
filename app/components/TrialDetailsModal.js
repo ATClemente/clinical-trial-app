@@ -166,22 +166,22 @@ export default class TrialDetailsModal extends React.Component {
                                     if(this.selectedMarker != null && this.selectedMarkerType === 'active'){
                                         this.markers[this.selectedMarker].hideCallout()
                                     }
-                                }} name="md-pin" size={32} color="#00FF00"/>
-                            <Text style={{paddingTop: 5}}> = Active  </Text>
+                                }} name="md-pin" size={30} color="#00FF00"/>
+                            <Text style={{paddingTop: 5}}> Active  </Text>
                             <Ionicons onPress={() => {
                                     this.setState({temporaryMarkerOpacity: +!this.state.temporaryMarkerOpacity});
                                     if(this.selectedMarker != null && this.selectedMarkerType === 'temp'){
                                         this.markers[this.selectedMarker].hideCallout()
                                     }
-                                }} name="md-pin" size={32} color="#FFFF00"/>
-                            <Text style={{paddingTop: 5}}> = Temporarily Closed  </Text>
+                                }} name="md-pin" size={30} color="#FFFF00"/>
+                            <Text style={{paddingTop: 5}}> Temporarily Closed  </Text>
                             <Ionicons onPress={() => {
                                     this.setState({closedMarkerOpacity: +!this.state.closedMarkerOpacity})
                                     if(this.selectedMarker != null && this.selectedMarkerType === 'closed'){
                                         this.markers[this.selectedMarker].hideCallout()
                                     }
-                                }} name="md-pin" size={32} color="#FF0000"/>
-                            <Text style={{paddingTop: 5}}> = Closed  </Text>
+                                }} name="md-pin" size={30} color="#FF0000"/>
+                            <Text style={{paddingTop: 5}}> Closed  </Text>
                         </View>
 
                         <View /*style={styles.content}*/>
