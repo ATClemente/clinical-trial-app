@@ -125,6 +125,7 @@ export default class TrialDetailsModal extends React.Component {
                                 icon={ this.state.trialSaved ? 'heart' : 'heart-outlined' }
                                 iconColor={ this.state.trialSaved ? '#db2e2e' : 'black' }
                                 handleTouch={ this.state.trialSaved ? this.unsaveTrial : this.saveTrial }
+                                disabled={ this.state.modifyTrial }
                             />
                         </View>
                     </View>

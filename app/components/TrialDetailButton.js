@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  ActivityIndicator,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -13,11 +14,17 @@ export default ({ style, disabled, handleTouch, type, icon, iconColor, iconSize 
       disabled={disabled}
       onPress={handleTouch}
     >
-      <Entypo 
-        style={{ color: disabled ? 'grey' : iconColor }}
-        size={ iconSize ? iconSize : DEFAULT_ICON_SIZE }
-        name={icon}
-      />
+      <View style={{ width: 24 }}>
+      {
+        disabled
+        ? <ActivityIndicator size='small' color='#ccc' /> 
+        : (<Entypo 
+            style={{ color: iconColor }}
+            size={ iconSize ? iconSize : DEFAULT_ICON_SIZE }
+            name={icon}
+          /> )
+      }
+      </View>
     </TouchableOpacity>
   );
 };
