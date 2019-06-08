@@ -1,18 +1,17 @@
 import React from 'reactn';
 import {
-  Button,
   Keyboard,
   SafeAreaView,
   Text,
   View,
 } from 'react-native';
-import { Form, Icon, Item, Input, Picker } from 'native-base';
 import { CheckBox, Slider } from 'react-native-elements';
 import Modal from 'react-native-modal';
 import FormInput from './FormInput';
 import GradientButton from './GradientButton';
 import Colors from '../constants/Colors';
 import Styles from '../constants/Styles';
+import IosButton from './IosButton';
 
 export default class SearchLocationOptions extends React.PureComponent{
   constructor(props) {
@@ -86,15 +85,15 @@ export default class SearchLocationOptions extends React.PureComponent{
                 text='Update'
               />
             </View>
-            <Button onPress={this._clearFilter} title='Clear Filter' />
+            <IosButton handleTouch={this._reset} title='Clear Filter' />
           </View>
         </SafeAreaView>
       </Modal>
     );
   }
 
-  _clearFilter = () => {
-    this.setState({ location: '', radius: 10 }); 
+  _reset = async () => {
+    await this.setState({ location: '', radius: 10 }); 
     this.props.setLocation(''); 
     this.props.setVisible(false);
   }

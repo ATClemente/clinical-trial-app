@@ -15,6 +15,7 @@ import Modal from 'react-native-modal';
 import GradientButton from './GradientButton';
 import Colors from '../constants/Colors';
 import Styles from '../constants/Styles';
+import IosButton from './IosButton';
 
 export default class ShareModal extends React.PureComponent{
   constructor(props) {
@@ -61,11 +62,7 @@ export default class ShareModal extends React.PureComponent{
                   text='Send Email'
                 />
               </View>
-              <View style={{ alignItems: 'center' }}>
-                <TouchableOpacity style={{ padding: 10 }} onPress={() => this.props.setVisible(false)}>
-                  <Text style={{ color: '#0078ff', fontSize: 16 }}>Close</Text>
-                </TouchableOpacity>
-              </View>
+              <IosButton handleTouch={this._close} title='Close' />
             </View>
           </SafeAreaView>
         </Modal>
@@ -85,17 +82,15 @@ export default class ShareModal extends React.PureComponent{
               <View style={{ padding: 30 }}>
                 <Text style={{ textAlign: 'center' }}>Trial successfully shared.</Text>
               </View>
-              <View style={{ alignItems: 'center' }}>
-                <TouchableOpacity style={{ padding: 10 }} onPress={() => this.props.setVisible(false)}>
-                  <Text style={{ color: '#0078ff', fontSize: 16 }}>Close</Text>
-                </TouchableOpacity>
-              </View>
+              <IosButton handleTouch={this._close} title='Close' />
             </View>
           </SafeAreaView>
         </Modal>
       );
     }
   }
+
+  _close = () => this.props.setVisible(false)
 
   _shareTrial = async () => {
     await this.setState({ loading: true });
