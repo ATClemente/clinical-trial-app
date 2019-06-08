@@ -313,6 +313,39 @@ app.patch('/user/profile', async (req, res) => {
   }
 });
 
+app.put('/user/profile', async (req, res) => {
+  try {
+    let user = await findOne(req.profile.username);
+    // console.log(user);
+    await db.query(
+      'UPDATE users SET email=$1, dob=$2, gender=$3, zip=$4, cancertype=$5, show_onboarding=$6 WHERE username=$7',
+      [
+        req.body.email,
+        req.body.dob,
+        req.body.gender,
+        req.body.location,
+        req.body.cancerType,
+        req.body.showOnboarding,
+        req.profile.username
+      ]
+    );
+    user = await findOne(req.profile.username);
+    const profile = {
+      username: user.username,
+      email: user.email,
+      dob: user.dob,
+      gender: user.gender,
+      location: user.zip,
+      cancerType: user.cancertype,
+      showOnboarding: user.show_onboarding
+    };
+    return res.status(200).json({ success: true, status: 'Updated', profile });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(serverError);
+  }
+});
+
 app.get('/user/trials', async (req, res) => {
   try {
     const result = await db.query(

@@ -39,7 +39,7 @@ export default class SettingsScreen extends React.Component {
   _updateProfileAsync = async () => {
     await this.setState({ isLoading: true });
     try {
-      const { data } = await axios.patch(
+      const { data } = await axios.put(
         Urls.server + '/user/profile',
         {
           email: this.state.email,
