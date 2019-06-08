@@ -47,10 +47,10 @@ export default class CancerRSS extends React.Component {
     componentDidMount() {
       // const rssURL = 'https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Ffeed.rssunify.com%2F5cbc0dbe0657c%2Frss.xml&api_key=aw46lnwivmgetk7aos9xwiv1yb8xur8ogewi0epn&order_by=pubDate&order_dir=desc&count=50'
        // const rssURL = 'https://api.rss2json.com/v1/api.json?rss_url=http://feeds.feedburner.com/ncinewsreleases&api_key=aw46lnwivmgetk7aos9xwiv1yb8xur8ogewi0epn&order_by=pubDate&order_dir=desc&count=50'
-        const rssURL = 'https://api.rss2json.com/v1/api.json?rss_url=https://feed.rssunify.com/5cd3956da2842/rss.xml&api_key=aw46lnwivmgetk7aos9xwiv1yb8xur8ogewi0epn&order_by=pubDate&order_dir=desc&count=70'
+        //const rssURL = 'https://api.rss2json.com/v1/api.json?rss_url=https://feed.rssunify.com/5cd3956da2842/rss.xml&api_key=aw46lnwivmgetk7aos9xwiv1yb8xur8ogewi0epn&order_by=pubDate&order_dir=desc&count=70'
+      //  const rssURL = 'http://feeds.feedburner.com/ncinewsreleases'
+        const rssURL = 'https://api.rss2json.com/v1/api.json?rss_url=http://feeds.feedburner.com/ncinewsreleases&api_key=aw46lnwivmgetk7aos9xwiv1yb8xur8ogewi0epn&order_by=pubDate&order_dir=desc&count=70'
 
-        http://www.rssmix.com/u/8318797/rss.xml
-        
         /*
         fetch(rssUrl)
             .then(response => response.json())
