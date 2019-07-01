@@ -1,26 +1,29 @@
 import React from 'reactn';
 import {
-  Button,
   Keyboard,
   SafeAreaView,
   Text,
   View,
 } from 'react-native';
-import { Form, Icon, Item, Input, Picker } from 'native-base';
 import { CheckBox, Slider } from 'react-native-elements';
 import Modal from 'react-native-modal';
 import FormInput from './FormInput';
 import GradientButton from './GradientButton';
 import Colors from '../constants/Colors';
 import Styles from '../constants/Styles';
+import IosButton from './IosButton';
 
 export default class SearchLocationOptions extends React.PureComponent{
   constructor(props) {
     super(props);
     this.state = {
-      location: this.global.profile.location,
+      location: this.props.searchLocation,
       radius: 10,
     }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.setState({ location: nextProps.searchLocation });
   }
 
   render() {
@@ -77,36 +80,28 @@ export default class SearchLocationOptions extends React.PureComponent{
             <View style={{ marginTop: 20, marginBottom: 15 }}>
               <GradientButton
                 colors={[Colors.radar2, Colors.radar3]}
-                handleClick={() => { this.props.setLocation(this.state.location); this.props.setRadius(this.state.radius); this.props.setVisible(false)}}
+                handleClick={this._updateLocation}
                 disabled={this.state.location ? false : true}
                 text='Update'
               />
             </View>
-            <Button onPress={() => {this.setState({ location: '', radius: 10 }); this.props.setLocation(''); this.props.setVisible(false)}} title='Clear Filter' />
+            <IosButton handleTouch={this._reset} title='Clear Filter' />
           </View>
         </SafeAreaView>
       </Modal>
     );
   }
 
-  _set1 = async () => {
-    await this.setState({ box1: true, box2: false, box3: false, box4: false, radius: '10' });
-    this._dismiss();
+  _reset = async () => {
+    await this.setState({ location: '', radius: 10 }); 
+    this.props.setLocation(''); 
+    this.props.setVisible(false);
   }
 
-  _set2 = async () => {
-    await this.setState({ box1: false, box2: true, box3: false, box4: false, radius: '25' });
-    this._dismiss();
-  }
-
-  _set3 = async () => {
-    await this.setState({ box1: false, box2: false, box3: true, box4: false, radius: '50' });
-    this._dismiss();
-  }
-
-  _set4 = async () => {
-    await this.setState({ box1: false, box2: false, box3: false, box4: true, radius: '100' });
-    this._dismiss();
+  _updateLocation = () => {
+    this.props.setLocation(this.state.location); 
+    this.props.setRadius(this.state.radius); 
+    this.props.setVisible(false);
   }
 
   _dismiss() {

@@ -14,12 +14,13 @@ export default class App extends React.Component {
     let data = await AsyncStorage.getItem('profile');
     const profile = JSON.parse(data);
     data = await AsyncStorage.getItem('trials');
-    const trials = JSON.parse(data);
-    this.setGlobal({
+    const trials = data ? JSON.parse(data) : [];
+    await this.setGlobal({
       token,
       profile,
       trials,
     });
+    await this.setState({ isLoadingComplete: true });
   }
 
   render() {
@@ -48,6 +49,9 @@ export default class App extends React.Component {
       Asset.loadAsync([
         require('./assets/images/robot-dev.png'),
         require('./assets/images/robot-prod.png'),
+        require('./assets/images/01_search.png'),
+        require('./assets/images/02_view.png'),
+        require('./assets/images/03_news.png')
       ]),
       Font.loadAsync({
         // This is the font that we are using for our tab bar
@@ -67,7 +71,7 @@ export default class App extends React.Component {
   };
 
   _handleFinishLoading = () => {
-    this.setState({ isLoadingComplete: true });
+    //this.setState({ isLoadingComplete: true });
   };
 }
 

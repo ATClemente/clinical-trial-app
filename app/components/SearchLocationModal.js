@@ -15,6 +15,7 @@ import GradientButton from './GradientButton';
 import Colors from '../constants/Colors';
 import axios from 'axios';
 import Urls from '../constants/Urls';
+import parseErrorStack from 'react-native/Libraries/Core/Devtools/parseErrorStack';
 
 export default class SearchLocationModal extends React.PureComponent{
   constructor(props) {
@@ -49,7 +50,7 @@ export default class SearchLocationModal extends React.PureComponent{
       Object.keys(data.profile).forEach(item => {
         this.setState({ item });
       });  
-      this.props.setProfileLocation(data.profile.location);
+      this.props.setSearchLocation(data.profile.location);
       this.props.setLocationModal(false);
     } catch (e) {
       console.log(e);
@@ -64,12 +65,11 @@ export default class SearchLocationModal extends React.PureComponent{
   };
 
   render() {
-    console.log(this.context);
     return(
       <Modal
         isVisible={this.props.visible}
         avoidKeyboard={true}
-        onRequestClose={() => this.props.setLocationModal(false)}
+        onRequestClose={()=>{}}
       >
         <SafeAreaView style={{ 
           flexDirection: 'column', 
@@ -122,14 +122,14 @@ export default class SearchLocationModal extends React.PureComponent{
               />
             </View>
           </View>
-          <View style={{ alignSelf: 'center' }}>
+          {/* <View style={{ alignSelf: 'center' }}>
             <Text 
               style={{ fontSize: 18, color: '#1b6ae8' }}
               onPress={() => this.props.setLocationModal(false)}
             >
               Close
             </Text>
-          </View>
+          </View> */}
         </SafeAreaView>
       </Modal>
     )

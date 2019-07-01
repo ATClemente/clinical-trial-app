@@ -14,6 +14,7 @@ import FormDatePicker from '../components/FormDatePicker';
 import FormSwitch from '../components/FormSwitch';
 import Colors from '../constants/Colors';
 import { toastDelay } from '../constants/Constants';
+import IosButton from '../components/IosButton';
 
 export default class SettingsScreen extends React.Component {
   constructor(props) {
@@ -38,7 +39,7 @@ export default class SettingsScreen extends React.Component {
   _updateProfileAsync = async () => {
     await this.setState({ isLoading: true });
     try {
-      const { data } = await axios.patch(
+      const { data } = await axios.put(
         Urls.server + '/user/profile',
         {
           email: this.state.email,
@@ -143,12 +144,7 @@ export default class SettingsScreen extends React.Component {
                 text='Update Profile'
               />
             </View>
-            <Text
-              style={{ alignSelf: 'center', fontSize: 16, color: '#1b6ae8' }}
-              onPress={this._signOutAsync} 
-            >
-              Sign Out
-            </Text>
+            <IosButton handleTouch={this._signOutAsync} title='Sign Out' />
           </View>
         </View>
       </View>

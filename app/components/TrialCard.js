@@ -16,7 +16,7 @@ export default ({ item, title, ViewTrialButton }) => {
       <View>
         <Text style={{ color: '#333', fontWeight: '500' }}>{title}</Text>
         <Divider
-          backgroundColor='#ccc'
+          backgroundColor='#ddd'
           style={{ marginVertical: 6 }}
         />
         <Text>Phase: {ClinicalTrialAPIUtil.getPhase(item)}</Text>

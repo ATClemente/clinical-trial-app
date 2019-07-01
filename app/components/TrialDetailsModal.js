@@ -10,14 +10,11 @@ import {
   FlatList,
   SafeAreaView,
   Modal,
-  TouchableHighlight,
-  AsyncStorage
+  AsyncStorage,
+  Dimensions
 } from 'react-native';
-import Colors from '../constants/Colors';
-import GradientButton from '../components/GradientButton';
 import * as QueryConstants from '../constants/MainSearchQueryParams.js';
 import ViewMoreText from 'react-native-view-more-text';
-import Collapsible from 'react-native-collapsible';
 import MapView, {Circle, Callout} from 'react-native-maps';
 import { Card } from 'react-native-elements';
 import axios from 'axios';
@@ -25,7 +22,14 @@ import Urls from '../constants/Urls';
 import { Ionicons } from '@expo/vector-icons';
 import IconButton from '../components/IconButton';
 import geolib from 'geolib';
-import ClinicalTrialAPIUtil from '../components/ClinicalTrialAPIUtil.js';
+import TrialDetailButton from './TrialDetailButton.js';
+import Colors from '../constants/Colors';
+import ShareModal from '../components/ShareModal';
+
+const windowSize = Dimensions.get('screen');
+const ratio = 32/37;
+const mapWidth = windowSize.width - 30;
+const mapHeight = Math.round(mapWidth * ratio);
 
 export default class TrialDetailsModal extends React.Component {
     constructor(props) {
@@ -49,17 +53,21 @@ export default class TrialDetailsModal extends React.Component {
             waitForLoading: true,
             savedTrials: this.global.trials,
             trialSaved: false,
-            modifyTrial: false
+            modifyTrial: false,
+            activeMarkerOpacity: 1,
+            temporaryMarkerOpacity: 1,
+            closedMarkerOpacity: 1,
+            showShare: false,
         };
-    }
-
-    componentWillMount(){
-        //this.setProfileData();
-        //this.setUserLocationCoordinates();
+        this.selectedMarker = null;
+        this.selectedMarkerType = '';
+        this.markers={};
     }
 
     componentWillReceiveProps(nextProps) {
-        this.setUserLocationCoordinates(nextProps.searchLocation);
+        const profileLocation = this.global.profile.location ? this.global.profile.location : '90210';
+        const newLocation = nextProps.searchLocation ? nextProps.searchLocation : profileLocation;
+        this.setUserLocationCoordinates(newLocation);
         this.setState({
             locationDistanceFilter: nextProps.searchRadius,
             modalVisible: nextProps.modalVisible,
@@ -73,8 +81,14 @@ export default class TrialDetailsModal extends React.Component {
 
     resetModal(){
         //this.props.setModalVisible(false);
+        this.markers = {};
+        this.selectedMarker = null;
+        this.selectedMarkerType = '';
         this.setState({
             showMoreEligibility: false,
+            activeMarkerOpacity: 1,
+            temporaryMarkerOpacity: 1,
+            closedMarkerOpacity: 1,
             waitForLoading: true}, 
             function(){
             this.props.setModalVisible(false);
@@ -90,35 +104,40 @@ export default class TrialDetailsModal extends React.Component {
                 onRequestClose={() => { this.resetModal() }}>
                 <SafeAreaView style={styles.mainView}>
 
-                    <View style={{ marginBottom: 5, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <View style={{width: '25%', }}>
-                            <IconButton
-                                icon='ios-arrow-dropleft'
-                                side='left'
-                                text='Back'
-                                handleTouch={() => { this.resetModal() }}
+                    <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between' }}>
+                        <View>
+                            <TrialDetailButton
+                                icon='chevron-left'
+                                iconSize={24}
+                                handleTouch={ () => this.resetModal() }
                             />
                         </View>
 
-                        <Text style={{fontWeight: "bold", textDecorationLine: "underline", textAlign: "center" }}>Trial Details</Text>
-
-                        <View style={{width: '25%', alignItems: 'flex-end' }}>
-                            <IconButton
-                                icon={this.state.trialSaved ? 'md-star' : 'md-star-outline'}
-                                iconSize={26}
-                                side='right'
-                                text={this.state.trialSaved ? 'Unsave' : 'Save' }
-                                textColor='#333'
-                                iconColor='#f2c100'
-                                handleTouch={this.state.trialSaved ? this.unsaveTrial : this.saveTrial }
+                        <View style={{ flexDirection: 'row', alignItems: 'flex-end', alignItems: 'center' }}>
+                            <TrialDetailButton
+                                icon='share-alternative'
+                                iconSize={20}
+                                style={{ marginRight: 12 }}
+                                handleTouch={ () => this.setShareVisible(true) }
+                            />
+                            <TrialDetailButton
+                                iconSize={22}
+                                icon={ this.state.trialSaved ? 'heart' : 'heart-outlined' }
+                                iconColor={ this.state.trialSaved ? '#db2e2e' : 'black' }
+                                handleTouch={ this.state.trialSaved ? this.unsaveTrial : this.saveTrial }
+                                disabled={ this.state.modifyTrial }
                             />
                         </View>
                     </View>
                     
-                    <View style={{borderBottomWidth: StyleSheet.hairlineWidth, marginBottom: 5}}></View>
-                    <ScrollView>
+                    <View style={{borderColor: '#ddd', borderBottomWidth: 1 }}></View>
+
+                    <ScrollView style={{ padding: 15 }}>
                         <Text style={{fontWeight: "bold", textDecorationLine: "underline"}}>Title:</Text>
                         <Text style={{marginBottom: 5}}>{this.state.trial[QueryConstants.BRIEF_TITLE]}</Text>
+                        
+                        <View style={styles.divider}></View>
+
                         <Text style={{fontWeight: "bold", textDecorationLine: "underline"}}>Trial Summary:</Text>
                         <ViewMoreText
                         numberOfLines={3}
@@ -129,21 +148,66 @@ export default class TrialDetailsModal extends React.Component {
                             <Text>{this.state.trial[QueryConstants.BRIEF_SUMMARY]}</Text>
                         </ViewMoreText>
 
+                        <View style={styles.divider}></View>
+
                         <Text style={{fontWeight: "bold", textDecorationLine: "underline"}}>Lead Organization:</Text>
                         <View style={{padding: 10, alignItems: "center"}}>
                                 {!this.isTrialEmpty(this.state.trial) && this.renderLeadOrganization(this.state.trial)}
                         </View>
 
+                        <View style={styles.divider}></View>
+
+                        <Text style={{fontWeight: "bold", textDecorationLine: "underline"}}>Location:</Text>
+
                         <Text style={{padding: 5, textAlign: "center"}}>Sites within {this.state.locationDistanceFilter} miles of {this.props.searchLocation}: </Text>
+                        
+                        <View style={{justifyContent: 'center', flexDirection: 'row'}}>
+                            <Ionicons onPress={() => {
+                                    this.setState({activeMarkerOpacity: +!this.state.activeMarkerOpacity}); 
+                                    if(this.selectedMarker != null && this.selectedMarkerType === 'active'){
+                                        this.markers[this.selectedMarker].hideCallout()
+                                    }
+                                }} name="md-pin" size={30} color="#00FF00"/>
+                            <Text style={{paddingTop: 5}}> Active  </Text>
+                            <Ionicons onPress={() => {
+                                    this.setState({temporaryMarkerOpacity: +!this.state.temporaryMarkerOpacity});
+                                    if(this.selectedMarker != null && this.selectedMarkerType === 'temp'){
+                                        this.markers[this.selectedMarker].hideCallout()
+                                    }
+                                }} name="md-pin" size={30} color="#FFFF00"/>
+                            <Text style={{paddingTop: 5}}> Temporarily Closed  </Text>
+                            <Ionicons onPress={() => {
+                                    this.setState({closedMarkerOpacity: +!this.state.closedMarkerOpacity})
+                                    if(this.selectedMarker != null && this.selectedMarkerType === 'closed'){
+                                        this.markers[this.selectedMarker].hideCallout()
+                                    }
+                                }} name="md-pin" size={30} color="#FF0000"/>
+                            <Text style={{paddingTop: 5}}> Closed  </Text>
+                        </View>
 
                         <View /*style={styles.content}*/>
                                 {!this.isTrialEmpty(this.state.trial) && this.renderMapview(this.state.trial)}
                         </View>
 
+                        <View style={styles.divider}></View>
+
                         <Text style={{marginTop: 10, fontWeight: "bold", textDecorationLine: "underline"}}>Eligibility Criteria:</Text>
                         <View style={{padding: 10, alignItems: "center"}}>
                                 {!this.isTrialEmpty(this.state.trial) && this.renderEligibilityCriteria(this.state.trial)}
                         </View>
+
+                        <View style={{ height: 30 }}></View>
+
+                        <ShareModal
+                            visible={this.state.showShare}
+                            setVisible={this.setShareVisible}
+                            trial={{ 
+                                id: this.state.trial.nct_id, 
+                                title: this.state.trial.brief_title, 
+                                summary: this.state.trial.brief_summary,
+                                phase: this.state.trial.phase
+                            }}
+                        />
 
                     </ScrollView>
                 </SafeAreaView>
@@ -156,6 +220,10 @@ export default class TrialDetailsModal extends React.Component {
 
             </Modal>
         )
+    }
+
+    setShareVisible = visible => {
+        this.setState({ showShare: visible });
     }
 
     saveTrial = async () => {
@@ -378,11 +446,33 @@ export default class TrialDetailsModal extends React.Component {
             return "No principal investigator specified";
         }
     }
+    
+    clearLoadingIndicator = () => {
+        console.log("clear loading called");
+        this.setState({waitForLoading: false});
+    }
+
 
     renderMapview = (trial) => {
 
-        var activeSites = trial[QueryConstants.SITES].filter(this.checkForActiveSites);
-        var finalSites = activeSites.filter(this.checkForLocationProximity);
+        //var activeSites = trial[QueryConstants.SITES].filter(this.checkForActiveSites);
+        //var finalSites = activeSites.filter(this.checkForLocationProximity);
+
+        let finalSites = trial[QueryConstants.SITES].filter(this.checkForLocationProximity);
+
+        if (finalSites.length < 1){
+            return(
+                <View
+                    style={{justifyContent: 'center'}} 
+                    onLayout={() => {this.setState({waitForLoading: false })}} >
+                    <Text style={{ textAlign: "center" }}>Whoops!</Text>
+                    <Text style={{ textAlign: "center" }}>There are no trial sites near you :(</Text>
+                    <Text style={{ textAlign: "center" }}>Try searching again with a specific location</Text>
+                    <Text style={{ textAlign: "center" }}>to find trials with sites close to you!</Text>
+                </View>
+            );
+
+        }
 
         var locationMarkers = [];
 
@@ -424,6 +514,25 @@ export default class TrialDetailsModal extends React.Component {
                 else{
                     newMarker.contact_email = "None Provided";
                 }
+
+                //Set pin color (.pinColor)
+                //Colors use HSV and from what I have seen and found can be any "HUE" but need 100% value and saturation.
+                //Using named colors for now and converted to hex so we can know what that is
+                if(currentSite[QueryConstants.RECRUIT_STATUS].toLowerCase() == "active"){
+                    newMarker.pinColor = 'green'; //#00FF00
+                    newMarker.type = 'active';
+                    newMarker.opacity = this.state.activeMarkerOpacity;
+                }
+                else if(currentSite[QueryConstants.RECRUIT_STATUS].toLowerCase() == "temporarily_closed_to_accrual"){
+                    newMarker.pinColor = 'yellow'; //#FFFF00
+                    newMarker.type = 'temp';
+                    newMarker.opacity = this.state.temporaryMarkerOpacity;
+                }
+                else if(currentSite[QueryConstants.RECRUIT_STATUS].toLowerCase() == "closed_to_accrual"){
+                    newMarker.pinColor = 'red'; //#FF0000
+                    newMarker.type = 'closed';
+                    newMarker.opacity = this.state.closedMarkerOpacity;
+                }
     
                 locationMarkers.push(newMarker);
             }
@@ -448,10 +557,10 @@ export default class TrialDetailsModal extends React.Component {
         lonDelta = 0.12 * (this.state.locationDistanceFilter / 10);
 
         return(
-            <View style={{ height: 300, width: 370 }}>
+            <View style={{ height: mapHeight, width: mapWidth }}>
                 <MapView
                     style={{ flex: 1 }}
-                    onMapReady = {() => {this.setState({ waitForLoading: false })}}
+                    onMapReady = {() => {this.setState({waitForLoading: false })}}
                     initialRegion={{
                         latitude: this.state.locationFilterLat,
                         longitude: this.state.locationFilterLon,
@@ -479,20 +588,35 @@ export default class TrialDetailsModal extends React.Component {
                         coordinate={marker.coordinates}
                         pinColor={marker.pinColor}
                         key = {marker.key}
+                        opacity={marker.opacity}
+                        ref={(ref) => this.markers[marker.key] = ref}
+                        onPress={() => {this.selectedMarker = marker.key; this.selectedMarkerType = marker.type}}
                         >
-                        <Callout style={styles.plainView}>
-                            <View style={{margin: 5}} >
-                                <Text style={{fontWeight: "bold"}}>{marker.title}</Text>
-                                <Text>Contact Name: {marker.contact_name}</Text>
-                                <Text>Contact Phone: {marker.contact_phone}</Text>
-                                <Text>Contact Email: {marker.contact_email}</Text>
-                            </View>
+                        <Callout style={styles.plainView} tooltip={!!!marker.opacity}>
+                            {!!marker.opacity && this.renderCallout(marker, !!marker.opacity)}
                         </Callout>
                         </MapView.Marker>
-                    ))}
+                    ))} 
                 </MapView>
             </View>
         );
+    }
+
+    renderCallout(marker, show){
+        if(show){
+            return(
+                <View style={{margin: 5}} >
+                    <Text style={{fontWeight: "bold"}}>{marker.title}</Text>
+                    <Text>Contact Name: {marker.contact_name}</Text>
+                    <Text>Contact Phone: {marker.contact_phone}</Text>
+                    <Text>Contact Email: {marker.contact_email}</Text>
+                </View>
+            );
+        }
+        else{
+            markerRef.hideCallout();
+            return null;
+        }
     }
 
     checkForActiveSites(site){
@@ -580,7 +704,6 @@ export default class TrialDetailsModal extends React.Component {
 
 const styles = StyleSheet.create({
   mainView:{
-      padding: 20,
       flex: 1
   },
   allResultsView:{
@@ -647,5 +770,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 10 //Part of said hack
+  },
+  divider: {
+    borderColor: '#ddd', 
+    borderBottomWidth: StyleSheet.hairlineWidth, 
+    marginVertical: 10
   }
 });

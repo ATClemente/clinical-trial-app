@@ -28,33 +28,7 @@ export default class CancerRSS extends React.Component {
     //Cite: https://facebook.github.io/react-native/docs/network
     constructor(props) {
         super(props);
-       
-        this.state = { isLoading: true }
-        this.state = { isLoading: true, modalVisible: false, modalURL: '' }
-
-
-        var xmlText = "<?xml version='1.0' encoding='utf-8'?>\
-<Library>\
-   <Books count='1'>\
-       <Book id='1'>\
-           <Name>Me Before You</Name>\
-           <Author>Jojo Moyes</Author>\
-       </Book>\
-   </Books>\
-   <Music count=1>\
-       <CD id='2'>\
-           <Name>Houses of the Holy</Name>\
-           <Artist>Led Zeppelin</Artist>\
-       </CD>\
-   </Music>\
-</Library>"
-
-        var xml = new XMLParser().parseFromString(xmlText);    // Assume xmlText contains the example XML
-
-       //console.log(xml);
-
-     //   console.log(xml.getElementsByTagName('Name'));
-
+               this.state = { isLoading: true, modalVisible: false, modalURL: '' }
     }
 
 
@@ -66,20 +40,17 @@ export default class CancerRSS extends React.Component {
         // Make modal visible 
         this.setState({ modalVisible: false })
 
-
     }
-
-
 
     //Cite: https://gist.github.com/PhilipFlyvholm/d4171a16900cef6146b097a7ed432515
 
     componentDidMount() {
       // const rssURL = 'https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Ffeed.rssunify.com%2F5cbc0dbe0657c%2Frss.xml&api_key=aw46lnwivmgetk7aos9xwiv1yb8xur8ogewi0epn&order_by=pubDate&order_dir=desc&count=50'
        // const rssURL = 'https://api.rss2json.com/v1/api.json?rss_url=http://feeds.feedburner.com/ncinewsreleases&api_key=aw46lnwivmgetk7aos9xwiv1yb8xur8ogewi0epn&order_by=pubDate&order_dir=desc&count=50'
-        const rssURL = 'https://api.rss2json.com/v1/api.json?rss_url=https://feed.rssunify.com/5cd3956da2842/rss.xml&api_key=aw46lnwivmgetk7aos9xwiv1yb8xur8ogewi0epn&order_by=pubDate&order_dir=desc&count=70'
+        //const rssURL = 'https://api.rss2json.com/v1/api.json?rss_url=https://feed.rssunify.com/5cd3956da2842/rss.xml&api_key=aw46lnwivmgetk7aos9xwiv1yb8xur8ogewi0epn&order_by=pubDate&order_dir=desc&count=70'
+      //  const rssURL = 'http://feeds.feedburner.com/ncinewsreleases'
+        const rssURL = 'https://api.rss2json.com/v1/api.json?rss_url=http://feeds.feedburner.com/cancer-currents&api_key=aw46lnwivmgetk7aos9xwiv1yb8xur8ogewi0epn&order_by=pubDate&order_dir=desc&count=70'
 
-        http://www.rssmix.com/u/8318797/rss.xml
-        
         /*
         fetch(rssUrl)
             .then(response => response.json())
@@ -145,22 +116,20 @@ export default class CancerRSS extends React.Component {
         }
 
         return (
-            <Container style={{ paddingHorizontal: 5, backgroundColor: '#ddd' }}>
+            <Container style={{ paddingHorizontal: 5, backgroundColor: '#eee' }}>
                 <Content >
-
                     <FlatList
                         style={{ marginVertical: 4 }}
                         data={this.state.dataSource}
                         renderItem={this._renderItem}
                         keyExtractor={(item, index) => item.guid}
                     />
- 
+                    {/* <PopUpScreenModal
+                        visible={this.state.modalVisible}
+                        hideModal={this._hideModal}
+                        url={this.state.modalURL}
+                    /> */}
                 </Content>
-                <PopUpScreenModal
-                    visible={this.state.modalVisible}
-                    hideModal={this._hideModal}
-                    url={this.state.modalURL}
-                />
             </Container>
         );
     }
@@ -175,7 +144,7 @@ export default class CancerRSS extends React.Component {
                 <CardItem bordered style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
 
                     <Text 
-                        onPress={() => Linking.openURL(item.link)}
+                        onPress={() => this.setState({ modalVisible: true, modalURL: item.link })}
                         style={styles.articleTitle}
                     >
                         {item.title}
@@ -203,7 +172,7 @@ export default class CancerRSS extends React.Component {
                     <View style={{ width: '100%', marginBottom: 5 }}>
                         <GradientButton
                             colors={[Colors.blueOne, Colors.blueTwo]}
-                            handleClick={() => this.setState({ modalVisible: true, modalURL: item.link })}
+                            handleClick={() => this.props.navigation.navigate('NewsArticle', { uri: item.link }) } 
                             loading={false}
                             disabled={false}
                             text='View Article'
@@ -215,70 +184,6 @@ export default class CancerRSS extends React.Component {
         )
     }
 }
-
-
-
-    /*
-    render() {
-
-
-        if (this.state.isLoading) {
-            return (
-                <View style={{ flex: 1, padding: 20 }}>
-                    <ActivityIndicator />
-                </View>
-            )
-        }
-        return (
-
-            <View style={{ flex: 1, paddingTop: 1, justifyContent: 'space-between' }}>
-
-                <FlatList
-                    data={this.state.dataSource}
-
-                    renderItem={({ item }) =>
-                        //<Text style={styles.body}>{item.title}, {item.publicationDate}, {item.abstract}</Text>}
-
-                        <View style={{ padding: 1 }}>
-
-                            <Text style>Publication Date:{item.pubDate} </Text>
-
-                            <Text
-                                onPress={() => Linking.openURL(item.link)}>
-                                {item.title}
-                            </Text>
-
-
-                            <Text style>Description:{item.description.replace('<p>', '').replace('</p>', '')  } </Text>
-                            <Text style>Link:{item.link} </Text> 
-
-      
-
-                            
-
-/*
-                            <View
-                                style={{
-                                    borderBottomColor: 'grey',
-                                    borderBottomWidth: 1,
-
-                                    borderRadius: 5,
-                                    padding: 5
-                                }}
-                            />
-
-                        </View>
-                    }
-                    keyExtractor={(item, index) => item.guid}
-                />
-            </View>
-
-          
-            );
-
-    }
-}
-*/
 
 const styles = StyleSheet.create({
     title: {

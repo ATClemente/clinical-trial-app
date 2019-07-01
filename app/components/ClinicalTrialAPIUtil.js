@@ -1,10 +1,5 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import {
-  AppRegistry,
-  StyleSheet,
-  Text,
-  View,
-  ListView,
   Alert
 } from 'react-native';
 
@@ -82,44 +77,6 @@ import * as QueryConstants from '../constants/MainSearchQueryParams.js';
 
   static getPhase(trial){
     return trial[QueryConstants.PHASE][QueryConstants.PHASE].replace("_", "\/");
-  }
-
-
-
-  static testPostReq = () => {
-    var params = {};
-    var sizeStr = "size";
-    params[sizeStr] = 5;
-
-    var includeStr = "include";
-    var includeArr = [];
-
-    includeArr.push("nci_id");
-    includeArr.push("nct_id");
-    includeArr.push("brief_title");
-
-
-    params[includeStr] = includeArr;
-
-
-    fetch('https://clinicaltrialsapi.cancer.gov/v1/clinical-trials', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(
-        //{size: '5'}
-        params
-      ),
-    }).then((response) => response.json())
-      .then((responseJson) => {
-        console.log(responseJson)
-        //return responseJson.movies;
-      })
-    .catch((error) => {
-      console.error(error);
-    });
   }
 }
 

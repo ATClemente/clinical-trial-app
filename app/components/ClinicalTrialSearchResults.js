@@ -1,26 +1,13 @@
 import React from 'react';
 import {
-  Image,
-  Platform,
-  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-  Button,
   ActivityIndicator,
-  Alert,
-  TextInput,
-  Picker,
   FlatList,
-  Modal
 } from 'react-native';
-import { Card, Divider } from 'react-native-elements';
-import { WebBrowser } from 'expo';
-import { MonoText } from '../components/StyledText';
-import Colors from '../constants/Colors';
 import * as QueryConstants from '../constants/MainSearchQueryParams.js';
-import ClinicalTrialAPIUtil from '../components/ClinicalTrialAPIUtil.js';
 import TrialDetailsModal from '../components/TrialDetailsModal';
 import TrialCard from '../components/TrialCard';
 

@@ -1,87 +1,123 @@
 import React from 'react';
 import {
-  AsyncStorage,
-  StyleSheet,
+  Keyboard,
   Text,
-  TextInput,
-  TouchableOpacity,
   View
 } from 'react-native';
+import axios from 'axios';
+import { Toast } from 'native-base';
+import FormInput from '../components/FormInput';
+import GradientButton from '../components/GradientButton';
 import Colors from '../constants/Colors';
+import Urls from '../constants/Urls';
+import { toastDelay } from '../constants/Constants';
 
 export default class ForgotPasswordScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      username: '',
-      password: ''
+      email: '',
+      loading: false,
+      emailSent: false
     }
   }
 
   static navigationOptions = {
-    title: 'Forgot password',
+    title: 'Forgot Password',
   };
 
   render() {
-    const btnDisabled = !this.state.username || !this.state.password;
-    const btnStyle = [styles.button, 
-      btnDisabled 
-      ? styles.disabled 
-      : styles.enabled ];
-    return (      
-      <View style={styles.container}>
-        <Text>Forgot Password</Text>
-      </View>
-    );
+    if (!this.state.emailSent) {
+      return (      
+        <View style={{ 
+          flex: 1,
+          flexDirection: 'column',
+          justifyContent: 'center'
+        }}>
+          <View style={{
+            width: '100%',
+            paddingHorizontal: 20,
+          }}>
+            <View style={{ paddingBottom: 15, textAlign: 'center' }}>
+              <Text style={{ fontWeight: 'bold', marginBottom: 10 }}>
+                Enter your email address to reset your password.
+              </Text>
+              <Text>
+                If you have no email address saved in Settings, please create a new account.
+              </Text>
+            </View>
+            <FormInput
+              label='Email'
+              placeholder='johndoe@example.com'
+              keyboardType='email-address'
+              autoCapitalize='none'
+              value={this.state.email}
+              onChangeText={email => this.setState({ email })}
+            />
+            <View style={{ marginTop: 8, marginBottom: 14 }}>
+              <GradientButton
+                colors={[Colors.radar2, Colors.radar3]}
+                handleClick={this._resetPassword}
+                loading={this.state.loading}
+                disabled={!this._isEmailValid()}
+                text='Send Reset Password Link'
+              />
+            </View>
+            <View style={{ height: '30%' }} />
+          </View>
+        </View>
+      );
+    }
+    else {
+      return (
+        <View style={{ 
+          flex: 1,
+          flexDirection: 'column',
+          justifyContent: 'center'
+        }}>
+          <View style={{
+            width: '100%',
+            paddingHorizontal: 20,
+          }}>
+            <Text style={{ textAlign: 'center' }}>Please check your email to reset your password. Email may take a few minutes to arrive.</Text>
+            <View style={{ height: '10%' }} />
+          </View>
+        </View>
+      );
+    }
   }
 
-  _signInAsync = async () => {
-    await AsyncStorage.setItem('userToken', 'abc');
-    this.props.navigation.navigate('Main');
-  };
+  _resetPassword = async () => {
+    Keyboard.dismiss();
+    await this.setState({ loading: true });
+    try {
+      const { data } = await axios.get(
+        Urls.server + '/auth/forgot?email=' + this.state.email
+      );
+      await this.setState({ emailSent: true });
+    } catch (e) {
+      if (e.response) {
+        Toast.show({
+          text: e.response.data.status,
+          buttonText: 'Okay',
+          type: 'warning',
+          duration: toastDelay
+        });
+      } else {
+        Toast.show({
+          text: e,
+          buttonText: 'Okay',
+          type: 'warning',
+          duration: toastDelay
+        });
+      }
+    }
+    await this.setState({ loading: false });
+  }
+
+  _isEmailValid = () => {
+    let email = this.state.email;
+    let pattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    return pattern.test(String(email).toLowerCase())
+  }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: 'column',
-    backgroundColor: Colors.WHITE,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  form: {
-    justifyContent: 'center',
-    width: '80%'
-  },
-  signupRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '80%'
-  },
-  textInput: {
-    height: 40,
-    borderColor: Colors.SILVER,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    marginBottom: 20
-  },
-  button: {
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: Colors.DODGER_BLUE,
-    marginBottom: 12,
-    paddingVertical: 12,
-    borderRadius: 5
-  },
-  enabled: {
-    opacity: 1
-  },
-  disabled: {
-    opacity: 0.5
-  },
-  buttonText: {
-    color: Colors.WHITE,
-    textAlign: 'center',
-    height: 20
-  }
-});

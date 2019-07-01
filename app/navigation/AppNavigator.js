@@ -2,7 +2,7 @@ import React from 'react';
 import {
   createAppContainer,
   createStackNavigator,
-  createSwitchNavigator
+  createSwitchNavigator,
 } from 'react-navigation';
 
 import MainTabNavigator from './MainTabNavigator';
@@ -10,26 +10,28 @@ import AuthLoadingScreen from '../screens/AuthLoadingScreen';
 import SignInScreen from '../screens/SignInScreen';
 import SignUpScreen from '../screens/SignUpScreen';
 import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
+import OnboardingClass from '../screens/OnboardingClass';
+import OnboardingScreen from '../screens/OnboardingScreen';
 
 const AuthStack = createStackNavigator({
   SignIn: {
     screen: SignInScreen,
     navigationOptions: {
-      header: null
-    }
+      header: null,
+    },
   },
   SignUp: {
     screen: SignUpScreen,
     navigationOptions: {
-      title: 'Sign up for an account'
-    }
+      title: 'Sign up for an account',
+    },
   },
   ForgotPassword: {
     screen: ForgotPasswordScreen,
     navigationOptions: {
-      title: 'Forgot password'
-    }
-  }
+      title: 'Forgot password',
+    },
+  },
 });
 
 export default createAppContainer(
@@ -39,10 +41,11 @@ export default createAppContainer(
       // Read more at https://reactnavigation.org/docs/en/auth-flow.html
       Main: MainTabNavigator,
       Auth: AuthStack,
-      AuthLoading: AuthLoadingScreen
+      AuthLoading: AuthLoadingScreen,
+      Onboarding: OnboardingScreen,
     },
     {
-      initialRouteName: 'AuthLoading'
-    }
-  )
+      initialRouteName: 'AuthLoading',
+    },
+  ),
 );

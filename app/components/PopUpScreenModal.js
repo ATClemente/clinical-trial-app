@@ -12,7 +12,7 @@ export default class PopUpScreenModal extends Component {
                     animationType="slide"
                     transparent={false}
                     visible={this.props.visible}
-                    onRequestClose={() => this.props.hideModal }>
+                    onRequestClose={() => this.props.hideModal() }>
 
                     <SafeAreaView style={{ height: '100%', width: '100%'}}>
                         <IconButton

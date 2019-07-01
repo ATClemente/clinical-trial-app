@@ -63,7 +63,7 @@ export default class CancerNews extends React.Component {
         }
 
         return (
-            <Container style={{ paddingHorizontal: 5, backgroundColor: '#ddd' }}>
+            <Container style={{ paddingHorizontal: 5, backgroundColor: '#eee' }}>
                 <Content >
                     <FlatList
                         style={{ marginVertical: 4 }}
@@ -71,11 +71,11 @@ export default class CancerNews extends React.Component {
                         renderItem={this._renderItem}
                         keyExtractor={(item, index) => item.doi}    
                     />
-                    <PopUpScreenModal
+                    {/* <PopUpScreenModal
                         visible={this.state.modalVisible}
                         hideModal={this._hideModal}
                         url={this.state.modalURL}
-                    />
+                    /> */}
                 </Content>
             </Container>
         );
@@ -109,7 +109,7 @@ export default class CancerNews extends React.Component {
 
                     <Text 
                         style={styles.articleTitle}
-                         onPress={() => Linking.openURL(item.url[0].value)} 
+                         onPress={() => this.setState({ modalVisible: true, modalURL: item.url[0].value })}
                        // onPress={() => { this._articleInApp(item) }}
 
 
@@ -131,7 +131,7 @@ export default class CancerNews extends React.Component {
                     <View style={{ width: '100%', marginBottom: 5 }}>
                     <GradientButton
                         colors={[Colors.blueOne, Colors.blueTwo]}
-                        handleClick={() => this.setState({ modalVisible: true, modalURL: item.url[0].value })}
+                        handleClick={() => this.props.navigation.navigate('ResearchArticle', { uri: item.url[0].value })}
                         loading={false}
                         disabled={false}
                         text='View Article'

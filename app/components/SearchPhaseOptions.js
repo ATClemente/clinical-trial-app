@@ -8,10 +8,10 @@ import {
 } from 'react-native';
 import { CheckBox } from 'react-native-elements'
 import Modal from 'react-native-modal';
-import FormInput from './FormInput';
 import GradientButton from './GradientButton';
 import Colors from '../constants/Colors';
 import Styles from '../constants/Styles';
+import IosButton from './IosButton';
 
 export default class SearchGenderOptions extends React.PureComponent{
   constructor(props) {
@@ -22,6 +22,18 @@ export default class SearchGenderOptions extends React.PureComponent{
       phase2: false,
       phase3: false,
       phase4: false,
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.phase === '') {
+      this.setState({ 
+        phase: '',
+        phase1: false,
+        phase2: false,
+        phase3: false,
+        phase4: false
+      });
     }
   }
 
@@ -81,7 +93,7 @@ export default class SearchGenderOptions extends React.PureComponent{
                 text='Update'
               />
             </View>
-            <Button onPress={this._reset} title='Clear Filter' />
+            <IosButton handleTouch={this._reset} title='Clear Filter' />
           </View>
         </SafeAreaView>
       </Modal>
@@ -89,10 +101,8 @@ export default class SearchGenderOptions extends React.PureComponent{
   }
 
   _reset = async () => {
-    await this.setState({ phase1: false, phase2: false, phase3: false, phase4: false, phase: '' });
     this.props.setPhase(''); 
     this.props.setVisible(false);
-    this._dismiss();
   }
 
   _setPhase = async () => {

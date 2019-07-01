@@ -95,15 +95,6 @@ export default class SignUpScreen extends React.Component {
 
   _signUpAsync = async () => {
     Keyboard.dismiss();
-    if (this.state.password !== this.state.verifyPwd) {
-      Toast.show({
-        text: "Passwords don't match",
-        buttonText: 'Okay',
-        type: 'warning',
-        duration: toastDelay
-      });
-      return;
-    }
     await this.setState({ loading: true });
     try {
       const { data } = await axios.post(
@@ -115,12 +106,13 @@ export default class SignUpScreen extends React.Component {
       );
       await AsyncStorage.setItem('jwt', data.jwt);
       await AsyncStorage.setItem('profile', JSON.stringify(data.profile));
-      this.setGlobal({ 
+      await AsyncStorage.setItem('trials', JSON.stringify([]));
+      await this.setGlobal({ 
         token: data.jwt,
         profile: data.profile,
         trials: [],
       });
-      this.props.navigation.navigate('Main');
+      this.props.navigation.navigate('Onboarding');
     } catch (e) {
       if (e.response) {
         Toast.show({

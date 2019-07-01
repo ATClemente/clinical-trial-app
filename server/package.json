@@ -4,11 +4,15 @@
   "description": "app server",
   "main": "index.js",
   "dependencies": {
+    "@sendgrid/mail": "^6.4.0",
     "bcrypt": "^3.0.6",
     "body-parser": "^1.18.3",
     "express": "^4.16.3",
+    "express-handlebars": "^3.1.0",
     "jsonwebtoken": "^8.5.1",
-    "pg": "^7.10.0"
+    "node-html-parser": "^1.1.15",
+    "pg": "^7.10.0",
+    "request": "^2.88.0"
   },
   "devDependencies": {
     "babel-eslint": "^10.0.1",
